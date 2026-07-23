@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Soleil — Un Signe de la Création d'Allah</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #030d1a;
+  --gold: #d4a843;
+  --gold-light: #f5d57a;
+  --silver-dim: #7a9bbf;
+  --white: #eef3ff;
+  --text: #d8e8ff;
+  --text-dim: #7a9bbf;
+  --sun-orange: #f5a623;
+  --sun-yellow: #ffe880;
+  --sun-red: #e05a1a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--night); color:var(--text); font-family:'Lato',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ══ HEADER ══ */
+#sky-header {
+  position:relative; width:100%; height:240px; overflow:hidden;
+  background:linear-gradient(180deg,#010610 0%,#08141e 35%,#1a2a08 70%,#2a3e06 100%);
+  flex-shrink:0;
+}
+/* corona rays */
+.corona-ray {
+  position:absolute; top:50%; left:50%;
+  width:3px; border-radius:3px;
+  background:linear-gradient(to bottom, rgba(255,220,60,.7), transparent);
+  transform-origin:top center;
+  animation:rayPulse var(--rp,4s) ease-in-out infinite var(--rd,0s);
+}
+@keyframes rayPulse {
+  0%,100%{ opacity:.3; transform:rotate(var(--angle)) scaleY(.7) translateX(-50%); }
+  50%{ opacity:.9; transform:rotate(var(--angle)) scaleY(1.15) translateX(-50%); }
+}
+/* hero sun */
+#hero-sun {
+  position:absolute; top:28px; left:50%; transform:translateX(-50%);
+  width:80px; height:80px; border-radius:50%;
+  background:radial-gradient(circle at 38% 35%,#fff8c0,#ffe050 30%,#f5a623 70%,#e06010);
+  box-shadow:0 0 50px 16px rgba(245,166,35,.55),0 0 100px 36px rgba(245,166,35,.25),0 0 180px 60px rgba(245,166,35,.1);
+  animation:heroSunPulse 5s ease-in-out infinite;
+  z-index:2;
+}
+@keyframes heroSunPulse {
+  0%,100%{ box-shadow:0 0 50px 16px rgba(245,166,35,.55),0 0 100px 36px rgba(245,166,35,.25),0 0 180px 60px rgba(245,166,35,.1); transform:translateX(-50%) scale(1); }
+  50%{ box-shadow:0 0 70px 24px rgba(245,166,35,.7),0 0 130px 50px rgba(245,166,35,.35),0 0 220px 80px rgba(245,166,35,.15); transform:translateX(-50%) scale(1.06); }
+}
+/* horizon glow */
+#horizon-glow {
+  position:absolute; bottom:0; left:0; right:0; height:80px;
+  background:linear-gradient(to top, rgba(255,140,20,.18), transparent);
+}
+/* heat shimmer */
+.shimmer {
+  position:absolute; bottom:0; width:3px;
+  background:linear-gradient(to top,rgba(255,180,60,.25),transparent);
+  border-radius:3px;
+  animation:shimmerRise var(--sh,3s) ease-in-out infinite var(--sd,0s);
+}
+@keyframes shimmerRise {
+  0%{ height:0; opacity:.8; transform:translateX(0); }
+  60%{ height:60px; opacity:.4; transform:translateX(var(--sx,4px)); }
+  100%{ height:80px; opacity:0; transform:translateX(var(--sx2,8px)); }
+}
+.hstar { position:absolute; border-radius:50%; background:#fff; animation:twinkle var(--dur,3s) ease-in-out infinite var(--del,0s); }
+@keyframes twinkle {
+  0%,100%{ opacity:var(--op,.5); } 50%{ opacity:.05; }
+}
+#sky-label {
+  position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+  text-align:center; white-space:nowrap; z-index:3;
+}
+#sky-label h1 { font-family:'Scheherazade New',serif; font-size:24px; color:var(--gold-light); text-shadow:0 0 20px rgba(212,168,67,.5); }
+#sky-label p { font-size:11px; color:var(--silver-dim); letter-spacing:2.5px; text-transform:uppercase; margin-top:3px; }
+
+/* ══ SCREENS ══ */
+#app { display:flex; flex-direction:column; min-height:100vh; }
+.screen { display:none; flex:1; }
+.screen.active { display:block; }
+
+/* ══ INTRO ══ */
+#intro-wrap { max-width:700px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#skip-intro { text-align:right; margin-bottom:1rem; }
+#skip-intro button { background:none; border:none; color:var(--text-dim); font-size:12px; cursor:pointer; letter-spacing:.5px; font-family:'Lato',sans-serif; text-decoration:underline; text-underline-offset:3px; }
+#skip-intro button:hover { color:var(--text); }
+#slide-dots { display:flex; justify-content:center; gap:8px; margin-bottom:2rem; }
+.dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.15); transition:background .3s,transform .3s; cursor:pointer; }
+.dot.active { background:var(--gold); transform:scale(1.3); }
+.dot.done { background:rgba(212,168,67,.4); }
+.slide { display:none; animation:slideIn .45s ease; }
+.slide.active { display:block; }
+@keyframes slideIn { from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
+
+/* Scene canvas */
+.scene-canvas {
+  width:100%; height:200px; border-radius:14px; margin-bottom:1.4rem;
+  overflow:hidden; position:relative; border:1px solid rgba(255,255,255,.07);
+}
+
+/* ── SCENE ANIMATIONS ── */
+
+/* Scene 0 : siraj wahhaj — sun as lamp */
+.lamp-sun { position:absolute; border-radius:50%; animation:lampPulse 3.5s ease-in-out infinite; }
+@keyframes lampPulse {
+  0%,100%{ transform:translate(-50%,-50%) scale(1); }
+  50%{ transform:translate(-50%,-50%) scale(1.08); }
+}
+.lamp-ray { position:absolute; border-radius:3px; animation:lampRay var(--lr,3s) ease-in-out infinite var(--ld,0s); }
+@keyframes lampRay {
+  0%,100%{ opacity:.3; transform:rotate(var(--angle)) scaleY(.75); }
+  50%{ opacity:.9; transform:rotate(var(--angle)) scaleY(1.2); }
+}
+.lamp-particle { position:absolute; border-radius:50%; background:rgba(255,220,80,.8); animation:particleFloat var(--pf,4s) ease-in-out infinite var(--pd,0s); }
+@keyframes particleFloat {
+  0%{ transform:translate(0,0); opacity:.8; }
+  50%{ transform:translate(var(--px,10px),var(--py,-20px)); opacity:.3; }
+  100%{ transform:translate(var(--px2,5px),var(--py2,-40px)); opacity:0; }
+}
+
+/* Scene 1 : orbit — earth around sun */
+.orbit-path { position:absolute; border-radius:50%; border:1px dashed rgba(255,200,80,.2); top:50%; left:50%; transform:translate(-50%,-50%); }
+.orbit-earth {
+  position:absolute; border-radius:50%;
+  background:radial-gradient(circle at 35%,#4a9fe0,#1a5fa0 50%,#0d3a6a);
+  box-shadow:0 0 10px rgba(74,159,224,.4);
+  top:50%; left:50%;
+  animation:orbitEarth 8s linear infinite;
+}
+@keyframes orbitEarth {
+  from{ transform:rotate(0deg) translateX(var(--orx,80px)) rotate(0deg); }
+  to{ transform:rotate(360deg) translateX(var(--orx,80px)) rotate(-360deg); }
+}
+.orbit-sun { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; background:radial-gradient(circle at 38%,#ffe880,#f5a623); animation:lampPulse 4s ease-in-out infinite; }
+
+/* Scene 2 : nuclear fusion */
+.fusion-core { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; animation:fusionPulse 2s ease-in-out infinite; }
+@keyframes fusionPulse {
+  0%,100%{ transform:translate(-50%,-50%) scale(1); box-shadow:0 0 30px 10px rgba(255,200,60,.5); }
+  50%{ transform:translate(-50%,-50%) scale(1.12); box-shadow:0 0 55px 20px rgba(255,160,40,.7); }
+}
+.proton { position:absolute; border-radius:50%; animation:protonMove var(--pm,2.5s) ease-in-out infinite var(--pmd,0s); }
+@keyframes protonMove {
+  0%,100%{ transform:translate(var(--px,0px),var(--py,0px)); opacity:.9; }
+  50%{ transform:translate(var(--px2,0px),var(--py2,0px)); opacity:.4; }
+}
+.energy-burst { position:absolute; border-radius:50%; border:2px solid rgba(255,220,80,.6); top:50%; left:50%; transform:translate(-50%,-50%); animation:burstExpand 2s ease-out infinite var(--eb,0s); }
+@keyframes burstExpand {
+  0%{ width:10px;height:10px;opacity:.9; }
+  100%{ width:160px;height:160px;opacity:0; }
+}
+
+/* Scene 3 : day/night cycle */
+.dn-earth { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; width:80px; height:80px; overflow:hidden; animation:earthSpin 8s linear infinite; }
+@keyframes earthSpin { from{ transform:translate(-50%,-50%) rotate(0deg); } to{ transform:translate(-50%,-50%) rotate(360deg); } }
+.dn-sun-icon { position:absolute; border-radius:50%; background:radial-gradient(circle at 38%,#ffe880,#f5a623); animation:lampPulse 4s ease-in-out infinite; }
+.dn-moon-icon { position:absolute; border-radius:50%; background:radial-gradient(circle at 34%,#e8f0ff,#b0c8f0); box-shadow:0 0 16px 4px rgba(180,200,240,.3); animation:moonGlowSm 5s ease-in-out infinite; }
+@keyframes moonGlowSm { 0%,100%{ box-shadow:0 0 16px 4px rgba(180,200,240,.3); } 50%{ box-shadow:0 0 28px 8px rgba(180,200,240,.5); } }
+.day-arc { position:absolute; border-radius:50%; border:2px solid rgba(255,200,60,.3); top:50%; left:50%; transform:translate(-50%,-50%); }
+.night-arc { position:absolute; border-radius:50%; border:2px dashed rgba(180,200,240,.2); top:50%; left:50%; transform:translate(-50%,-50%); }
+.small-star { position:absolute; background:#fff; border-radius:50%; animation:twinkle 2s ease-in-out infinite var(--del,0s); }
+
+/* Scene 4 : photosynthesis */
+.sun-beam { position:absolute; width:2px; border-radius:2px; background:linear-gradient(to bottom,rgba(255,220,60,.8),rgba(255,200,40,.2)); animation:beamFall var(--bf,2s) ease-in-out infinite var(--bd,0s); }
+@keyframes beamFall {
+  0%,100%{ opacity:.2; transform:scaleY(.8); }
+  50%{ opacity:.8; transform:scaleY(1.1); }
+}
+.photo-leaf { position:absolute; bottom:20px; animation:leafGrow 3s ease-in-out infinite var(--lg,0s); }
+@keyframes leafGrow { 0%,100%{ transform:scale(1) rotate(var(--lr2,0deg)); } 50%{ transform:scale(1.06) rotate(var(--lr2,0deg)); } }
+.co2-particle { position:absolute; font-size:9px; color:rgba(180,220,180,.6); font-family:Lato,sans-serif; animation:co2Rise var(--cr,3s) ease-in infinite var(--crd,0s); }
+@keyframes co2Rise { 0%{ transform:translateY(0); opacity:.8; } 100%{ transform:translateY(-80px); opacity:0; } }
+.o2-particle { position:absolute; font-size:9px; color:rgba(100,200,255,.7); font-family:Lato,sans-serif; animation:o2Rise var(--or,2.5s) ease-in infinite var(--ord,0s); }
+@keyframes o2Rise { 0%{ transform:translateY(0); opacity:.9; } 100%{ transform:translateY(-60px); opacity:0; } }
+
+/* Scene 5 : tasbih — glorification */
+.tasbih-ray { position:absolute; top:50%; left:50%; border-radius:3px; background:linear-gradient(to right,rgba(255,220,60,.6),transparent); transform-origin:left center; animation:tasbihRay var(--tr,4s) ease-in-out infinite var(--td,0s); }
+@keyframes tasbihRay { 0%,100%{ opacity:.2; transform:rotate(var(--angle)) scaleX(.6); } 50%{ opacity:.85; transform:rotate(var(--angle)) scaleX(1.2); } }
+.arabic-float { position:absolute; font-family:'Scheherazade New',serif; animation:arabicFloat var(--af,5s) ease-in-out infinite var(--afd,0s); }
+@keyframes arabicFloat { 0%,100%{ transform:translateY(0) translateX(0); opacity:.6; } 50%{ transform:translateY(-8px) translateX(var(--ax,5px)); opacity:1; } }
+
+/* ── TEXT / LAYOUT ── */
+.slide-num { font-size:11px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:.5rem; font-weight:700; }
+.slide h2 { font-family:'Scheherazade New',serif; font-size:22px; color:var(--gold-light); line-height:1.4; margin-bottom:.75rem; text-shadow:0 0 16px rgba(212,168,67,.3); }
+.slide-body { font-size:14.5px; line-height:1.75; color:var(--text); margin-bottom:1.1rem; }
+.ayah-box { background:rgba(212,168,67,.07); border-left:3px solid var(--gold); border-radius:0 10px 10px 0; padding:.85rem 1rem; margin-bottom:1.3rem; }
+.ayah-ar { font-family:'Scheherazade New',serif; font-size:17px; color:var(--gold); line-height:1.8; display:block; margin-bottom:.3rem; }
+.ayah-fr { font-size:13px; color:var(--silver-dim); font-style:italic; line-height:1.5; }
+.key-fact { display:flex; gap:10px; align-items:flex-start; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:.85rem 1rem; margin-bottom:.75rem; }
+.key-fact-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+.key-fact p { font-size:13.5px; line-height:1.6; color:var(--text); }
+.key-fact p strong { color:var(--gold-light); font-weight:700; }
+.slide-nav { display:flex; gap:10px; margin-top:1.5rem; }
+.btn-prev,.btn-next,.btn-quiz { padding:11px 24px; border-radius:10px; font-size:14px; font-family:'Lato',sans-serif; cursor:pointer; font-weight:700; letter-spacing:.3px; transition:background .2s,border-color .2s,transform .1s; }
+.btn-prev { background:transparent; border:1px solid rgba(255,255,255,.15); color:var(--text-dim); }
+.btn-prev:hover { background:rgba(255,255,255,.05); }
+.btn-next { flex:1; background:linear-gradient(135deg,rgba(212,168,67,.22),rgba(212,168,67,.1)); border:1px solid rgba(212,168,67,.5); color:var(--gold-light); }
+.btn-next:hover { background:linear-gradient(135deg,rgba(212,168,67,.35),rgba(212,168,67,.18)); border-color:rgba(212,168,67,.75); }
+.btn-quiz { flex:1; background:linear-gradient(135deg,rgba(58,173,114,.25),rgba(58,173,114,.1)); border:1px solid rgba(58,173,114,.5); color:#7de0b0; }
+.btn-quiz:hover { background:linear-gradient(135deg,rgba(58,173,114,.38),rgba(58,173,114,.2)); border-color:rgba(58,173,114,.75); }
+.btn-prev:active,.btn-next:active,.btn-quiz:active { transform:scale(.97); }
+
+/* ══ QUIZ ══ */
+#quiz-wrap { max-width:680px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
+.score-pill { background:rgba(212,168,67,.13); border:1px solid rgba(212,168,67,.35); border-radius:20px; padding:5px 16px; font-size:13px; color:var(--gold); font-weight:700; }
+.prog-wrap { flex:1; margin:0 14px; height:4px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; }
+#qprog { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:4px; transition:width .5s ease; width:0%; }
+.q-count { font-size:13px; color:var(--text-dim); white-space:nowrap; }
+#q-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:16px; padding:1.75rem; margin-bottom:1.2rem; }
+#q-icon { width:36px;height:36px;border-radius:10px;background:rgba(212,168,67,.14);border:1px solid rgba(212,168,67,.3);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:1rem; }
+#q-text { font-size:15.5px;line-height:1.65;color:var(--white);margin-bottom:1.4rem; }
+#options { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+.opt { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:12px 14px; font-size:13.5px; color:var(--text); font-family:'Lato',sans-serif; cursor:pointer; text-align:left; line-height:1.4; transition:background .17s,border-color .17s,transform .1s; }
+.opt:hover:not(:disabled) { background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.4);transform:translateY(-1px); }
+.opt:active:not(:disabled) { transform:scale(.98); }
+.opt.correct { background:rgba(58,173,114,.18);border-color:rgba(58,173,114,.6);color:#7de0b0; }
+.opt.wrong   { background:rgba(224,82,82,.15); border-color:rgba(224,82,82,.5);color:#f5a0a0; }
+.opt:disabled { cursor:default; }
+#fb-box { background:rgba(212,168,67,.07); border:1px solid rgba(212,168,67,.2); border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.2rem; display:none; animation:fadeUp .35s ease; }
+#fb-text { font-size:14px;line-height:1.7;color:var(--text);margin-bottom:.7rem; }
+#fb-ayah { font-family:'Scheherazade New',serif; font-size:15px; color:var(--gold); border-left:2px solid var(--gold); padding-left:12px; line-height:1.7; }
+#qnext { width:100%; padding:13px; background:linear-gradient(135deg,rgba(212,168,67,.2),rgba(212,168,67,.08)); border:1px solid rgba(212,168,67,.45); border-radius:10px; color:var(--gold-light); font-family:'Lato',sans-serif; font-size:15px; font-weight:700; cursor:pointer; display:none; letter-spacing:.4px; transition:background .2s,border-color .2s; }
+#qnext:hover { background:linear-gradient(135deg,rgba(212,168,67,.32),rgba(212,168,67,.16));border-color:rgba(212,168,67,.7); }
+#end-screen { display:none;text-align:center;padding:2.5rem 1rem;animation:fadeUp .5s ease; }
+#end-badge { width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,67,.2),rgba(212,168,67,.04));border:2px solid rgba(212,168,67,.5);margin:0 auto 1.4rem;display:flex;align-items:center;justify-content:center;font-size:36px; }
+#end-title { font-family:'Scheherazade New',serif;font-size:22px;color:var(--gold-light);margin-bottom:.5rem; }
+#end-big { font-size:52px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:.4rem; }
+#end-sub { font-size:13px;color:var(--text-dim);margin-bottom:.5rem; }
+#end-msg { font-size:14px;color:var(--text);line-height:1.65;max-width:400px;margin:0 auto 2rem; }
+.end-btns { display:flex;gap:10px;justify-content:center;flex-wrap:wrap; }
+#restart-btn,#review-btn { padding:11px 28px; border-radius:10px; font-family:'Lato',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:background .2s,border-color .2s; }
+#restart-btn { background:transparent;border:1px solid rgba(212,168,67,.5);color:var(--gold); }
+#restart-btn:hover { background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.8); }
+#review-btn { background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--text-dim); }
+#review-btn:hover { background:rgba(255,255,255,.06); }
+@keyframes fadeUp { from{ opacity:0;transform:translateY(10px); } to{ opacity:1;transform:translateY(0); } }
+@media(max-width:480px){
+  #options{ grid-template-columns:1fr; }
+  .slide h2{ font-size:19px; }
+  #sky-label h1{ font-size:20px; }
+  #intro-wrap,#quiz-wrap{ padding:1.4rem 1rem 2.5rem; }
+  .slide-nav{ flex-direction:column; }
+  .btn-prev{ order:2; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ HEADER ══ -->
+<div id="sky-header">
+  <div id="hstars"></div>
+  <div id="corona-rays"></div>
+  <div id="hero-sun"></div>
+  <div id="horizon-glow"></div>
+  <div id="shimmer-wrap"></div>
+  <div id="sky-label">
+    <h1>الشَّمْسُ — آيَةٌ مِنْ آيَاتِ اللهِ</h1>
+    <p>Le Soleil — Un Signe de la Création d'Allah</p>
+  </div>
+</div>
+
+<!-- ══ INTRO ══ -->
+<div id="screen-intro" class="screen active">
+  <div id="intro-wrap">
+    <div id="skip-intro"><button onclick="startQuiz()">Passer directement au quiz →</button></div>
+    <div id="slide-dots"></div>
+
+    <!-- SLIDE 0 : Siraj Wahhaj -->
+    <div class="slide active" id="sl-0">
+      <div class="scene-canvas" id="sc0" style="background:linear-gradient(180deg,#020810,#04121e)"></div>
+      <div class="slide-num">Leçon 1 · 6 leçons</div>
+      <h2>سِرَاجًا وَهَّاجًا — Une Lampe Ardente</h2>
+      <p class="slide-body">
+        Le Coran décrit le soleil par deux mots d'une précision remarquable :
+        <strong style="color:var(--gold-light)">سِرَاج</strong> (<em>sirâj</em>) — une lampe qui produit sa propre lumière —
+        et <strong style="color:var(--gold-light)">وَهَّاج</strong> (<em>wahhâj</em>) — ardente, rayonnante avec intensité.
+        Ce n'est pas un décor : c'est une <strong style="color:var(--gold-light)">source lumineuse active</strong>,
+        distincte de la lune qui ne fait que réfléchir.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَجَعَلْنَا سِرَاجًا وَهَّاجًا ﴾</span>
+        <span class="ayah-fr">« Nous avons fait [du soleil] une lampe ardente. » — An-Naba : 13</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">💡</span>
+        <p>Le mot <strong>سِرَاج</strong> est le même utilisé pour une lampe à huile — un objet qui <strong>génère</strong> sa propre lumière par combustion. La science a confirmé que le soleil produit sa lumière par <strong>fusion nucléaire</strong>.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌙</span>
+        <p>Par contraste, la lune est appelée <strong>نُور</strong> (<em>nûr</em> — lumière reçue). Cette distinction, révélée 14 siècles avant les télescopes, est un miracle coranique.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-next" onclick="goSlide(1)">Suivant → Le Soleil en Orbite</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 1 : Orbite -->
+    <div class="slide" id="sl-1">
+      <div class="scene-canvas" id="sc1" style="background:linear-gradient(180deg,#010610,#030e1c)"></div>
+      <div class="slide-num">Leçon 2 · 6 leçons</div>
+      <h2>Le Soleil Nage dans son Orbite — فِي فَلَكٍ يَسْبَحُونَ</h2>
+      <p class="slide-body">
+        Le Coran affirme que le soleil <strong style="color:var(--gold-light)">nage (يَسْبَح)</strong> dans une orbite (<strong style="color:var(--gold-light)">فَلَك</strong>).
+        La science moderne a confirmé que le soleil orbite autour du centre de la Voie Lactée
+        à <strong style="color:var(--gold-light)">720 000 km/h</strong> — il est en mouvement constant,
+        tout comme le Coran l'a décrit avec le verbe "nager", suggérant un déplacement fluide dans l'espace.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَالشَّمْسُ تَجْرِي لِمُسْتَقَرٍّ لَّهَا ۚ ذَٰلِكَ تَقْدِيرُ الْعَزِيزِ الْعَلِيمِ ﴾</span>
+        <span class="ayah-fr">« Le soleil court vers son lieu de repos déterminé. Tel est le décret du Tout-Puissant, l'Omniscient. » — Yâ-Sîn : 38</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌀</span>
+        <p>Le soleil met <strong>225 millions d'années</strong> pour accomplir une révolution complète autour du centre de la Voie Lactée. Le Coran le savait — et l'a exprimé avec le mot "nager".</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">📐</span>
+        <p>Le mot <strong>فَلَك</strong> (<em>falak</em>) désigne une trajectoire orbitale sphérique. Ce concept astronomique précis n'a été formalisé par la science qu'au XVIIe siècle.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(0)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(2)">Suivant → La Fusion Nucléaire</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 : Fusion nucléaire -->
+    <div class="slide" id="sl-2">
+      <div class="scene-canvas" id="sc2" style="background:linear-gradient(180deg,#050208,#0c0318)"></div>
+      <div class="slide-num">Leçon 3 · 6 leçons</div>
+      <h2>Un Feu Intérieur Immense — وقود الشمس</h2>
+      <p class="slide-body">
+        Allah a mis dans le soleil un feu intérieur d'une puissance inimaginable.
+        Chaque seconde, le soleil transforme <strong style="color:var(--gold-light)">600 millions de tonnes</strong>
+        d'hydrogène en hélium par fusion nucléaire, libérant une énergie équivalente à
+        <strong style="color:var(--gold-light)">100 milliards de bombes atomiques par seconde</strong>.
+        Ce feu brûle depuis 4,6 milliards d'années — par la volonté d'Allah.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَجَعَلَ الشَّمْسَ سِرَاجًا ﴾</span>
+        <span class="ayah-fr">« Il a fait du soleil une lampe. » — Nûh : 16</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🔥</span>
+        <p>La surface du soleil atteint <strong>5 500°C</strong> et son cœur <strong>15 millions de degrés</strong>. Le Coran l'a appelé "ardent" (<em>wahhâj</em>) — la description la plus juste qui soit.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">⏳</span>
+        <p>Le soleil a encore <strong>5 milliards d'années</strong> de réserve d'hydrogène — une durée fixée par Allah pour que la vie continue sur Terre jusqu'au terme qu'Il a décrété.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(1)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(3)">Suivant → Jour et Nuit</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 : Jour et nuit -->
+    <div class="slide" id="sl-3">
+      <div class="scene-canvas" id="sc3" style="background:linear-gradient(180deg,#020810,#050d1a)"></div>
+      <div class="slide-num">Leçon 4 · 6 leçons</div>
+      <h2>Le Jour et la Nuit — Alternance Parfaite</h2>
+      <p class="slide-body">
+        Allah a créé le soleil pour que son mouvement apparent engendre
+        l'<strong style="color:var(--gold-light)">alternance parfaite</strong> du jour et de la nuit.
+        Cette alternance n'est pas le fruit du hasard : c'est une <strong style="color:var(--gold-light)">disposition divine</strong>
+        qui permet le repos, le travail, les saisons et la vie sur Terre.
+        Si le soleil s'arrêtait ou s'emballait, toute vie disparaîtrait.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَسَخَّرَ الشَّمْسَ وَالْقَمَرَ كُلٌّ يَجْرِي لِأَجَلٍ مُّسَمًّى ﴾</span>
+        <span class="ayah-fr">« Il a assujetti le soleil et la lune, chacun courant jusqu'à un terme fixé. » — Az-Zumar : 5</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌅</span>
+        <p>Le mot <strong>سَخَّرَ</strong> (<em>sakhkhara</em>) signifie "assujetti, mis au service". Le soleil n'est pas libre — il obéit à l'ordre d'Allah, mis au service des humains.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🧬</span>
+        <p>L'alternance jour/nuit régule l'horloge biologique de tous les êtres vivants. Sans elle, ni sommeil, ni croissance, ni vie. Un équilibre parfait voulu par Allah.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(2)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(4)">Suivant → La Photosynthèse</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 : Photosynthèse -->
+    <div class="slide" id="sl-4">
+      <div class="scene-canvas" id="sc4" style="background:linear-gradient(180deg,#020c10,#041810)"></div>
+      <div class="slide-num">Leçon 5 · 6 leçons</div>
+      <h2>La Lumière qui Nourrit — Vie par le Soleil</h2>
+      <p class="slide-body">
+        Allah a fait du soleil la <strong style="color:var(--gold-light)">source première de toute vie</strong> sur Terre.
+        Les plantes captent la lumière solaire pour fabriquer de la nourriture (photosynthèse),
+        libèrent l'oxygène que nous respirons, et constituent la base de toute la chaîne alimentaire.
+        Sans la lumière qu'Allah a mise dans le soleil, rien ne vivrait.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَجَعَلْنَا مِنَ الْمَاءِ كُلَّ شَيْءٍ حَيٍّ ۖ أَفَلَا يُؤْمِنُونَ ﴾</span>
+        <span class="ayah-fr">« Nous avons fait de l'eau toute chose vivante. Ne croient-ils donc pas ? » — Al-Anbiya : 30</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌿</span>
+        <p>Les plantes transforment <strong>lumière + CO₂ + eau → glucose (matière organique) + O₂</strong>. Ce glucose nourrit la plante et devient cellulose, amidon, protéines. Sans soleil, rien de tout cela n'existerait — un système conçu par Allah.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">☀️</span>
+        <p>
+          La lumière voyage à <strong>300 000 km/s</strong> — en 1 seconde, elle ferait <strong>7,5 fois le tour de la Terre</strong> ! Et pourtant, la distance Terre-Soleil est si immense qu’il lui faut quand même du temps :
+          <br><br>
+          <span style="display:block;background:rgba(212,168,67,.09);border:1px solid rgba(212,168,67,.2);border-radius:8px;padding:10px 14px;margin:8px 0;font-family:monospace;font-size:12.5px;line-height:1.9;color:var(--gold-light)">
+            Étape 1 &mdash; Distance Terre-Soleil : <strong>150 000 000 km</strong><br>
+            Étape 2 &mdash; Vitesse de la lumière : <strong>300 000 km/s</strong><br>
+            Étape 3 &mdash; Temps = Distance &divide; Vitesse<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;150 000 000 &divide; 300 000 = <strong>500 secondes</strong><br>
+            Étape 4 &mdash; 500 s &divide; 60 = <strong style="color:#f5d57a;font-size:13.5px">8 minutes et 20 secondes &#x231B;</strong>
+          </span>
+          La lumière du soleil arrive sur Terre en <strong>flux continu et ininterrompu</strong> — comme un robinet qui ne s’arrête jamais. Chaque photon (particule de lumière) que tu reçois à cet instant précis a <strong>quitté le soleil il y a exactement 8 minutes et 20 secondes</strong>, et a parcouru 150 millions de km avant d’atteindre tes yeux. Ce n’est pas une nouvelle lumière toutes les 8 minutes — c’est <strong>une nouvelle lumière à chaque fraction de seconde</strong>, chacune ayant fait ce même voyage de 8 min 20 s. Allah maintient ce flux sans pause depuis <strong>4,6 milliards d’années</strong>, au service de Ses créatures.
+        </p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(3)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(5)">Suivant → Le Soleil Glorifie Allah</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 : Tasbih du soleil -->
+    <div class="slide" id="sl-5">
+      <div class="scene-canvas" id="sc5" style="background:linear-gradient(180deg,#030810,#060f1e)"></div>
+      <div class="slide-num">Leçon 6 · 6 leçons</div>
+      <h2>Le Soleil Glorifie Allah — يُسَبِّحُ لِلَّهِ</h2>
+      <p class="slide-body">
+        Tout dans l'univers glorifie Allah — y compris le soleil. Sa <strong style="color:var(--gold-light)">lumière</strong>,
+        sa <strong style="color:var(--gold-light)">chaleur</strong>, son <strong style="color:var(--gold-light)">orbite précise</strong>
+        sont des formes de tasbih. Allah nous appelle à contempler le soleil non comme une divinité
+        — ce qui est interdit — mais comme un <strong style="color:var(--gold-light)">signe (آية)</strong> de Sa grandeur,
+        pour adorer le Créateur, non la créature.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ تُسَبِّحُ لَهُ السَّمَاوَاتُ السَّبْعُ وَالْأَرْضُ وَمَن فِيهِنَّ ۚ وَإِن مِّن شَيْءٍ إِلَّا يُسَبِّحُ بِحَمْدِهِ ﴾</span>
+        <span class="ayah-fr">« Les sept cieux, la terre et tous ceux qui s'y trouvent Le glorifient. Il n'est rien qui ne Le glorifie en Le louant. » — Al-Isra : 44</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🚫</span>
+        <p>Le Prophète ﷺ a interdit de prier <strong>au moment exact du lever et du coucher du soleil</strong>, pour distinguer clairement l'adoration d'Allah de l'adoration du soleil pratiquée par les polythéistes.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🤲</span>
+        <p>À chaque lever de soleil, le croyant dit : <strong>سُبْحَانَ اللهِ وَبِحَمْدِهِ</strong> — il rejoint ainsi le tasbih universel que le soleil accomplit depuis sa création par Allah.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(4)">← Précédent</button>
+        <button class="btn-quiz" onclick="startQuiz()">🎯 Tester mes connaissances →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="screen-quiz" class="screen">
+  <div id="quiz-wrap">
+    <div id="quiz-header">
+      <div class="score-pill" id="score-pill">⭐ 0</div>
+      <div class="prog-wrap"><div id="qprog"></div></div>
+      <div class="q-count" id="q-count">1 / 8</div>
+    </div>
+    <div id="q-card">
+      <div id="q-icon">☀️</div>
+      <div id="q-text"></div>
+      <div id="options"></div>
+    </div>
+    <div id="fb-box">
+      <div id="fb-text"></div>
+      <div id="fb-ayah"></div>
+    </div>
+    <button id="qnext">Question suivante →</button>
+    <div id="end-screen">
+      <div id="end-badge"></div>
+      <div id="end-title"></div>
+      <div id="end-big"></div>
+      <div id="end-sub">points sur 8</div>
+      <div id="end-msg"></div>
+      <div class="end-btns">
+        <button id="restart-btn" onclick="restartQuiz()">↺ Recommencer le quiz</button>
+        <button id="review-btn" onclick="reviewIntro()">📖 Revoir les leçons</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ══ HEADER BUILD ══ */
+(function(){
+  // stars (only top portion, dimmed by sun)
+  const sb=document.getElementById('hstars');
+  for(let i=0;i<55;i++){
+    const s=document.createElement('div');s.className='hstar';
+    const z=Math.random()*2+.5;
+    s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*55}%;left:${Math.random()*100}%;--op:${(.1+Math.random()*.4).toFixed(2)};--dur:${(2+Math.random()*4).toFixed(1)}s;--del:${(Math.random()*5).toFixed(1)}s;opacity:${(.1+Math.random()*.4).toFixed(2)}`;
+    sb.appendChild(s);
+  }
+  // corona rays
+  const cr=document.getElementById('corona-rays');
+  for(let i=0;i<24;i++){
+    const r=document.createElement('div');r.className='corona-ray';
+    const len=60+Math.random()*80;
+    r.style.cssText=`height:${len}px;margin-top:${-(len)}px;margin-left:-1.5px;--angle:${i*15}deg;--rp:${(3+Math.random()*3).toFixed(1)}s;--rd:${(Math.random()*4).toFixed(1)}s`;
+    cr.appendChild(r);
+  }
+  // shimmer
+  const sw=document.getElementById('shimmer-wrap');
+  for(let i=0;i<12;i++){
+    const sh=document.createElement('div');sh.className='shimmer';
+    sh.style.cssText=`left:${5+i*8}%;--sh:${(2+Math.random()*3).toFixed(1)}s;--sd:${(Math.random()*3).toFixed(1)}s;--sx:${(Math.random()*10-5).toFixed(1)}px;--sx2:${(Math.random()*16-8).toFixed(1)}px`;
+    sw.appendChild(sh);
+  }
+})();
+
+/* ══ SCENE BUILDERS ══ */
+
+function buildSc0(el){
+  // big glowing sun with rays
+  const sun=document.createElement('div');sun.className='lamp-sun';
+  sun.style.cssText='width:70px;height:70px;top:50%;left:50%;background:radial-gradient(circle at 38%,#fff8c0,#ffe050 30%,#f5a623 70%,#e06010);box-shadow:0 0 50px 16px rgba(245,166,35,.6),0 0 100px 36px rgba(245,166,35,.25)';
+  el.appendChild(sun);
+  // rays
+  for(let i=0;i<16;i++){
+    const r=document.createElement('div');r.className='lamp-ray';
+    const len=35+Math.random()*45;
+    r.style.cssText=`width:2.5px;height:${len}px;top:calc(50% - ${len}px);left:calc(50% - 1.5px);background:linear-gradient(to bottom,rgba(255,220,60,.75),transparent);transform-origin:bottom center;--angle:${i*22.5}deg;transform:rotate(${i*22.5}deg);--lr:${(3+Math.random()*2).toFixed(1)}s;--ld:${(Math.random()*3).toFixed(1)}s`;
+    el.appendChild(r);
+  }
+  // floating light particles
+  for(let i=0;i<10;i++){
+    const p=document.createElement('div');p.className='lamp-particle';
+    const sz=Math.random()*4+2;
+    p.style.cssText=`width:${sz}px;height:${sz}px;top:${35+Math.random()*30}%;left:${25+Math.random()*50}%;--pf:${(3+Math.random()*3).toFixed(1)}s;--pd:${(Math.random()*4).toFixed(1)}s;--px:${(Math.random()*30-15).toFixed(0)}px;--py:${(-(20+Math.random()*20)).toFixed(0)}px;--px2:${(Math.random()*20-10).toFixed(0)}px;--py2:${(-(40+Math.random()*20)).toFixed(0)}px`;
+    el.appendChild(p);
+  }
+  // Arabic labels
+  const ar=document.createElement('div');
+  ar.style.cssText='position:absolute;top:18px;right:18px;font-family:Scheherazade New,serif;font-size:22px;color:rgba(255,220,80,.6);text-align:right;line-height:1.4';
+  ar.innerHTML='سِرَاج<br><span style="font-size:13px;color:rgba(255,200,60,.4);font-family:Lato,sans-serif">lampe ardente</span>';
+  el.appendChild(ar);
+  const ar2=document.createElement('div');
+  ar2.style.cssText='position:absolute;top:18px;left:18px;font-family:Scheherazade New,serif;font-size:22px;color:rgba(255,220,80,.6);line-height:1.4';
+  ar2.innerHTML='وَهَّاج<br><span style="font-size:13px;color:rgba(255,200,60,.4);font-family:Lato,sans-serif">rayonnant</span>';
+  el.appendChild(ar2);
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(255,200,80,.5);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  lbl.textContent='An-Naba : 13 — وَجَعَلْنَا سِرَاجًا وَهَّاجًا';
+  el.appendChild(lbl);
+}
+
+function buildSc1(el){
+  // orbit paths
+  [170,130].forEach(sz=>{
+    const o=document.createElement('div');o.className='orbit-path';
+    o.style.cssText=`width:${sz}px;height:${sz}px`;
+    el.appendChild(o);
+  });
+  // sun at center
+  const sun=document.createElement('div');sun.className='orbit-sun';
+  sun.style.cssText='width:50px;height:50px;box-shadow:0 0 35px 10px rgba(245,166,35,.5),0 0 70px 22px rgba(245,166,35,.2)';
+  el.appendChild(sun);
+  // earth orbiting
+  const earth=document.createElement('div');earth.className='orbit-earth';
+  earth.style.cssText='width:22px;height:22px;margin-top:-11px;margin-left:-11px;--orx:85px';
+  el.appendChild(earth);
+  // labels
+  const sl=document.createElement('div');
+  sl.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-70%);font-family:Scheherazade New,serif;font-size:11px;color:rgba(255,200,60,.55);white-space:nowrap;margin-top:-36px';
+  sl.textContent='الشمس — Soleil';
+  el.appendChild(sl);
+  const el2=document.createElement('div');
+  el2.style.cssText='position:absolute;bottom:20px;right:18%;font-size:10px;color:rgba(100,180,240,.6);font-family:Lato,sans-serif';
+  el2.textContent='الأرض — Terre';
+  el.appendChild(el2);
+  // speed text
+  const sp=document.createElement('div');
+  sp.style.cssText='position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.45);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  sp.textContent='720 000 km/h — فِي فَلَكٍ يَسْبَحُونَ';
+  el.appendChild(sp);
+  // milky way dots
+  for(let i=0;i<40;i++){
+    const s=document.createElement('div');
+    s.style.cssText=`position:absolute;border-radius:50%;background:#fff;width:${Math.random()*2+.5}px;height:${Math.random()*2+.5}px;top:${Math.random()*100}%;left:${Math.random()*100}%;opacity:${(.1+Math.random()*.35).toFixed(2)}`;
+    el.appendChild(s);
+  }
+}
+
+function buildSc2(el){
+  // plasma rings
+  [140,105,70].forEach((sz,i)=>{
+    const ring=document.createElement('div');ring.className='energy-burst';
+    ring.style.cssText=`width:${sz}px;height:${sz}px;border-color:rgba(255,${180-i*30},40,.${5-i});--eb:${(i*.6).toFixed(1)}s`;
+    el.appendChild(ring);
+  });
+  // fusion core
+  const core=document.createElement('div');core.className='fusion-core';
+  core.style.cssText='width:52px;height:52px;background:radial-gradient(circle at 40%,#fff5a0,#ffe040 30%,#f58020 65%,#d04010);box-shadow:0 0 40px 12px rgba(255,160,40,.6)';
+  el.appendChild(core);
+  // protons
+  const protonColors=['rgba(255,120,60,.8)','rgba(255,200,60,.8)','rgba(255,80,80,.8)'];
+  for(let i=0;i<9;i++){
+    const p=document.createElement('div');p.className='proton';
+    const sz=Math.random()*7+5;
+    p.style.cssText=`width:${sz}px;height:${sz}px;border-radius:50%;background:${protonColors[i%3]};top:${20+Math.random()*60}%;left:${15+Math.random()*70}%;--pm:${(1.5+Math.random()*2).toFixed(1)}s;--pmd:${(Math.random()*2).toFixed(1)}s;--px:${(Math.random()*30-15).toFixed(0)}px;--py:${(Math.random()*30-15).toFixed(0)}px;--px2:${(Math.random()*20-10).toFixed(0)}px;--py2:${(Math.random()*20-10).toFixed(0)}px`;
+    el.appendChild(p);
+  }
+  // stats
+  [['🌡️ 15 000 000°C','au cœur du soleil',18,true],['💥 600M t/s','d\'hydrogène en hélium',18,false]].forEach(([t,s,tp,isLeft])=>{
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;top:${tp}px;${isLeft?'left:10px':'right:10px'};font-size:11px;color:rgba(255,200,60,.65);font-family:Lato,sans-serif;line-height:1.4;text-align:${isLeft?'left':'right'}`;
+    d.innerHTML=`<strong style="color:rgba(255,220,80,.9)">${t}</strong><br>${s}`;
+    el.appendChild(d);
+  });
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(255,180,60,.45);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  lbl.textContent='وَهَّاجًا — Ardent par Sa volonté';
+  el.appendChild(lbl);
+}
+
+function buildSc3(el){
+  // Earth globe
+  const earth=document.createElement('div');earth.className='dn-earth';
+  earth.style.cssText='left:50%;top:50%;';
+  earth.innerHTML=`<div style="position:absolute;inset:0;border-radius:50%;background:linear-gradient(90deg,#0a1a3a 50%,#1a4a8a 50%);overflow:hidden"><div style="position:absolute;inset:0;border-radius:50%;background:linear-gradient(135deg,rgba(30,100,180,.8) 0%,transparent 40%,rgba(20,60,120,.6) 60%,rgba(10,30,80,.9) 100%)"></div></div>`;
+  el.appendChild(earth);
+  // arcs
+  [120,100,80].forEach((sz,i)=>{
+    const a=document.createElement('div');
+    a.className=i<2?'day-arc':'night-arc';
+    a.style.cssText=`width:${sz}px;height:${sz}px`;
+    el.appendChild(a);
+  });
+  // sun and moon icons on sides
+  const sunI=document.createElement('div');sunI.className='dn-sun-icon';
+  sunI.style.cssText='width:42px;height:42px;position:absolute;top:50%;left:16px;transform:translateY(-50%);box-shadow:0 0 22px 6px rgba(245,166,35,.5)';
+  el.appendChild(sunI);
+  const moonI=document.createElement('div');moonI.className='dn-moon-icon';
+  moonI.style.cssText='width:32px;height:32px;position:absolute;top:50%;right:16px;transform:translateY(-50%)';
+  el.appendChild(moonI);
+  // small stars on night side
+  for(let i=0;i<20;i++){
+    const s=document.createElement('div');s.className='small-star';
+    const sz=Math.random()*2+.8;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*80}%;right:${Math.random()*30}%;opacity:${(.3+Math.random()*.5).toFixed(2)};--op:${(.3+Math.random()*.5).toFixed(2)};--del:${(Math.random()*3).toFixed(1)}s;--dur:${(2+Math.random()*3).toFixed(1)}s`;
+    el.appendChild(s);
+  }
+  // labels
+  const dl=document.createElement('div');dl.style.cssText='position:absolute;bottom:24px;left:20px;font-size:11px;color:rgba(255,200,60,.55);font-family:Lato,sans-serif';dl.textContent='نَهَار — Jour';el.appendChild(dl);
+  const nl=document.createElement('div');nl.style.cssText='position:absolute;bottom:24px;right:20px;font-size:11px;color:rgba(180,200,240,.5);font-family:Lato,sans-serif';nl.textContent='لَيْل — Nuit';el.appendChild(nl);
+  const lbl=document.createElement('div');lbl.style.cssText='position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.45);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';lbl.textContent='سَخَّرَ الشَّمْسَ — Soleil mis au service';el.appendChild(lbl);
+}
+
+function buildSc4(el){
+  // small sun top
+  const sun=document.createElement('div');
+  sun.style.cssText='position:absolute;top:12px;left:50%;transform:translateX(-50%);width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 38%,#ffe880,#f5a623);box-shadow:0 0 28px 8px rgba(245,166,35,.45)';
+  el.appendChild(sun);
+  // beams falling down
+  for(let i=0;i<14;i++){
+    const b=document.createElement('div');b.className='sun-beam';
+    const len=40+Math.random()*60;
+    b.style.cssText=`height:${len}px;top:56px;left:${12+i*6}%;--bf:${(2+Math.random()*2).toFixed(1)}s;--bd:${(Math.random()*2).toFixed(1)}s`;
+    el.appendChild(b);
+  }
+  // CO2 particles rising into leaves
+  for(let i=0;i<6;i++){
+    const c=document.createElement('div');c.className='co2-particle';
+    c.style.cssText=`bottom:30px;left:${15+i*14}%;--cr:${(2+Math.random()*2).toFixed(1)}s;--crd:${(Math.random()*2).toFixed(1)}s`;
+    c.textContent='CO₂';
+    el.appendChild(c);
+  }
+  // O2 particles rising from leaves
+  for(let i=0;i<5;i++){
+    const o=document.createElement('div');o.className='o2-particle';
+    o.style.cssText=`bottom:50px;left:${20+i*15}%;--or:${(1.8+Math.random()*1.5).toFixed(1)}s;--ord:${(Math.random()*2.5).toFixed(1)}s`;
+    o.textContent='O₂';
+    el.appendChild(o);
+  }
+  // plants
+  const cols=[['#2d7a3a','#1e5c28'],['#3aad60','#2d8040'],['#1e6b30','#14502a'],['#4ac870','#35a050'],['#228040','#1a6030']];
+  [10,27,44,62,78].forEach((left,i)=>{
+    const c=cols[i];
+    const h=50+Math.random()*30;
+    const pl=document.createElement('div');pl.className='photo-leaf';
+    pl.style.cssText=`left:${left}%;--lg:${(i*.4).toFixed(1)}s;--lr2:${(Math.random()*6-3).toFixed(0)}deg`;
+    pl.innerHTML=`<svg width="28" height="${h}" viewBox="0 0 28 ${h}"><line x1="14" y1="${h}" x2="14" y2="${h*.35}" stroke="${c[0]}" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="14" cy="${h*.3}" rx="10" ry="6.5" fill="${c[0]}" opacity=".9"/><ellipse cx="6" cy="${h*.5}" rx="7" ry="4.5" fill="${c[0]}" opacity=".7" transform="rotate(-28 6 ${h*.5})"/><ellipse cx="22" cy="${h*.44}" rx="7" ry="4.5" fill="${c[0]}" opacity=".7" transform="rotate(28 22 ${h*.44})"/></svg>`;
+    el.appendChild(pl);
+  });
+  // ground
+  const gnd=document.createElement('div');gnd.style.cssText='position:absolute;bottom:0;left:0;right:0;height:16px;background:linear-gradient(180deg,rgba(30,60,20,.6),rgba(20,40,15,.9));border-radius:0 0 14px 14px';el.appendChild(gnd);
+  const lbl=document.createElement('div');lbl.style.cssText='position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(58,173,114,.55);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';lbl.textContent='lumière + CO₂ + H₂O → glucose + O₂ — Photosynthèse';el.appendChild(lbl);
+}
+
+function buildSc5(el){
+  // central sun
+  const sun=document.createElement('div');
+  sun.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 38%,#fff8c0,#ffe050 30%,#f5a623 70%,#e06010);box-shadow:0 0 40px 14px rgba(245,166,35,.55),0 0 80px 30px rgba(245,166,35,.2);animation:heroSunPulse 5s ease-in-out infinite';
+  el.appendChild(sun);
+  // tasbih rays
+  for(let i=0;i<20;i++){
+    const r=document.createElement('div');r.className='tasbih-ray';
+    const len=40+Math.random()*55;
+    r.style.cssText=`height:3px;width:${len}px;margin-left:0;margin-top:-1.5px;--angle:${i*18}deg;transform:rotate(${i*18}deg);--tr:${(3+Math.random()*3).toFixed(1)}s;--td:${(Math.random()*4).toFixed(1)}s`;
+    el.appendChild(r);
+  }
+  // floating Arabic dhikr words
+  const dhikr=[
+    {text:'سُبْحَانَ اللهِ',x:'8%',y:'12%',sz:16,afd:'0s',ax:'6px'},
+    {text:'الحمد لله',x:'62%',y:'8%',sz:14,afd:'1.2s',ax:'-5px'},
+    {text:'اللهُ أَكْبَر',x:'5%',y:'65%',sz:15,afd:'0.6s',ax:'8px'},
+    {text:'لَا إِلَهَ إِلَّا اللهُ',x:'58%',y:'70%',sz:13,afd:'1.8s',ax:'-6px'},
+   
+  ];
+  dhikr.forEach(d=>{
+    const div=document.createElement('div');div.className='arabic-float';
+    div.style.cssText=`left:${d.x};top:${d.y};font-size:${d.sz}px;color:rgba(212,168,67,.5);--af:${(4+Math.random()*3).toFixed(1)}s;--afd:${d.afd};--ax:${d.ax}`;
+    div.textContent=d.text;
+    el.appendChild(div);
+  });
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.45);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  lbl.textContent='يُسَبِّحُ لِلَّهِ — Tout glorifie Allah';
+  el.appendChild(lbl);
+}
+
+const sceneFns=[buildSc0,buildSc1,buildSc2,buildSc3,buildSc4,buildSc5];
+sceneFns.forEach((fn,i)=>fn(document.getElementById('sc'+i)));
+
+/* ══ SLIDE NAV ══ */
+const NSLIDES=6;
+const dotsEl=document.getElementById('slide-dots');
+for(let i=0;i<NSLIDES;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=(()=>{const n=i;return()=>goSlide(n);})();
+  dotsEl.appendChild(d);
+}
+let curSlide=0;
+function goSlide(n){
+  document.getElementById('sl-'+curSlide).classList.remove('active');
+  curSlide=n;
+  document.getElementById('sl-'+n).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>{ d.className='dot'+(i===n?' active':i<n?' done':''); });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══ QUIZ DATA ══ */
+const Q=[
+  {
+    icon:'💡',
+    q:"Quel mot coranique désigne le soleil comme source de lumière propre (et non réfléchie) ?",
+    opts:["نُور (nûr)","سِرَاج (sirâj)","قَمَر (qamar)","بَدْر (badr)"],
+    ans:1,
+    fb:"سِرَاج (sirâj) désigne une lampe qui produit sa propre lumière. Ce terme distingue parfaitement le soleil (qui génère sa lumière) de la lune (nûr — lumière réfléchie), 14 siècles avant la science.",
+    ayah:"« Nous avons fait [du soleil] une lampe ardente (سِرَاجًا وَهَّاجًا). » — An-Naba : 13"
+  },
+  {
+    icon:'🌙',
+    q:"Comment le Coran distingue-t-il le soleil de la lune en termes de lumière ?",
+    opts:["Le soleil est plus petit","Le soleil est siraj (lampe ardente), la lune est nûr (lumière réfléchie)","La lune est plus lumineuse la nuit","Ils ont la même nature lumineuse"],
+    ans:1,
+    fb:"Le Coran utilise siraj pour le soleil (source de lumière) et nûr pour la lune (lumière reçue et réfléchie). Cette distinction scientifique est un miracle du Coran, révélée 14 siècles avant nos instruments.",
+    ayah:"« Il a fait du soleil une lampe ardente et de la lune une lumière. » — Nûh : 16"
+  },
+  {
+    icon:'🌀',
+    q:"À quelle vitesse le soleil orbite-t-il autour du centre de la Voie Lactée ?",
+    opts:["72 000 km/h","720 000 km/h","7 200 km/h","72 millions km/h"],
+    ans:1,
+    fb:"Le soleil orbite autour du centre de la Voie Lactée à 720 000 km/h, mettant 225 millions d'années pour faire le tour complet. Le Coran l'a décrit comme 'nageant dans son orbite' bien avant ces découvertes.",
+    ayah:"« Le soleil court vers son lieu de repos déterminé. Tel est le décret du Tout-Puissant, l'Omniscient. » — Yâ-Sîn : 38"
+  },
+  {
+    icon:'🌡️',
+    q:"Quelle est la température au cœur du soleil ?",
+    opts:["5 500°C","150 000°C","15 millions de degrés","1 milliard de degrés"],
+    ans:2,
+    fb:"Le cœur du soleil atteint 15 millions de degrés Celsius — la température nécessaire à la fusion nucléaire. Sa surface est à 5 500°C. Le Coran l'a appelé 'wahhâj' (ardent) — une description parfaite.",
+    ayah:"« Nous avons fait [du soleil] une lampe ardente (وَهَّاجًا). » — An-Naba : 13"
+  },
+  {
+    icon:'⏱️',
+    q:"Quelle quantité d'hydrogène le soleil transforme-t-il chaque seconde par fusion nucléaire ?",
+    opts:["600 kg","600 tonnes","600 millions de tonnes","600 milliards de tonnes"],
+    ans:2,
+    fb:"Le soleil transforme 600 millions de tonnes d'hydrogène en hélium chaque seconde par fusion nucléaire, libérant une énergie équivalente à 100 milliards de bombes atomiques — tout cela par la volonté d'Allah.",
+    ayah:"« Il a fait du soleil une lampe ardente. » — Nûh : 16"
+  },
+  {
+    icon:'🌅',
+    q:"Que signifie le mot سَخَّرَ (sakhkhara) utilisé pour le soleil dans le Coran ?",
+    opts:["Allumé, enflammé","Assujetti, mis au service des humains","Éteint, refroidi","Créé, fabriqué"],
+    ans:1,
+    fb:"سَخَّرَ (sakhkhara) signifie 'assujetti, mis au service'. Le soleil n'est pas libre : il obéit à l'ordre d'Allah et est mis au service de Ses créatures — pour leur lumière, leur chaleur et leur vie.",
+    ayah:"« Il a assujetti le soleil et la lune, chacun courant jusqu'à un terme fixé. » — Az-Zumar : 5"
+  },
+  {
+    icon:'🌿',
+    q:"Combien de temps met la lumière du soleil pour nous parvenir ?",
+    opts:["8 secondes","8 minutes et 20 secondes","8 heures","8 jours"],
+    ans:1,
+    fb:"150 000 000 km ÷ 300 000 km/s = 500 secondes = 8 min 20 s. La lumière arrive en flux continu : chaque photon que tu reçois à cet instant a quitté le soleil il y a exactement 8 min 20 s. Ce n'est pas une lumière toutes les 8 minutes — c'est une lumière nouvelle à chaque fraction de seconde, chacune ayant fait ce voyage de 150 millions de km. Un flux ininterrompu depuis 4,6 milliards d'années, par la volonté d'Allah.",
+    ayah:"« Nous avons fait [du soleil] une lampe ardente. » — An-Naba : 13"
+  },
+  {
+    icon:'🤲',
+    q:"Pourquoi le Prophète ﷺ a-t-il interdit de prier après la prière de l’aube (« ṣalâtu-ṣ-ṣubh ») et ce, jusqu’au lever du soleil, ainsi que de prier après [la prière] de l'après-midi (« ṣalâtu-l-‘aṣr ») et ce, jusqu’à son coucher ?",
+    opts:["Car la lumière est aveuglante","Pour distinguer l'adoration d'Allah de l'adoration du soleil","Car les anges dorment à ce moment","Car la prière est invalide le matin"],
+    ans:1,
+    fb:"Le Prophète (sur lui la paix et le salut) a interdit de prier après la prière de l’aube (« ṣalâtu-ṣ-ṣubh ») jusqu’à ce que le soleil se lève et que l’on constate, à l’œil nu, l’espace équivalent à une lance à la verticale, entre l’horizon et le soleil. Cela peut durer quelques minutes, et la durée est comprise entre cinq et dix minutes, selon les différents avis des savants. Le Prophète (sur lui la paix et le salut) a également interdit de prier après l'après-midi (« ṣalâtu-l-‘aṣr ») jusqu’à ce que le soleil se couche, c’est-à-dire : quelques minutes avant la prière du coucher (« ṣalâtu-l-maghrib »). En effet, prier à ces deux moments reviendrait à imiter les païens qui adoraient le soleil lors de son lever et de son coucher. Le soleil est un signe (âya) vers Allah — pas un objet d'adoration.",
+    ayah:"« Les sept cieux, la terre et tous ceux qui s'y trouvent Le glorifient. » — Al-Isra : 44"
+  }
+];
+
+let cur=0,score=0,answered=false;
+
+function startQuiz(){
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-quiz').classList.add('active');
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderQ(){
+  answered=false;
+  const q=Q[cur];
+  document.getElementById('q-icon').textContent=q.icon;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('q-count').textContent=`${cur+1} / ${Q.length}`;
+  document.getElementById('qprog').style.width=`${(cur/Q.length)*100}%`;
+  const opts=document.getElementById('options');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=o;
+    b.onclick=()=>pick(i);opts.appendChild(b);
+  });
+}
+function pick(i){
+  if(answered)return;answered=true;
+  const q=Q[cur];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  if(i!==q.ans)document.querySelectorAll('.opt')[i].classList.add('wrong');
+  else score++;
+  document.getElementById('fb-text').textContent=q.fb;
+  document.getElementById('fb-ayah').textContent=q.ayah;
+  document.getElementById('fb-box').style.display='block';
+  document.getElementById('qnext').style.display='block';
+  document.getElementById('score-pill').textContent=`⭐ ${score}`;
+}
+document.getElementById('qnext').onclick=()=>{ cur++;if(cur>=Q.length)showEnd();else renderQ(); };
+function showEnd(){
+  document.getElementById('q-card').style.display='none';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='none';
+  const pct=score/Q.length;
+  let badge,title,msg;
+  if(pct===1){ badge='🌟';title='Exceptionnel — بارك الله فيك';msg="Tu as répondu correctement à toutes les questions ! Tu connais parfaitement les signes d'Allah dans le soleil. Que cela renforce ton émerveillement et ta foi."; }
+  else if(pct>=.625){ badge='☀️';title='Très bien — أحسنت';msg="Tu as une belle connaissance des signes solaires. Relis les leçons et contemple le soleil avec les yeux du croyant — c'est un livre ouvert sur la grandeur d'Allah."; }
+  else { badge='🌅';title='Bon début — استمر في التعلم';msg="Chaque lever de soleil est un signe d'Allah. Reprends les leçons, observe le ciel et médite : ce soleil ardent glorifie son Créateur depuis des milliards d'années."; }
+  document.getElementById('end-badge').textContent=badge;
+  document.getElementById('end-title').textContent=title;
+  document.getElementById('end-big').textContent=score;
+  document.getElementById('end-msg').textContent=msg;
+  document.getElementById('end-screen').style.display='block';
+  document.getElementById('qprog').style.width='100%';
+}
+function restartQuiz(){
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+}
+function reviewIntro(){
+  document.getElementById('screen-quiz').classList.remove('active');
+  document.getElementById('screen-intro').classList.add('active');
+  goSlide(0);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
