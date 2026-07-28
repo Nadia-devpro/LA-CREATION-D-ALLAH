@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'Arc-en-Ciel — Un Signe de la Création d'Allah</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #030d1a;
+  --gold: #d4a843;
+  --gold-light: #f5d57a;
+  --silver-dim: #7a9bbf;
+  --white: #eef3ff;
+  --text: #d8e8ff;
+  --text-dim: #7a9bbf;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--night); color:var(--text); font-family:'Lato',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ══ HEADER ══ */
+#sky-header {
+  position:relative; width:100%; height:240px; overflow:hidden;
+  background:linear-gradient(180deg,#020c18 0%,#062038 40%,#0f3a55 70%,#1a5560 100%);
+}
+.hstar { position:absolute; border-radius:50%; background:#fff; animation:twinkle var(--dur,3s) ease-in-out infinite var(--del,0s); }
+@keyframes twinkle { 0%,100%{ opacity:var(--op,.5); } 50%{ opacity:.05; } }
+
+/* header rain fading out */
+.h-rain {
+  position:absolute; width:1.5px; border-radius:2px;
+  background:linear-gradient(to bottom,transparent,rgba(120,190,255,.5));
+  animation:hRainFall var(--rf,1.1s) linear infinite var(--rd,0s);
+  opacity: var(--ro, .3);
+}
+@keyframes hRainFall {
+  from{ transform:translateY(-20px) rotate(8deg); opacity:0; }
+  15%{ opacity:var(--ro,.3); }
+  to{ transform:translateY(250px) rotate(8deg); opacity:0; }
+}
+
+/* header clearing clouds */
+.h-cloud {
+  position:absolute; border-radius:50px;
+  background:rgba(200,225,255,var(--ca,.12));
+  animation:cloudBreak var(--cb,18s) ease-in-out infinite var(--cd,0s);
+}
+@keyframes cloudBreak {
+  0%,100%{ transform:translateX(0); opacity:var(--ca,.12); }
+  50%{ transform:translateX(var(--cx,20px)); opacity:calc(var(--ca,.12) * 1.4); }
+}
+
+/* hero rainbow in header */
+#hero-rainbow {
+  position:absolute; bottom:30px; left:50%; transform:translateX(-50%);
+  width:380px; height:190px; overflow:hidden;
+}
+.rainbow-arc {
+  position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+  border-radius:50% 50% 0 0 / 100% 100% 0 0;
+  border-top-style:solid; border-left:none; border-right:none; border-bottom:none;
+  animation:rainbowAppear 3s ease-out forwards, rainbowGlow var(--rg,4s) ease-in-out infinite var(--rgd,0s);
+}
+@keyframes rainbowAppear {
+  from{ opacity:0; transform:translateX(-50%) scaleY(.3); }
+  to{ opacity:1; transform:translateX(-50%) scaleY(1); }
+}
+@keyframes rainbowGlow {
+  0%,100%{ opacity:var(--ro2,.8); }
+  50%{ opacity:1; }
+}
+
+#sky-label {
+  position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
+  text-align:center; white-space:nowrap; z-index:5;
+}
+#sky-label h1 { font-family:'Scheherazade New',serif; font-size:24px; color:var(--gold-light); text-shadow:0 0 20px rgba(212,168,67,.5); }
+#sky-label p { font-size:11px; color:var(--silver-dim); letter-spacing:2.5px; text-transform:uppercase; margin-top:3px; }
+
+/* ══ SCREENS ══ */
+#app { display:flex; flex-direction:column; min-height:100vh; }
+.screen { display:none; flex:1; }
+.screen.active { display:block; }
+
+/* ══ INTRO ══ */
+#intro-wrap { max-width:700px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#skip-intro { text-align:right; margin-bottom:1rem; }
+#skip-intro button { background:none; border:none; color:var(--text-dim); font-size:12px; cursor:pointer; letter-spacing:.5px; font-family:'Lato',sans-serif; text-decoration:underline; text-underline-offset:3px; }
+#skip-intro button:hover { color:var(--text); }
+#slide-dots { display:flex; justify-content:center; gap:8px; margin-bottom:2rem; }
+.dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.15); transition:background .3s,transform .3s; cursor:pointer; }
+.dot.active { background:var(--gold); transform:scale(1.3); }
+.dot.done { background:rgba(212,168,67,.4); }
+.slide { display:none; animation:slideIn .45s ease; }
+.slide.active { display:block; }
+@keyframes slideIn { from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
+
+.scene-canvas {
+  width:100%; height:200px; border-radius:14px; margin-bottom:1.4rem;
+  overflow:hidden; position:relative; border:1px solid rgba(255,255,255,.07);
+}
+
+/* ══ SCENE ANIMATIONS ══ */
+@keyframes fall { from{ transform:translateY(-20px) rotate(8deg); opacity:0; } 15%{ opacity:1; } to{ transform:translateY(220px) rotate(8deg); opacity:0; } }
+@keyframes float { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+@keyframes fadeIn { from{ opacity:0; } to{ opacity:1; } }
+@keyframes shimmer { 0%,100%{ opacity:.4; } 50%{ opacity:1; } }
+
+/* Scene 0 : Birth — rain + sun + rainbow appears */
+.sc0-rain { position:absolute; width:1.5px; border-radius:2px; background:linear-gradient(to bottom,transparent,rgba(100,170,255,.7)); animation:fall var(--fd,.9s) linear infinite var(--fdd,0s); }
+.sc0-sun { position:absolute; border-radius:50%; background:radial-gradient(circle at 38%,#ffe880,#f5a623); animation:sunAppear 3s ease-out forwards, shimmer 4s ease-in-out infinite 3s; }
+@keyframes sunAppear { from{ opacity:0; transform:scale(.5); } to{ opacity:1; transform:scale(1); } }
+.sc0-arc { position:absolute; bottom:0; left:50%; transform:translateX(-50%); border-radius:50% 50% 0 0 / 100% 100% 0 0; border-top-style:solid; border-left:none; border-right:none; border-bottom:none; animation:arcBorn 4s ease-out forwards var(--ad,0s); }
+@keyframes arcBorn { 0%{ opacity:0; transform:translateX(-50%) scaleY(0); } 60%{ opacity:.8; } 100%{ opacity:1; transform:translateX(-50%) scaleY(1); } }
+
+/* Scene 1 : Refraction — light through drop */
+.photon { position:absolute; height:2px; border-radius:2px; background:rgba(255,255,255,.85); animation:photonIn var(--pi,2s) ease-in-out infinite var(--pid,0s); }
+@keyframes photonIn { 0%{ transform:scaleX(0); opacity:0; } 30%{ transform:scaleX(1); opacity:.9; } 100%{ transform:scaleX(1); opacity:.9; } }
+.refracted { position:absolute; height:2px; border-radius:2px; animation:refractOut var(--ro3,2s) ease-out infinite var(--rod,0s); }
+@keyframes refractOut { 0%,29%{ opacity:0; width:0; } 30%{ opacity:1; width:0; } 80%{ opacity:.9; } 100%{ opacity:0; } }
+.drop-sc { position:absolute; border-radius:50% 50% 55% 55% / 40% 40% 60% 60%; background:radial-gradient(circle at 35%,rgba(200,230,255,.9),rgba(120,180,240,.5)); border:1px solid rgba(150,200,255,.3); }
+
+/* Scene 2 : 7 colors */
+.color-band { position:absolute; left:0; right:0; border-radius:4px; animation:bandAppear 1s ease-out forwards var(--bad,0s); }
+@keyframes bandAppear { from{ opacity:0; transform:scaleX(.3); } to{ opacity:1; transform:scaleX(1); } }
+.color-label { position:absolute; font-size:11px; font-family:Lato,sans-serif; animation:fadeIn 1s ease-out forwards var(--lad,0s); opacity:0; }
+
+/* Scene 3 : Angle 42° */
+.angle-ray { position:absolute; height:2px; background:rgba(255,255,255,.6); border-radius:2px; transform-origin:left center; animation:shimmer 3s ease-in-out infinite var(--ard,0s); }
+.angle-arc-sc { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); border-radius:50% 50% 0 0 / 100% 100% 0 0; border-top-style:solid; border-left:none; border-right:none; border-bottom:none; }
+
+/* Scene 4 : Promise / nuh */
+.nuh-water { position:absolute; bottom:0; left:0; right:0; animation:waterRecede 4s ease-out infinite; }
+@keyframes waterRecede { 0%{ height:80px; } 50%{ height:40px; } 100%{ height:80px; } }
+.dove { position:absolute; animation:doveFloat 5s ease-in-out infinite var(--dfd,0s); }
+@keyframes doveFloat { 0%,100%{ transform:translateX(0) translateY(0); } 50%{ transform:translateX(30px) translateY(-12px); } }
+
+/* Scene 5 : Contemplation / sign */
+.contemp-arc { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); border-radius:50% 50% 0 0 / 100% 100% 0 0; border-top-style:solid; border-left:none; border-right:none; border-bottom:none; animation:shimmer var(--cas,4s) ease-in-out infinite var(--cad,0s); }
+.sparkle { position:absolute; border-radius:50%; animation:sparklePop var(--sp,2s) ease-in-out infinite var(--spd,0s); }
+@keyframes sparklePop { 0%,100%{ transform:scale(0); opacity:0; } 50%{ transform:scale(1); opacity:.9; } }
+
+/* ── TEXT / LAYOUT ── */
+.slide-num { font-size:11px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:.5rem; font-weight:700; }
+.slide h2 { font-family:'Scheherazade New',serif; font-size:22px; color:var(--gold-light); line-height:1.4; margin-bottom:.75rem; text-shadow:0 0 16px rgba(212,168,67,.3); }
+.slide-body { font-size:14.5px; line-height:1.75; color:var(--text); margin-bottom:1.1rem; }
+.ayah-box { background:rgba(212,168,67,.07); border-left:3px solid var(--gold); border-radius:0 10px 10px 0; padding:.85rem 1rem; margin-bottom:1.3rem; }
+.ayah-ar { font-family:'Scheherazade New',serif; font-size:17px; color:var(--gold); line-height:1.8; display:block; margin-bottom:.3rem; }
+.ayah-fr { font-size:13px; color:var(--silver-dim); font-style:italic; line-height:1.5; }
+.key-fact { display:flex; gap:10px; align-items:flex-start; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:.85rem 1rem; margin-bottom:.75rem; }
+.key-fact-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+.key-fact p { font-size:13.5px; line-height:1.6; color:var(--text); }
+.key-fact p strong { color:var(--gold-light); font-weight:700; }
+.slide-nav { display:flex; gap:10px; margin-top:1.5rem; }
+.btn-prev,.btn-next,.btn-quiz { padding:11px 24px; border-radius:10px; font-size:14px; font-family:'Lato',sans-serif; cursor:pointer; font-weight:700; letter-spacing:.3px; transition:background .2s,border-color .2s,transform .1s; }
+.btn-prev { background:transparent; border:1px solid rgba(255,255,255,.15); color:var(--text-dim); }
+.btn-prev:hover { background:rgba(255,255,255,.05); }
+.btn-next { flex:1; background:linear-gradient(135deg,rgba(212,168,67,.22),rgba(212,168,67,.1)); border:1px solid rgba(212,168,67,.5); color:var(--gold-light); }
+.btn-next:hover { background:linear-gradient(135deg,rgba(212,168,67,.35),rgba(212,168,67,.18)); border-color:rgba(212,168,67,.75); }
+.btn-quiz { flex:1; background:linear-gradient(135deg,rgba(58,173,114,.25),rgba(58,173,114,.1)); border:1px solid rgba(58,173,114,.5); color:#7de0b0; }
+.btn-quiz:hover { background:linear-gradient(135deg,rgba(58,173,114,.38),rgba(58,173,114,.2)); border-color:rgba(58,173,114,.75); }
+.btn-prev:active,.btn-next:active,.btn-quiz:active { transform:scale(.97); }
+
+/* ══ QUIZ ══ */
+#quiz-wrap { max-width:680px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
+.score-pill { background:rgba(212,168,67,.13); border:1px solid rgba(212,168,67,.35); border-radius:20px; padding:5px 16px; font-size:13px; color:var(--gold); font-weight:700; }
+.prog-wrap { flex:1; margin:0 14px; height:4px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; }
+#qprog { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:4px; transition:width .5s ease; width:0%; }
+.q-count { font-size:13px; color:var(--text-dim); white-space:nowrap; }
+#q-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:16px; padding:1.75rem; margin-bottom:1.2rem; }
+#q-icon { width:36px;height:36px;border-radius:10px;background:rgba(212,168,67,.14);border:1px solid rgba(212,168,67,.3);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:1rem; }
+#q-text { font-size:15.5px;line-height:1.65;color:var(--white);margin-bottom:1.4rem; }
+#options { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+.opt { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:12px 14px; font-size:13.5px; color:var(--text); font-family:'Lato',sans-serif; cursor:pointer; text-align:left; line-height:1.4; transition:background .17s,border-color .17s,transform .1s; }
+.opt:hover:not(:disabled) { background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.4);transform:translateY(-1px); }
+.opt:active:not(:disabled) { transform:scale(.98); }
+.opt.correct { background:rgba(58,173,114,.18);border-color:rgba(58,173,114,.6);color:#7de0b0; }
+.opt.wrong   { background:rgba(224,82,82,.15); border-color:rgba(224,82,82,.5);color:#f5a0a0; }
+.opt:disabled { cursor:default; }
+#fb-box { background:rgba(212,168,67,.07); border:1px solid rgba(212,168,67,.2); border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.2rem; display:none; animation:fadeUp .35s ease; }
+#fb-text { font-size:14px;line-height:1.7;color:var(--text);margin-bottom:.7rem; }
+#fb-ayah { font-family:'Scheherazade New',serif; font-size:15px; color:var(--gold); border-left:2px solid var(--gold); padding-left:12px; line-height:1.7; }
+#qnext { width:100%; padding:13px; background:linear-gradient(135deg,rgba(212,168,67,.2),rgba(212,168,67,.08)); border:1px solid rgba(212,168,67,.45); border-radius:10px; color:var(--gold-light); font-family:'Lato',sans-serif; font-size:15px; font-weight:700; cursor:pointer; display:none; letter-spacing:.4px; transition:background .2s,border-color .2s; }
+#qnext:hover { background:linear-gradient(135deg,rgba(212,168,67,.32),rgba(212,168,67,.16));border-color:rgba(212,168,67,.7); }
+#end-screen { display:none;text-align:center;padding:2.5rem 1rem;animation:fadeUp .5s ease; }
+#end-badge { width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,67,.2),rgba(212,168,67,.04));border:2px solid rgba(212,168,67,.5);margin:0 auto 1.4rem;display:flex;align-items:center;justify-content:center;font-size:36px; }
+#end-title { font-family:'Scheherazade New',serif;font-size:22px;color:var(--gold-light);margin-bottom:.5rem; }
+#end-big { font-size:52px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:.4rem; }
+#end-sub { font-size:13px;color:var(--text-dim);margin-bottom:.5rem; }
+#end-msg { font-size:14px;color:var(--text);line-height:1.65;max-width:400px;margin:0 auto 2rem; }
+.end-btns { display:flex;gap:10px;justify-content:center;flex-wrap:wrap; }
+#restart-btn,#review-btn { padding:11px 28px; border-radius:10px; font-family:'Lato',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:background .2s,border-color .2s; }
+#restart-btn { background:transparent;border:1px solid rgba(212,168,67,.5);color:var(--gold); }
+#restart-btn:hover { background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.8); }
+#review-btn { background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--text-dim); }
+#review-btn:hover { background:rgba(255,255,255,.06); }
+@keyframes fadeUp { from{ opacity:0;transform:translateY(10px); } to{ opacity:1;transform:translateY(0); } }
+@media(max-width:480px){
+  #options{ grid-template-columns:1fr; }
+  .slide h2{ font-size:19px; }
+  #sky-label h1{ font-size:20px; }
+  #intro-wrap,#quiz-wrap{ padding:1.4rem 1rem 2.5rem; }
+  .slide-nav{ flex-direction:column; }
+  .btn-prev{ order:2; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ HEADER ══ -->
+<div id="sky-header">
+  <div id="hstars"></div>
+  <!-- fading rain -->
+  <div id="hrain"></div>
+  <!-- clearing clouds -->
+  <div class="h-cloud" style="width:160px;height:38px;top:20px;left:2%;--ca:.1;--cb:25s;--cx:18px"></div>
+  <div class="h-cloud" style="width:100px;height:26px;top:15px;right:5%;--ca:.09;--cb:20s;--cd:2s;--cx:-14px"></div>
+  <!-- hero rainbow -->
+  <div id="hero-rainbow">
+    <!-- 7 arcs, outermost first -->
+    <div class="rainbow-arc" style="width:380px;height:190px;border-width:8px;border-color:rgba(220,50,50,.75);--rg:5s;--rgd:0s;--ro2:.75"></div>
+    <div class="rainbow-arc" style="width:356px;height:178px;border-width:8px;border-color:rgba(230,120,30,.78);--rg:5s;--rgd:.3s;--ro2:.78"></div>
+    <div class="rainbow-arc" style="width:332px;height:166px;border-width:8px;border-color:rgba(230,210,30,.8);--rg:5s;--rgd:.6s;--ro2:.8"></div>
+    <div class="rainbow-arc" style="width:308px;height:154px;border-width:8px;border-color:rgba(50,190,60,.78);--rg:5s;--rgd:.9s;--ro2:.78"></div>
+    <div class="rainbow-arc" style="width:284px;height:142px;border-width:8px;border-color:rgba(30,130,230,.75);--rg:5s;--rgd:1.2s;--ro2:.75"></div>
+    <div class="rainbow-arc" style="width:260px;height:130px;border-width:8px;border-color:rgba(60,60,210,.7);--rg:5s;--rgd:1.5s;--ro2:.7"></div>
+    <div class="rainbow-arc" style="width:236px;height:118px;border-width:8px;border-color:rgba(140,40,200,.65);--rg:5s;--rgd:1.8s;--ro2:.65"></div>
+  </div>
+  <div id="sky-label">
+    <h1>قَوْسُ قُزَحَ — آيَةٌ مِنْ آيَاتِ اللهِ</h1>
+    <p>L'Arc-en-Ciel — Un Signe de la Création d'Allah</p>
+  </div>
+</div>
+
+<!-- ══ INTRO ══ -->
+<div id="screen-intro" class="screen active">
+  <div id="intro-wrap">
+    <div id="skip-intro"><button onclick="startQuiz()">Passer directement au quiz →</button></div>
+    <div id="slide-dots"></div>
+
+    <!-- SLIDE 0 : Naissance de l'arc-en-ciel -->
+    <div class="slide active" id="sl-0">
+      <div class="scene-canvas" id="sc0" style="background:linear-gradient(180deg,#04101e,#082030)"></div>
+      <div class="slide-num">Leçon 1 · 6 leçons</div>
+      <h2>La Naissance de l'Arc-en-Ciel</h2>
+      <p class="slide-body">
+        L'arc-en-ciel apparaît toujours dans les mêmes conditions :
+        la pluie vient de se terminer, le soleil perce les nuages,
+        et ses rayons traversent les gouttes d'eau encore en suspension.
+        Allah a programmé cette rencontre précise entre <strong style="color:var(--gold-light)">eau et lumière</strong>
+        pour produire l'un des spectacles les plus beaux de la création.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَمِنْ آيَاتِهِ خَلْقُ السَّمَاوَاتِ وَالْأَرْضِ وَاخْتِلَافُ أَلْسِنَتِكُمْ وَأَلْوَانِكُمْ ﴾</span>
+        <span class="ayah-fr">« Parmi Ses signes : la création des cieux et de la terre, la diversité de vos langues et de vos couleurs. » — Ar-Rum : 22</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌦️</span>
+        <p>Pour voir un arc-en-ciel, trois conditions doivent être réunies simultanément : <strong>le soleil derrière toi, la pluie devant toi, et un angle précis de 42°; vos yeux doivent être alignés avec le centre de l'arc et les gouttes d'eau selon un angle exact de 40° pour le violet à 42° pour le rouge. </strong> Allah a tout coordonné avec une précision mathématique.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌈</span>
+        <p>L'arc-en-ciel n'est pas un objet solide — c'est un <strong>phénomène optique</strong> qui apparaît et disparaît selon la lumière et l'observateur. Deux personnes côte à côte voient deux arcs-en-ciel légèrement différents !</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-next" onclick="goSlide(1)">Suivant → La Réfraction de la Lumière</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 1 : Réfraction -->
+    <div class="slide" id="sl-1">
+      <div class="scene-canvas" id="sc1" style="background:linear-gradient(180deg,#020810,#04121e)"></div>
+      <div class="slide-num">Leçon 2 · 6 leçons</div>
+      <h2>La Réfraction — Lumière Décomposée</h2>
+      <p class="slide-body">
+        La lumière du soleil paraît blanche — mais elle contient en réalité
+        <strong style="color:var(--gold-light)">toutes les couleurs mélangées</strong>.
+        Quand elle entre dans une goutte de pluie, elle se ralentit et se courbe
+        différemment selon sa couleur (réfraction), se reflète à l'intérieur de la goutte,
+        puis ressort en éventail. Allah a caché tout un arc de couleurs dans ce qui semblait blanc.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَمِنْ آيَاتِهِ أَنْ تَقُومَ السَّمَاءُ وَالْأَرْضُ بِأَمْرِهِ ﴾</span>
+        <span class="ayah-fr">« Et parmi Ses signes le ciel et la terre sont maintenus par Son ordre; » — Ar-Rum : 25</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">💡</span>
+        <p>La lumière blanche est composée de <strong>toutes les couleurs du spectre</strong> voyageant ensemble. La goutte d'eau agit comme un prisme naturel : elle les sépare selon leur longueur d'onde — un mécanisme conçu par Allah.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🔬</span>
+        <p>Isaac Newton n'a compris ce phénomène qu'en <strong>1666</strong>, avec un prisme de verre. Allah avait déjà placé ce prisme naturel dans chaque goutte de pluie depuis la création du monde.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(0)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(2)">Suivant → Les 7 Couleurs</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 : 7 couleurs -->
+    <div class="slide" id="sl-2">
+      <div class="scene-canvas" id="sc2" style="background:linear-gradient(180deg,#030c18,#050f1e)"></div>
+      <div class="slide-num">Leçon 3 · 6 leçons</div>
+      <h2>Les 7 Couleurs — تَنَوُّعُ الْأَلْوَانِ</h2>
+      <p class="slide-body">
+        L'arc-en-ciel affiche toujours exactement <strong style="color:var(--gold-light)">7 couleurs</strong>
+        dans le même ordre immuable : rouge, orange, jaune, vert, bleu, indigo, violet.
+        Jamais dans l'ordre inverse, jamais dans un ordre différent.
+        Allah a établi cette loi physique de la lumière qui produit
+        toujours la même beauté ordonnée — un signe de Son ordre parfait dans la création.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَمَا ذَرَأَ لَكُمْ فِي الْأَرْضِ مُخْتَلِفًا أَلْوَانُهُ إِنَّ فِي ذَٰلِكَ لَآيَةً لِقَوْمٍ يَذَّكَّرُونَ ﴾</span>
+        <span class="ayah-fr">« Ce qu'Il a créé pour vous sur la terre a des couleurs diverses. Voilà bien là une preuve pour des gens qui se rappellent. » — An-Nahl : 13</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🎨</span>
+        <p>L'ordre des couleurs est déterminé par la <strong>longueur d'onde</strong> de chaque couleur : rouge (la plus longue — 700 nm) jusqu'au violet (la plus courte — 400 nm). Une loi physique immuable posée par Allah.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">👁️</span>
+        <p>L'œil humain a été créé pour percevoir exactement ces <strong>7 couleurs visibles</strong>. Au-delà, il y a l'infrarouge et l'ultraviolet — invisibles à l'homme, mais réels. Allah a délimité notre perception avec sagesse.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(1)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(3)">Suivant → L'Angle Parfait de 42°.</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 : Angle 42° -->
+    <div class="slide" id="sl-3">
+      <div class="scene-canvas" id="sc3" style="background:linear-gradient(180deg,#020810,#04121e)"></div>
+      <div class="slide-num">Leçon 4 · 6 leçons</div>
+      <h2>L'Angle Parfait — 42°</h2>
+      <p class="slide-body">
+        L'arc-en-ciel apparaît à exactement <strong style="color:var(--gold-light)">42 degrés</strong>
+        autour de la direction opposée au soleil.
+        Cet angle est une constante physique
+        fixée par Allah dans les lois de la lumière et de l'eau.
+        C'est pourquoi l'arc-en-ciel a toujours la même forme de demi-cercle parfait.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَخَلَقَ كُلَّ شَيْءٍ فَقَدَّرَهُ تَقْدِيرًا ﴾</span>
+        <span class="ayah-fr">« Il a créé toute chose et en a fixé la mesure avec précision. » — Al-Furqan : 2</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">📐</span>
+        <p>Cet angle de <strong>42°</strong> résulte de la combinaison précise de l'indice de réfraction de l'eau (1,33) et de la géométrie de la sphère d'une goutte. Allah a fixé les propriétés de l'eau pour que cet angle soit toujours identique.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌐</span>
+        <p>En réalité, l'arc-en-ciel est un <strong>cercle complet</strong> — on ne voit que la moitié car l'horizon cache le reste. Depuis un avion, on peut voir l'arc complet : un cercle parfait de lumière et de couleurs.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(2)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(4)">Suivant → Couleurs dans la création </button>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 : Couleurs dans la création -->
+    <div class="slide" id="sl-4">
+      <div class="scene-canvas" id="sc4" style="background:linear-gradient(180deg,#030d10,#061a10)"></div>
+      <div class="slide-num">Leçon 5 · 6 leçons</div>
+      <h2>Allah a Tout Créé avec des Couleurs — تَنَوُّعُ الْأَلْوَانِ فِي الْخَلْقِ</h2>
+      <p class="slide-body">
+        La diversité des couleurs montre la beauté de la création d'Allah  —
+        c'est un <strong style="color:var(--gold-light)">signe de la Puissance d'Allah</strong>.
+        Montagnes blanches, rouges, noires. Fruits de toutes les teintes.
+        Fleurs aux mille nuances. Animaux aux robes variées.
+        Et au-dessus de tout cela : l'arc-en-ciel — la synthèse parfaite de
+        <strong style="color:var(--gold-light)">toutes les couleurs réunies en un seul signe céleste</strong>.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ أَلَمْ تَرَ أَنَّ اللَّهَ أَنْزَلَ مِنَ السَّمَاءِ مَاءً فَأَخْرَجْنَا بِهِ ثَمَرَاتٍ مُخْتَلِفًا أَلْوَانُهَا وَمِنَ الْجِبَالِ جُدَدٌ بِيضٌ وَحُمْرٌ مُخْتَلِفٌ أَلْوَانُهَا وَغَرَابِيبُ سُودٌ ﴾</span>
+        <span class="ayah-fr">« N'as-tu pas vu que, du ciel, Allah fait descendre l'eau ? Puis nous en faisons sortir des fruits de couleurs différentes. Et dans les montagnes, il y a des sillons blancs et rouges, de couleurs différentes, et des roches excessivement noires. » — Fatir : 27</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🎨</span>
+        <p>Ce verset est extraordinaire : De <strong>l'eau du ciel</strong> apparaît la <strong>diversité des couleurs</strong> sur terre. C'est exactement ce que fait l'arc-en-ciel — l'eau de pluie + la lumière = une explosion de couleurs.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌺</span>
+        <p>Le verset suivant (Fatir : 28) ajoute : <strong>إِنَّمَا يَخْشَى اللَّهَ مِنْ عِبَادِهِ الْعُلَمَاءُ</strong> — "Parmi Ses serviteurs, seuls les savants craignent vraiment Allah." Contempler les couleurs de la création mène à la connaissance, qui mène à la crainte d'Allah.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(3)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(5)">Suivant → Contempler la Beauté d'Allah</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 : Contemplation -->
+    <div class="slide" id="sl-5">
+      <div class="scene-canvas" id="sc5" style="background:linear-gradient(180deg,#04101e,#082535)"></div>
+      <div class="slide-num">Leçon 6 · 6 leçons</div>
+      <h2>Contempler la Beauté d'Allah — جَمَالُ اللهِ</h2>
+      <p class="slide-body">
+        Allah est <strong style="color:var(--gold-light)">beau et Il aime la beauté</strong>
+        (إِنَّ اللَّهَ جَمِيلٌ يُحِبُّ الْجَمَالَ — hadith-Rapporté par Mouslim dans son Sahih n°91).
+        L'arc-en-ciel est l'une des manifestations visibles de cette beauté divine
+        dans la création. Il nous invite à <strong style="color:var(--gold-light)">lever les yeux</strong>,
+        à s'émerveiller, et à reconnaître que derrière cette beauté se trouve
+        un Créateur infiniment beau, infiniment sage.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ صُنْعَ اللَّهِ الَّذِي أَتْقَنَ كُلَّ شَيْءٍ ﴾</span>
+        <span class="ayah-fr">« Telle est l'oeuvre d'Allah qui a tout façonné à la perfection.  » — An-Naml : 88</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">✨</span>
+        <p>Le mot <strong>أَتْقَنَ</strong> (<em>atqana</em>) signifie "a réalisé avec une perfection absolue". L'arc-en-ciel — ses 7 couleurs, son angle de 42°, sa forme de demi-cercle — est une œuvre parfaite d'Allah.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🤲</span>
+        <p>La prochaine fois que tu vois un arc-en-ciel, arrête-toi un instant et pense : cette lumière a quitté le soleil il y a 8 minutes, elle a traversé des milliers de gouttes de pluie, et dans chaque goutte Allah l'a décomposée en 7 couleurs, toujours dans le même ordre, toujours à exactement 42°. <strong>Médite sur la Puissance d'Allah.</strong></p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(4)">← Précédent</button>
+        <button class="btn-quiz" onclick="startQuiz()">🎯 Tester mes connaissances →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="screen-quiz" class="screen">
+  <div id="quiz-wrap">
+    <div id="quiz-header">
+      <div class="score-pill" id="score-pill">⭐ 0</div>
+      <div class="prog-wrap"><div id="qprog"></div></div>
+      <div class="q-count" id="q-count">1 / 8</div>
+    </div>
+    <div id="q-card">
+      <div id="q-icon">🌈</div>
+      <div id="q-text"></div>
+      <div id="options"></div>
+    </div>
+    <div id="fb-box">
+      <div id="fb-text"></div>
+      <div id="fb-ayah"></div>
+    </div>
+    <button id="qnext">Question suivante →</button>
+    <div id="end-screen">
+      <div id="end-badge"></div>
+      <div id="end-title"></div>
+      <div id="end-big"></div>
+      <div id="end-sub">points sur 8</div>
+      <div id="end-msg"></div>
+      <div class="end-btns">
+        <button id="restart-btn" onclick="restartQuiz()">↺ Recommencer le quiz</button>
+        <button id="review-btn" onclick="reviewIntro()">📖 Revoir les leçons</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ══ HEADER ══ */
+(function(){
+  const sb=document.getElementById('hstars');
+  for(let i=0;i<50;i++){
+    const s=document.createElement('div');s.className='hstar';
+    const z=Math.random()*2+.5;
+    s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*45}%;left:${Math.random()*100}%;--op:${(.1+Math.random()*.3).toFixed(2)};--dur:${(2+Math.random()*4).toFixed(1)}s;--del:${(Math.random()*5).toFixed(1)}s;opacity:${(.1+Math.random()*.3).toFixed(2)}`;
+    sb.appendChild(s);
+  }
+  // light fading rain
+  const rw=document.getElementById('hrain');
+  for(let i=0;i<18;i++){
+    const r=document.createElement('div');r.className='h-rain';
+    const h=10+Math.random()*8;
+    r.style.cssText=`height:${h}px;left:${Math.random()*100}%;top:${60+Math.random()*40}px;--rf:${(1+Math.random()*1).toFixed(2)}s;--rd:${(Math.random()*3).toFixed(2)}s;--ro:.2;opacity:.2`;
+    rw.appendChild(r);
+  }
+})();
+
+/* ══ SCENE BUILDERS ══ */
+
+/* Helper: draw mini rainbow arcs */
+function drawMiniRainbow(el, cx, bottom, maxW, lineW){
+  const colors=[
+    `rgba(220,50,50,VAR)`,`rgba(230,120,30,VAR)`,`rgba(230,210,30,VAR)`,
+    `rgba(50,190,60,VAR)`,`rgba(30,130,230,VAR)`,`rgba(60,60,210,VAR)`,`rgba(140,40,200,VAR)`
+  ];
+  const step=lineW+2;
+  colors.forEach((c,i)=>{
+    const w=maxW-i*step*2;
+    const h=w/2;
+    const arc=document.createElement('div');
+    arc.style.cssText=`position:absolute;bottom:${bottom}px;left:${cx}px;transform:translateX(-50%);width:${w}px;height:${h}px;border-radius:50% 50% 0 0 / 100% 100% 0 0;border-top:${lineW}px solid ${c.replace('VAR','0.8')};border-left:none;border-right:none;border-bottom:none`;
+    el.appendChild(arc);
+  });
+}
+
+/* Sc0 : Birth — rain clears, sun appears, rainbow forms */
+function buildSc0(el){
+  // sky gradient layers
+  const skyBefore=document.createElement('div');
+  skyBefore.style.cssText='position:absolute;inset:0;background:linear-gradient(180deg,#050f1e,#0a2035)';
+  el.appendChild(skyBefore);
+  // rain fading out (left side)
+  for(let i=0;i<12;i++){
+    const r=document.createElement('div');r.className='sc0-rain';
+    const h=10+Math.random()*8;
+    r.style.cssText=`height:${h}px;left:${Math.random()*45}%;top:0;--fd:${(.9+Math.random()*.6).toFixed(2)}s;--fdd:${(Math.random()*2).toFixed(2)}s;opacity:.5`;
+    el.appendChild(r);
+  }
+  // sun breaking through right
+  const sun=document.createElement('div');sun.className='sc0-sun';
+  sun.style.cssText='width:44px;height:44px;top:16px;right:22px;box-shadow:0 0 28px 8px rgba(245,166,35,.5)';
+  el.appendChild(sun);
+  // rays from sun
+  for(let i=0;i<8;i++){
+    const ray=document.createElement('div');
+    ray.style.cssText=`position:absolute;top:38px;right:44px;width:${30+Math.random()*30}px;height:2px;background:rgba(255,220,60,.4);border-radius:2px;transform-origin:right center;transform:rotate(${i*45}deg);animation:shimmer ${(3+Math.random()*2).toFixed(1)}s ease-in-out infinite ${(Math.random()*2).toFixed(1)}s`;
+    el.appendChild(ray);
+  }
+  // rainbow forming
+  drawMiniRainbow(el,'50%',15,260,7);
+  // label
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.5);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  lbl.textContent='ماء + ضوء = قوس قزح — Eau + Lumière = Arc-en-ciel';
+  el.appendChild(lbl);
+}
+
+/* Sc1 : Refraction through a drop */
+function buildSc1(el){
+  // incoming white light ray
+  const wRay=document.createElement('div');wRay.className='photon';
+  wRay.style.cssText='width:80px;top:95px;left:20px;--pi:3s;--pid:0s';
+  el.appendChild(wRay);
+  // water drop at center
+  const drop=document.createElement('div');drop.className='drop-sc';
+  drop.style.cssText='width:55px;height:68px;top:70px;left:118px';
+  el.appendChild(drop);
+  // water drop label
+  const dl=document.createElement('div');
+  dl.style.cssText='position:absolute;top:74px;left:158px;font-size:10px;color:rgba(100,180,255,.6);font-family:Lato,sans-serif';
+  dl.textContent='Goutte\nd\'eau';
+  el.appendChild(dl);
+  // refracted colored rays exiting right
+  const refColors=[
+    {c:'rgba(220,50,50,.85)',angle:-22,len:90,top:78},
+    {c:'rgba(230,120,30,.85)',angle:-16,len:85,top:84},
+    {c:'rgba(230,210,30,.85)',angle:-10,len:80,top:90},
+    {c:'rgba(50,190,60,.85)',angle:-4,len:80,top:96},
+    {c:'rgba(30,130,230,.85)',angle:2,len:80,top:102},
+    {c:'rgba(60,60,210,.85)',angle:8,len:80,top:108},
+    {c:'rgba(140,40,200,.85)',angle:14,len:75,top:114},
+  ];
+  refColors.forEach((rc,i)=>{
+    const ray=document.createElement('div');
+    ray.style.cssText=`position:absolute;top:${rc.top}px;left:175px;width:${rc.len}px;height:2.5px;background:${rc.c};border-radius:2px;transform-origin:left center;transform:rotate(${rc.angle}deg);animation:shimmer ${(2+Math.random()).toFixed(1)}s ease-in-out infinite ${(i*.15).toFixed(2)}s`;
+    el.appendChild(ray);
+  });
+  // labels
+  const inLbl=document.createElement('div');
+  inLbl.style.cssText='position:absolute;top:80px;left:22px;font-size:10px;color:rgba(255,255,255,.55);font-family:Lato,sans-serif;line-height:1.4';
+  inLbl.innerHTML='Lumière<br>blanche';
+  el.appendChild(inLbl);
+  const outLbl=document.createElement('div');
+  outLbl.style.cssText='position:absolute;top:62px;right:14px;font-size:10px;color:rgba(200,180,255,.55);font-family:Lato,sans-serif;line-height:1.4;text-align:right';
+  outLbl.innerHTML='Couleurs<br>séparées';
+  el.appendChild(outLbl);
+  // refraction label
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.5);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  lbl.textContent='اِنْكِسَارُ الضَّوْءِ — Réfraction : la lumière décomposée';
+  el.appendChild(lbl);
+  // physics equation
+  const eq=document.createElement('div');
+  eq.style.cssText='position:absolute;top:150px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.45);font-family:monospace;white-space:nowrap';
+  eq.textContent='n = 1.33 (indice de réfraction de l\'eau)';
+  el.appendChild(eq);
+}
+
+/* Sc2 : 7 colors display */
+function buildSc2(el){
+  const colors=[
+    {c:'#dc3232',name:'Rouge',ar:'أَحْمَر',nm:'700 nm'},
+    {c:'#e07820',name:'Orange',ar:'بُرْتُقَالِي',nm:'620 nm'},
+    {c:'#e0d020',name:'Jaune',ar:'أَصْفَر',nm:'580 nm'},
+    {c:'#32be3c',name:'Vert',ar:'أَخْضَر',nm:'530 nm'},
+    {c:'#1e82e6',name:'Bleu',ar:'أَزْرَق',nm:'470 nm'},
+    {c:'#3c3cd2',name:'Indigo',ar:'نِيلِي',nm:'440 nm'},
+    {c:'#8c28c8',name:'Violet',ar:'بَنَفْسَجِي',nm:'400 nm'},
+  ];
+  colors.forEach((col,i)=>{
+    const band=document.createElement('div');
+    band.style.cssText=`position:absolute;left:110px;right:14px;height:20px;top:${10+i*25}px;background:${col.c};border-radius:0 6px 6px 0;opacity:.82;animation:shimmer ${(3+Math.random()*2).toFixed(1)}s ease-in-out infinite ${(i*.2).toFixed(1)}s`;
+    el.appendChild(band);
+    const nameLbl=document.createElement('div');
+    nameLbl.style.cssText=`position:absolute;left:4px;top:${14+i*25}px;font-size:10px;color:rgba(255,255,255,.7);font-family:Lato,sans-serif;line-height:1`;
+    nameLbl.textContent=`${col.name}`;
+    el.appendChild(nameLbl);
+    const arLbl=document.createElement('div');
+    arLbl.style.cssText=`position:absolute;left:54px;top:${12+i*25}px;font-family:Scheherazade New,serif;font-size:13px;color:rgba(212,168,67,.55)`;
+    arLbl.textContent=col.ar;
+    el.appendChild(arLbl);
+    const nmLbl=document.createElement('div');
+    nmLbl.style.cssText=`position:absolute;right:18px;top:${15+i*25}px;font-size:9px;color:rgba(255,255,255,.4);font-family:monospace`;
+    nmLbl.textContent=col.nm;
+    el.appendChild(nmLbl);
+  });
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.5);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  lbl.textContent='7 couleurs — toujours dans le même ordre — par décret d\'Allah';
+  el.appendChild(lbl);
+}
+
+/* Sc3 : 42° angle diagram */
+function buildSc3(el){
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="rgba(212,168,67,.7)"/>
+      </marker>
+      <radialGradient id="sunG" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffe880"/>
+        <stop offset="100%" stop-color="#f5a623"/>
+      </radialGradient>
+    </defs>
+    <!-- observer (eye) -->
+    <ellipse cx="60" cy="130" rx="14" ry="10" fill="rgba(212,168,67,.2)" stroke="rgba(212,168,67,.5)" stroke-width="1.5"/>
+    <text x="60" y="134" text-anchor="middle" font-size="12" fill="rgba(212,168,67,.8)">👁</text>
+    <text x="60" y="152" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.5)" font-family="Lato">Observateur</text>
+    <!-- sun behind observer -->
+    <circle cx="30" cy="50" r="18" fill="url(#sunG)" opacity=".8"/>
+    <text x="30" y="80" text-anchor="middle" font-size="9" fill="rgba(255,200,60,.6)" font-family="Lato">Soleil</text>
+    <!-- ray from sun to drop -->
+    <line x1="48" y1="60" x2="210" y2="75" stroke="rgba(255,220,60,.5)" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <!-- water drop -->
+    <ellipse cx="218" cy="72" rx="14" ry="18" fill="rgba(100,180,255,.25)" stroke="rgba(100,180,255,.5)" stroke-width="1.5"/>
+    <text x="218" y="100" text-anchor="middle" font-size="9" fill="rgba(100,180,255,.6)" font-family="Lato">Goutte</text>
+    <!-- rainbow arc colored -->
+    <path d="M 80 180 A 140 140 0 0 1 270 95" stroke="rgba(220,50,50,.7)" stroke-width="5" fill="none"/>
+    <path d="M 82 185 A 145 145 0 0 1 272 100" stroke="rgba(230,120,30,.7)" stroke-width="5" fill="none"/>
+    <path d="M 84 190 A 150 150 0 0 1 274 105" stroke="rgba(230,210,30,.7)" stroke-width="5" fill="none"/>
+    <path d="M 86 195 A 155 155 0 0 1 276 110" stroke="rgba(50,190,60,.7)" stroke-width="5" fill="none"/>
+    <!-- 42° angle arc and label -->
+    <path d="M 60 130 L 60 70" stroke="rgba(212,168,67,.3)" stroke-width="1" stroke-dasharray="3,3"/>
+    <path d="M 60 130 L 210 72" stroke="rgba(212,168,67,.5)" stroke-width="1.5" marker-end="url(#arr2)"/>
+    <path d="M 60 90 A 40 40 0 0 1 98 115" stroke="rgba(212,168,67,.6)" stroke-width="2" fill="none"/>
+    <text x="95" y="95" font-size="14" fill="rgba(212,168,67,.9)" font-weight="bold" font-family="Lato">42°</text>
+    <!-- anti-solar point label -->
+    <text x="60" y="168" text-anchor="middle" font-size="8" fill="rgba(212,168,67,.4)" font-family="Lato">Point anti-solaire</text>
+    <!-- bottom label -->
+    <text x="170" y="198" text-anchor="middle" font-size="10" fill="rgba(212,168,67,.45)" font-family="Lato">Angle constant fixé par Allah dans les lois de la physique</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc4 : After the flood */
+function buildSc4(el){
+  // SVG scene : mountains of different colors + fruits + flowers + rainbow above
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <!-- sky -->
+    <rect width="340" height="200" fill="rgba(5,15,10,.0)"/>
+    <!-- mini rainbow at top -->
+    <path d="M 60 90 A 110 110 0 0 1 280 90" stroke="rgba(220,50,50,.5)" stroke-width="5" fill="none"/>
+    <path d="M 65 95 A 108 108 0 0 1 275 95" stroke="rgba(230,120,30,.5)" stroke-width="5" fill="none"/>
+    <path d="M 70 100 A 106 106 0 0 1 270 100" stroke="rgba(230,210,30,.5)" stroke-width="5" fill="none"/>
+    <path d="M 75 105 A 104 104 0 0 1 265 105" stroke="rgba(50,190,60,.5)" stroke-width="5" fill="none"/>
+    <path d="M 80 110 A 100 100 0 0 1 260 110" stroke="rgba(30,130,230,.5)" stroke-width="5" fill="none"/>
+    <path d="M 85 115 A 96 96 0 0 1 255 115" stroke="rgba(60,60,210,.5)" stroke-width="5" fill="none"/>
+    <path d="M 90 120 A 92 92 0 0 1 250 120" stroke="rgba(140,40,200,.5)" stroke-width="5" fill="none"/>
+    <!-- ground -->
+    <rect x="0" y="160" width="340" height="40" fill="rgba(20,50,15,.7)" rx="0"/>
+    <!-- WHITE mountain -->
+    <polygon points="30,160 70,100 110,160" fill="rgba(220,225,230,.35)" stroke="rgba(200,210,220,.2)" stroke-width="1"/>
+    <text x="70" y="175" text-anchor="middle" font-size="9" fill="rgba(220,225,230,.7)" font-family="Lato">أَبْيَض</text>
+    <text x="70" y="185" text-anchor="middle" font-size="8" fill="rgba(220,225,230,.45)" font-family="Lato">Blanc</text>
+    <!-- RED mountain -->
+    <polygon points="110,160 155,85 200,160" fill="rgba(180,60,40,.45)" stroke="rgba(200,80,50,.2)" stroke-width="1"/>
+    <text x="155" y="175" text-anchor="middle" font-size="9" fill="rgba(200,80,60,.8)" font-family="Lato">أَحْمَر</text>
+    <text x="155" y="185" text-anchor="middle" font-size="8" fill="rgba(200,80,60,.5)" font-family="Lato">Rouge</text>
+    <!-- BLACK mountain -->
+    <polygon points="210,160 255,95 300,160" fill="rgba(30,30,35,.7)" stroke="rgba(60,60,70,.3)" stroke-width="1"/>
+    <text x="255" y="175" text-anchor="middle" font-size="9" fill="rgba(120,120,130,.7)" font-family="Lato">أَسْوَد</text>
+    <text x="255" y="185" text-anchor="middle" font-size="8" fill="rgba(120,120,130,.45)" font-family="Lato">Noir</text>
+    <!-- colored fruits hanging -->
+    <circle cx="50" cy="148" r="7" fill="rgba(230,80,40,.8)"/>
+    <circle cx="64" cy="152" r="6" fill="rgba(220,150,30,.8)"/>
+    <circle cx="78" cy="148" r="7" fill="rgba(50,160,50,.8)"/>
+    <circle cx="92" cy="153" r="6" fill="rgba(180,40,160,.7)"/>
+    <!-- Fatir 27 label -->
+    <text x="170" y="14" text-anchor="middle" font-family="Scheherazade New,serif" font-size="12" fill="rgba(212,168,67,.55)">مُّخْتَلِفًا أَلْوَانُهَا — De couleurs variées</text>
+    <!-- water drop top -->
+    <text x="170" y="30" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(100,180,255,.45)">L'eau du ciel → diversité des couleurs sur terre</text>
+  `;
+  el.appendChild(svg);
+  // animated color sparkles on mountains
+  const sparkColors=['rgba(220,225,230,.9)','rgba(200,80,60,.9)','rgba(100,100,110,.8)'];
+  [[70,120],[155,100],[255,110]].forEach(([x,y],i)=>{
+    for(let j=0;j<3;j++){
+      const sp=document.createElement('div');sp.className='sparkle';
+      sp.style.cssText=`width:5px;height:5px;left:${x-8+j*8}px;top:${y+j*10}px;background:${sparkColors[i]};box-shadow:0 0 4px 2px ${sparkColors[i]};--sp:${(2+Math.random()*2).toFixed(1)}s;--spd:${(j*.5+i*.3).toFixed(1)}s`;
+      el.appendChild(sp);
+    }
+  });
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.5);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  lbl.textContent='فَاطِر : ٢٧ — Fatir : 27 — وَمِنَ الْجِبَالِ جُدَدٌ بِيضٌ وَحُمْرٌ مُخْتَلِفٌ أَلْوَانُهَا وَغَرَابِيبُ سُودٌ';
+  el.appendChild(lbl);
+}
+
+/* Sc5 : Contemplation */
+function buildSc5(el){
+  // big rainbow
+  drawMiniRainbow(el,'50%',30,300,9);
+  // ground + person
+  const gnd=document.createElement('div');
+  gnd.style.cssText='position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(180deg,rgba(20,60,20,.5),rgba(10,40,15,.8))';
+  el.appendChild(gnd);
+  const person=document.createElement('div');
+  person.style.cssText='position:absolute;bottom:28px;left:50%;transform:translateX(-50%)';
+  person.innerHTML=`<svg width="32" height="58" viewBox="0 0 32 58">
+    <circle cx="16" cy="10" r="7" fill="rgba(212,168,67,.65)"/>
+    <line x1="16" y1="17" x2="16" y2="42" stroke="rgba(212,168,67,.6)" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="16" y1="26" x2="4" y2="34" stroke="rgba(212,168,67,.6)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="16" y1="26" x2="28" y2="34" stroke="rgba(212,168,67,.6)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="16" y1="42" x2="9" y2="57" stroke="rgba(212,168,67,.6)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="16" y1="42" x2="23" y2="57" stroke="rgba(212,168,67,.6)" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
+  el.appendChild(person);
+  // sparkles on rainbow
+  const sparkPositions=[[105,100],[160,65],[220,65],[275,100],[190,52],[135,82]];
+  sparkPositions.forEach(([left,top],i)=>{
+    const sp=document.createElement('div');sp.className='sparkle';
+    sp.style.cssText=`width:6px;height:6px;left:${left}px;top:${top}px;background:rgba(255,255,255,.9);box-shadow:0 0 6px 2px rgba(255,255,255,.5);--sp:${(2+Math.random()*2).toFixed(1)}s;--spd:${(i*.4).toFixed(1)}s`;
+    el.appendChild(sp);
+  });
+  // floating words
+  const words=[
+    {t:'أَتْقَنَ',x:'72%',y:'10%',sz:14},
+    {t:'نُور',x:'76%',y:'50%',sz:15},
+    {t:'رَحْمَة',x:'38%',y:'8%',sz:13},
+  ];
+  words.forEach((w,i)=>{
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;left:${w.x};top:${w.y};font-family:Scheherazade New,serif;font-size:${w.sz}px;color:rgba(212,168,67,.45);animation:float ${(4+Math.random()*2).toFixed(1)}s ease-in-out infinite ${(i*.6).toFixed(1)}s`;
+    d.textContent=w.t;
+    el.appendChild(d);
+  });
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.5);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  lbl.textContent='صُنْعَ اللَّهِ الَّذِي أَتْقَنَ كُلَّ شَيْءٍ — Allah a parfait toute chose';
+  el.appendChild(lbl);
+}
+
+const sceneFns=[buildSc0,buildSc1,buildSc2,buildSc3,buildSc4,buildSc5];
+sceneFns.forEach((fn,i)=>fn(document.getElementById('sc'+i)));
+
+/* ══ SLIDE DOTS ══ */
+const NSLIDES=6;
+const dotsEl=document.getElementById('slide-dots');
+for(let i=0;i<NSLIDES;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=(()=>{const n=i;return()=>goSlide(n);})();
+  dotsEl.appendChild(d);
+}
+let curSlide=0;
+function goSlide(n){
+  document.getElementById('sl-'+curSlide).classList.remove('active');
+  curSlide=n;
+  document.getElementById('sl-'+n).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>{ d.className='dot'+(i===n?' active':i<n?' done':''); });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══ QUIZ ══ */
+const Q=[
+  {
+    icon:'🌦️',
+    q:"Quelles sont les trois conditions nécessaires pour voir un arc-en-ciel ?",
+    opts:["Pluie + vent + nuages","Soleil derrière soi + pluie devant + angle de 42°","Lune + pluie + nuit","Soleil + mer + vent fort"],
+    ans:1,
+    fb:"Pour voir un arc-en-ciel : le soleil doit être derrière toi, la pluie devant toi, et tu dois être dans la direction exacte formant 42° avec les gouttes d'eau. Allah a coordonné ces trois conditions avec une précision mathématique.",
+    ayah:"« Parmi Ses signes : la création des cieux et de la terre, la diversité de vos langues et de vos couleurs. » — Ar-Rum : 22"
+  },
+  {
+    icon:'💡',
+    q:"Que contient la lumière blanche du soleil en réalité ?",
+    opts:["Uniquement du blanc et du noir","Toutes les couleurs du spectre mélangées","Seulement le rouge, vert et bleu","De la chaleur pure sans couleur"],
+    ans:1,
+    fb:"La lumière blanche contient toutes les couleurs du spectre mélangées. La goutte d'eau agit comme un prisme naturel et les sépare selon leur longueur d'onde — un mécanisme que Newton n'a compris qu'en 1666, mais qu'Allah avait placé dans chaque goutte depuis la création.",
+    ayah:"« C'est l'œuvre d'Allah qui a parfait toute chose. » — An-Naml : 88"
+  },
+  {
+    icon:'🔬',
+    q:"Dans l'arc-en-ciel, quelle est la fonction de chaque goutte de pluie ?",
+    opts:["Elle absorbe la lumière","Elle agit comme un prisme qui sépare les couleurs","Elle produit sa propre lumière colorée","Elle réfléchit uniquement le blanc"],
+    ans:1,
+    fb:"Chaque goutte de pluie agit comme un prisme naturel. La lumière blanche du soleil entre dans la goutte, se ralentit et se courbe différemment selon la couleur (réfraction), se reflète à l'intérieur, puis ressort en éventail de 7 couleurs. Allah a placé ce prisme naturel dans chaque goutte depuis la création.",
+    ayah:"« Il a créé toute chose et en a fixé la mesure avec précision. » — Al-Furqan : 2"
+  },
+  {
+    icon:'🎨',
+    q:"Combien de couleurs compte un arc-en-ciel et dans quel ordre apparaissent-elles ?",
+    opts:["5 couleurs, ordre aléatoire","6 couleurs, du froid au chaud","7 couleurs, toujours dans le même ordre immuable","9 couleurs, de gauche à droite"],
+    ans:2,
+    fb:"L'arc-en-ciel affiche toujours exactement 7 couleurs dans le même ordre : rouge, orange, jaune, vert, bleu, indigo, violet. Jamais dans un autre ordre. Cet ordre est déterminé par la longueur d'onde de chaque couleur — une loi physique immuable posée par Allah.",
+    ayah:"« Ce qu'Il a créé pour vous sur la terre a des couleurs diverses. Voilà bien là une preuve pour des gens qui se rappellent » —  An-Nahl : 13"
+  },
+  {
+    icon:'📐',
+    q:"À quel angle précis un arc-en-ciel apparaît-il toujours ?",
+    opts:["30 degrés","42 degrés","60 degrés","90 degrés"],
+    ans:1,
+    fb:"L'arc-en-ciel apparaît toujours exactement à 42° autour de la direction opposée au soleil. Cet angle résulte de l'indice de réfraction de l'eau (1,33) combiné à la géométrie sphérique d'une goutte — une constante physique fixée par Allah.",
+    ayah:"« Et parmi Ses signes le ciel et la terre sont maintenus par Son ordre; » — Ar-Rum : 25"
+  },
+  {
+    icon:'🌐',
+    q:"Quelle est la vraie forme géométrique d'un arc-en-ciel complet ?",
+    opts:["Une demi-ellipse","Un cercle complet","Un arc de 180°","Une ligne droite de couleurs"],
+    ans:1,
+    fb:"L'arc-en-ciel est en réalité un cercle complet. On ne voit que la moitié car l'horizon cache le reste. Depuis un avion, on peut voir le cercle entier — un cercle parfait de lumière et de couleurs créé par Allah.",
+    ayah:"« qui a bien fait tout ce qu'Il a créé. » — As-Sajda : 7"
+  },
+  {
+    icon:'🕊️',
+    q:"Quel hadith le Prophète ﷺ nous a-t-il transmis sur la beauté d'Allah ?",
+    opts:["Allah aime la simplicité","Allah est beau et Il aime la beauté","Allah cache Sa beauté à Ses créatures","La beauté appartient uniquement au Paradis"],
+    ans:1,
+   fb:"Le Prophète ﷺ nous enseigne qu'Allah est beau et qu'Il aime la beauté. L'arc-en-ciel, avec ses 7 couleurs parfaitement ordonnées, est l'une des manifestations visibles de cette beauté divine dans la création.",
+    ayah:"Le Prophète ﷺ a dit : « Certes Allah est beau et Il aime la beauté. » (Rapporté par Muslim, Sahih n°91)",
+  },
+  {
+    icon:'✨',
+    q:"Que signifie le mot أَتْقَنَ (atqana) utilisé dans le Coran pour décrire l'œuvre d'Allah ?",
+    opts:["A créé rapidement","A réalisé avec une perfection absolue","A terminé et abandonné","A commencé sans finir"],
+    ans:1,
+    fb:"أَتْقَنَ (atqana) signifie 'a réalisé avec une perfection absolue et un soin extrême'. L'arc-en-ciel — ses 7 couleurs, son angle de 42°, sa forme de cercle parfait — est l'exemple même d'une œuvre d'Allah parfaitement accomplie.",
+    ayah:"« C'est l'œuvre d'Allah qui a parfait toute chose (أَتْقَنَ كُلَّ شَيْءٍ). » — An-Naml : 88"
+  }
+];
+
+let cur=0,score=0,answered=false;
+function startQuiz(){
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-quiz').classList.add('active');
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderQ(){
+  answered=false;
+  const q=Q[cur];
+  document.getElementById('q-icon').textContent=q.icon;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('q-count').textContent=`${cur+1} / ${Q.length}`;
+  document.getElementById('qprog').style.width=`${(cur/Q.length)*100}%`;
+  const opts=document.getElementById('options');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=o;
+    b.onclick=()=>pick(i);opts.appendChild(b);
+  });
+}
+function pick(i){
+  if(answered)return;answered=true;
+  const q=Q[cur];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  if(i!==q.ans)document.querySelectorAll('.opt')[i].classList.add('wrong');
+  else score++;
+  document.getElementById('fb-text').textContent=q.fb;
+  document.getElementById('fb-ayah').textContent=q.ayah;
+  document.getElementById('fb-box').style.display='block';
+  document.getElementById('qnext').style.display='block';
+  document.getElementById('score-pill').textContent=`⭐ ${score}`;
+}
+document.getElementById('qnext').onclick=()=>{ cur++;if(cur>=Q.length)showEnd();else renderQ(); };
+function showEnd(){
+  document.getElementById('q-card').style.display='none';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='none';
+  const pct=score/Q.length;
+  let badge,title,msg;
+  if(pct===1){ badge='🌟';title='Exceptionnel — بارك الله فيك';msg="Tu as répondu correctement à toutes les questions ! La prochaine fois que tu vois un arc-en-ciel, tu sauras que tu contemples 42°, 7 couleurs et l'œuvre parfaite d'Allah."; }
+  else if(pct>=.625){ badge='🌈';title='Très bien — أحسنت';msg="Tu connais bien les secrets de l'arc-en-ciel. Relis les leçons sur la réfraction et l'angle de 42° — ce sont les plus beaux exemples de la précision mathématique d'Allah dans la création."; }
+  else { badge='💧';title='Bon début — استمر في التعلم';msg="La prochaine fois qu'il pleut et que le soleil revient, cherche l'arc-en-ciel à 42° derrière toi. Souviens-toi : cette beauté est un signe d'Allah pour toi, en ce moment précis."; }
+  document.getElementById('end-badge').textContent=badge;
+  document.getElementById('end-title').textContent=title;
+  document.getElementById('end-big').textContent=score;
+  document.getElementById('end-msg').textContent=msg;
+  document.getElementById('end-screen').style.display='block';
+  document.getElementById('qprog').style.width='100%';
+}
+function restartQuiz(){
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+}
+function reviewIntro(){
+  document.getElementById('screen-quiz').classList.remove('active');
+  document.getElementById('screen-intro').classList.add('active');
+  goSlide(0);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
