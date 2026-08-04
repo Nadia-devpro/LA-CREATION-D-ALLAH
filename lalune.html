@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Lune — Un Signe de la Création d'Allah</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #030d1a;
+  --gold: #d4a843;
+  --gold-light: #f5d57a;
+  --silver-dim: #7a9bbf;
+  --white: #eef3ff;
+  --text: #d8e8ff;
+  --text-dim: #7a9bbf;
+  --moon-silver: #c8daf5;
+  --moon-glow: rgba(180,200,240,.4);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--night); color:var(--text); font-family:'Lato',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ══ HEADER ══ */
+#sky-header {
+  position:relative; width:100%; height:240px; overflow:hidden;
+  background:linear-gradient(180deg,#010610 0%,#030e20 40%,#060f28 70%,#0a1535 100%);
+}
+.hstar {
+  position:absolute; border-radius:50%; background:#fff;
+  animation:twinkle var(--dur,3s) ease-in-out infinite var(--del,0s);
+}
+@keyframes twinkle { 0%,100%{ opacity:var(--op,.6); } 50%{ opacity:.05; } }
+
+/* hero moon */
+#hero-moon {
+  position:absolute; top:28px; left:50%; transform:translateX(-50%);
+  width:90px; height:90px; border-radius:50%;
+  background:radial-gradient(circle at 34% 32%,#f0f4ff,#dce8ff 35%,#b8ccee 65%,#8aaad8);
+  box-shadow:0 0 50px 16px rgba(180,200,240,.35),0 0 100px 36px rgba(180,200,240,.15),0 0 180px 60px rgba(180,200,240,.07);
+  animation:moonPulse 6s ease-in-out infinite;
+  z-index:2;
+}
+@keyframes moonPulse {
+  0%,100%{ box-shadow:0 0 50px 16px rgba(180,200,240,.35),0 0 100px 36px rgba(180,200,240,.15); }
+  50%{ box-shadow:0 0 70px 24px rgba(180,200,240,.5),0 0 130px 50px rgba(180,200,240,.22); }
+}
+/* craters on hero moon */
+.h-crater {
+  position:absolute; border-radius:50%;
+  background:rgba(100,130,180,.2);
+  border:1px solid rgba(100,130,180,.15);
+}
+/* stars around moon */
+.moon-star {
+  position:absolute; border-radius:50%; background:#fff;
+  animation:twinkle var(--dur,3s) ease-in-out infinite var(--del,0s);
+}
+/* crescent phases */
+.h-phase {
+  position:absolute; border-radius:50%;
+  animation:phaseDrift var(--pd,20s) ease-in-out infinite var(--pdd,0s);
+}
+@keyframes phaseDrift {
+  0%,100%{ transform:translateX(0) translateY(0); opacity:var(--po,.6); }
+  50%{ transform:translateX(var(--px,8px)) translateY(var(--py,-4px)); opacity:calc(var(--po,.6) * 1.3); }
+}
+
+#sky-label {
+  position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+  text-align:center; white-space:nowrap; z-index:3;
+}
+#sky-label h1 { font-family:'Scheherazade New',serif; font-size:24px; color:var(--gold-light); text-shadow:0 0 20px rgba(212,168,67,.5); }
+#sky-label p { font-size:11px; color:var(--silver-dim); letter-spacing:2.5px; text-transform:uppercase; margin-top:3px; }
+
+/* ══ SCREENS ══ */
+#app { display:flex; flex-direction:column; min-height:100vh; }
+.screen { display:none; flex:1; }
+.screen.active { display:block; }
+
+/* ══ INTRO ══ */
+#intro-wrap { max-width:700px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#skip-intro { text-align:right; margin-bottom:1rem; }
+#skip-intro button { background:none; border:none; color:var(--text-dim); font-size:12px; cursor:pointer; letter-spacing:.5px; font-family:'Lato',sans-serif; text-decoration:underline; text-underline-offset:3px; }
+#skip-intro button:hover { color:var(--text); }
+#slide-dots { display:flex; justify-content:center; gap:8px; margin-bottom:2rem; }
+.dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.15); transition:background .3s,transform .3s; cursor:pointer; }
+.dot.active { background:var(--gold); transform:scale(1.3); }
+.dot.done { background:rgba(212,168,67,.4); }
+.slide { display:none; animation:slideIn .45s ease; }
+.slide.active { display:block; }
+@keyframes slideIn { from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
+
+.scene-canvas {
+  width:100%; height:200px; border-radius:14px; margin-bottom:1.4rem;
+  overflow:hidden; position:relative; border:1px solid rgba(255,255,255,.07);
+}
+
+/* ══ SCENE ANIMATIONS ══ */
+@keyframes shimmer { 0%,100%{ opacity:.4; } 50%{ opacity:1; } }
+@keyframes float { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+@keyframes orbitRotate { from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+@keyframes moonGlow { 0%,100%{ box-shadow:0 0 20px 6px rgba(180,200,240,.3); } 50%{ box-shadow:0 0 36px 12px rgba(180,200,240,.5); } }
+@keyframes sparklePop { 0%,100%{ transform:scale(0); opacity:0; } 50%{ transform:scale(1); opacity:.9; } }
+@keyframes tideRise { 0%,100%{ height:30px; } 50%{ height:55px; } }
+@keyframes phaseAnim { 0%,100%{ opacity:.3; } 50%{ opacity:.9; } }
+
+/* ── TEXT / LAYOUT ── */
+.slide-num { font-size:11px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:.5rem; font-weight:700; }
+.slide h2 { font-family:'Scheherazade New',serif; font-size:22px; color:var(--gold-light); line-height:1.4; margin-bottom:.75rem; text-shadow:0 0 16px rgba(212,168,67,.3); }
+.slide-body { font-size:14.5px; line-height:1.75; color:var(--text); margin-bottom:1.1rem; }
+.ayah-box { background:rgba(212,168,67,.07); border-left:3px solid var(--gold); border-radius:0 10px 10px 0; padding:.85rem 1rem; margin-bottom:1.3rem; }
+.ayah-ar { font-family:'Scheherazade New',serif; font-size:17px; color:var(--gold); line-height:1.8; display:block; margin-bottom:.3rem; }
+.ayah-fr { font-size:13px; color:var(--silver-dim); font-style:italic; line-height:1.5; }
+.key-fact { display:flex; gap:10px; align-items:flex-start; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:.85rem 1rem; margin-bottom:.75rem; }
+.key-fact-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+.key-fact p { font-size:13.5px; line-height:1.6; color:var(--text); }
+.key-fact p strong { color:var(--gold-light); font-weight:700; }
+.slide-nav { display:flex; gap:10px; margin-top:1.5rem; }
+.btn-prev,.btn-next,.btn-quiz { padding:11px 24px; border-radius:10px; font-size:14px; font-family:'Lato',sans-serif; cursor:pointer; font-weight:700; letter-spacing:.3px; transition:background .2s,border-color .2s,transform .1s; }
+.btn-prev { background:transparent; border:1px solid rgba(255,255,255,.15); color:var(--text-dim); }
+.btn-prev:hover { background:rgba(255,255,255,.05); }
+.btn-next { flex:1; background:linear-gradient(135deg,rgba(212,168,67,.22),rgba(212,168,67,.1)); border:1px solid rgba(212,168,67,.5); color:var(--gold-light); }
+.btn-next:hover { background:linear-gradient(135deg,rgba(212,168,67,.35),rgba(212,168,67,.18)); border-color:rgba(212,168,67,.75); }
+.btn-quiz { flex:1; background:linear-gradient(135deg,rgba(58,173,114,.25),rgba(58,173,114,.1)); border:1px solid rgba(58,173,114,.5); color:#7de0b0; }
+.btn-quiz:hover { background:linear-gradient(135deg,rgba(58,173,114,.38),rgba(58,173,114,.2)); border-color:rgba(58,173,114,.75); }
+.btn-prev:active,.btn-next:active,.btn-quiz:active { transform:scale(.97); }
+
+/* ══ QUIZ ══ */
+#quiz-wrap { max-width:680px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
+.score-pill { background:rgba(212,168,67,.13); border:1px solid rgba(212,168,67,.35); border-radius:20px; padding:5px 16px; font-size:13px; color:var(--gold); font-weight:700; }
+.prog-wrap { flex:1; margin:0 14px; height:4px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; }
+#qprog { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:4px; transition:width .5s ease; width:0%; }
+.q-count { font-size:13px; color:var(--text-dim); white-space:nowrap; }
+#q-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:16px; padding:1.75rem; margin-bottom:1.2rem; }
+#q-icon { width:36px;height:36px;border-radius:10px;background:rgba(212,168,67,.14);border:1px solid rgba(212,168,67,.3);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:1rem; }
+#q-text { font-size:15.5px;line-height:1.65;color:var(--white);margin-bottom:1.4rem; }
+#options { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+.opt { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:12px 14px; font-size:13.5px; color:var(--text); font-family:'Lato',sans-serif; cursor:pointer; text-align:left; line-height:1.4; transition:background .17s,border-color .17s,transform .1s; }
+.opt:hover:not(:disabled) { background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.4);transform:translateY(-1px); }
+.opt:active:not(:disabled) { transform:scale(.98); }
+.opt.correct { background:rgba(58,173,114,.18);border-color:rgba(58,173,114,.6);color:#7de0b0; }
+.opt.wrong   { background:rgba(224,82,82,.15); border-color:rgba(224,82,82,.5);color:#f5a0a0; }
+.opt:disabled { cursor:default; }
+#fb-box { background:rgba(212,168,67,.07); border:1px solid rgba(212,168,67,.2); border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.2rem; display:none; animation:fadeUp .35s ease; }
+#fb-text { font-size:14px;line-height:1.7;color:var(--text);margin-bottom:.7rem; }
+#fb-ayah { font-family:'Scheherazade New',serif; font-size:15px; color:var(--gold); border-left:2px solid var(--gold); padding-left:12px; line-height:1.7; }
+#qnext { width:100%; padding:13px; background:linear-gradient(135deg,rgba(212,168,67,.2),rgba(212,168,67,.08)); border:1px solid rgba(212,168,67,.45); border-radius:10px; color:var(--gold-light); font-family:'Lato',sans-serif; font-size:15px; font-weight:700; cursor:pointer; display:none; letter-spacing:.4px; transition:background .2s,border-color .2s; }
+#qnext:hover { background:linear-gradient(135deg,rgba(212,168,67,.32),rgba(212,168,67,.16));border-color:rgba(212,168,67,.7); }
+#end-screen { display:none;text-align:center;padding:2.5rem 1rem;animation:fadeUp .5s ease; }
+#end-badge { width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,67,.2),rgba(212,168,67,.04));border:2px solid rgba(212,168,67,.5);margin:0 auto 1.4rem;display:flex;align-items:center;justify-content:center;font-size:36px; }
+#end-title { font-family:'Scheherazade New',serif;font-size:22px;color:var(--gold-light);margin-bottom:.5rem; }
+#end-big { font-size:52px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:.4rem; }
+#end-sub { font-size:13px;color:var(--text-dim);margin-bottom:.5rem; }
+#end-msg { font-size:14px;color:var(--text);line-height:1.65;max-width:400px;margin:0 auto 2rem; }
+.end-btns { display:flex;gap:10px;justify-content:center;flex-wrap:wrap; }
+#restart-btn,#review-btn { padding:11px 28px; border-radius:10px; font-family:'Lato',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:background .2s,border-color .2s; }
+#restart-btn { background:transparent;border:1px solid rgba(212,168,67,.5);color:var(--gold); }
+#restart-btn:hover { background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.8); }
+#review-btn { background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--text-dim); }
+#review-btn:hover { background:rgba(255,255,255,.06); }
+@keyframes fadeUp { from{ opacity:0;transform:translateY(10px); } to{ opacity:1;transform:translateY(0); } }
+@media(max-width:480px){
+  #options{ grid-template-columns:1fr; }
+  .slide h2{ font-size:19px; }
+  #sky-label h1{ font-size:20px; }
+  #intro-wrap,#quiz-wrap{ padding:1.4rem 1rem 2.5rem; }
+  .slide-nav{ flex-direction:column; }
+  .btn-prev{ order:2; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ HEADER ══ -->
+<div id="sky-header">
+  <div id="hstars"></div>
+  <div id="hero-moon">
+    <div class="h-crater" style="width:14px;height:14px;top:22px;left:18px"></div>
+    <div class="h-crater" style="width:9px;height:9px;top:50px;left:55px"></div>
+    <div class="h-crater" style="width:7px;height:7px;top:30px;left:62px"></div>
+    <div class="h-crater" style="width:11px;height:11px;top:60px;left:24px"></div>
+  </div>
+  <!-- crescent phases floating -->
+  <div class="h-phase" style="width:38px;height:38px;border-radius:50%;background:transparent;border:3px solid rgba(180,200,240,.35);top:45px;left:12%;--pd:22s;--pdd:0s;--po:.45;--px:10px;--py:-5px"></div>
+  <div class="h-phase" style="width:26px;height:26px;border-radius:50%;background:rgba(180,200,240,.12);top:65px;right:15%;--pd:18s;--pdd:2s;--po:.4;--px:-8px;--py:-3px"></div>
+  <div class="h-phase" style="width:18px;height:18px;border-radius:50%;background:rgba(180,200,240,.15);top:38px;right:28%;--pd:25s;--pdd:4s;--po:.35;--px:6px;--py:-6px"></div>
+  <div id="sky-label">
+    <h1>الْقَمَرُ — آيَةٌ مِنْ آيَاتِ اللهِ</h1>
+    <p>La Lune — Un Signe de la Création d'Allah</p>
+  </div>
+</div>
+
+<!-- ══ INTRO ══ -->
+<div id="screen-intro" class="screen active">
+  <div id="intro-wrap">
+    <div id="skip-intro"><button onclick="startQuiz()">Passer directement au quiz →</button></div>
+    <div id="slide-dots"></div>
+
+    <!-- SLIDE 0 : Nûr — lumière réfléchie -->
+    <div class="slide active" id="sl-0">
+      <div class="scene-canvas" id="sc0" style="background:linear-gradient(180deg,#010610,#030e1c)"></div>
+      <div class="slide-num">Leçon 1 · 6 leçons</div>
+      <h2>نُورًا — Une Lumière Réfléchie</h2>
+      <p class="slide-body">
+        Le Coran distingue avec précision le soleil et la lune.
+        Le soleil est appelé <strong style="color:var(--gold-light)">سِرَاج</strong> — une lampe qui produit sa propre lumière.
+        La lune, elle, est appelée <strong style="color:var(--moon-silver)">نُور</strong> — une lumière reçue et réfléchie.
+        La lune ne brille pas d'elle-même : elle réfléchit la lumière du soleil.
+        Cette distinction, révélée il y a 14 siècles, a été confirmée par la science bien plus tard.
+      </p>
+      <div class="ayah-box">
+      <span class="ayah-ar">﴿ هُوَ الَّذِي جَعَلَ الشَّمْسَ ضِيَاءً وَالْقَمَرَ نُورًا ﴾</span>
+       <span class="ayah-fr">« C'est Lui qui a fait du soleil un éclat lumineux et de la lune une lumière. » — Yunus : 5</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">☀️</span>
+        <p>Le mot <strong>ضِيَاء</strong> (<em>diyâ</em>) pour le soleil désigne une lumière propre et éblouissante. Le mot <strong>نُور</strong> (<em>nûr</em>) pour la lune désigne une lumière douce et reçue. Une distinction scientifique parfaite posée par le Coran.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🔭</span>
+        <p>La lune ne produit <strong>aucune lumière propre</strong>. Elle réfléchit entre 3% et 12% de la lumière solaire qu'elle reçoit selon sa surface. Ce que nous voyons la nuit, c'est le soleil — réfléchi par la lune par la volonté d'Allah.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-next" onclick="goSlide(1)">Suivant → Les Phases de la Lune</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 1 : Phases / calendrier -->
+    <div class="slide" id="sl-1">
+      <div class="scene-canvas" id="sc1" style="background:linear-gradient(180deg,#010610,#030e1c)"></div>
+      <div class="slide-num">Leçon 2 · 6 leçons</div>
+      <h2>Les Phases — مَنَازِلُ الْقَمَرِ</h2>
+      <p class="slide-body">
+        La lune passe par <strong style="color:var(--moon-silver)">28 phases (منازل)</strong> en un mois lunaire.
+        Allah a voulu que ces phases servent de <strong style="color:var(--gold-light)">calendrier naturel</strong>
+        pour les hommes — pour compter les jours, les mois, les années,
+        et déterminer les dates des cultes : Ramadan, Hajj, Aïd.
+        C'est un calendrier visible à l'œil nu, accessible à tous, partout sur Terre.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ يَسْأَلُونَكَ عَنِ الْأَهِلَّةِ ۖ قُلْ هِيَ مَوَاقِيتُ لِلنَّاسِ وَالْحَجِّ ﴾</span>
+        <span class="ayah-fr">« Ils t'interrogent sur les croissants de lune. Dis : "Ce sont des indicateurs de temps pour les gens et pour le pèlerinage." » — Al-Baqara : 189</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">📅</span>
+        <p>Le mot <strong>مَوَاقِيت</strong> (<em>mawâqît</em>) signifie "repères temporels précis". Allah a fait de la lune une horloge naturelle universelle — visible par tout croyant, partout dans le monde, sans aucun instrument.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🕌</span>
+        <p>Le début du Ramadan, la date du Hajj, l'Aïd al-Fitr, l'Aïd al-Adha — tout le calendrier islamique est basé sur la lune. Allah a tout prévu : le croyant n'a qu'à <strong>lever les yeux pour connaître sa date de culte</strong>.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(0)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(2)">Suivant → La Lune et les Marées</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 : Marées -->
+    <div class="slide" id="sl-2">
+      <div class="scene-canvas" id="sc2" style="background:linear-gradient(180deg,#020810,#04101a)"></div>
+      <div class="slide-num">Leçon 3 · 6 leçons</div>
+      <h2>Les Marées — قُوَّةُ الْجَذْبِ</h2>
+      <p class="slide-body">
+        La lune exerce une <strong style="color:var(--moon-silver)">force d'attraction gravitationnelle</strong>
+        sur les océans de la Terre, provoquant les marées.
+        Deux fois par jour, les eaux montent et descendent avec une régularité parfaite.
+        Ce mouvement constant des eaux oxygène les océans, permet la vie marine,
+        nettoie les côtes et régule les courants — tout cela par la puissance qu'Allah a mise dans la lune.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَسَخَّرَ لَكُمُ اللَّيْلَ وَالنَّهَارَ وَالشَّمْسَ وَالْقَمَرَ ۖ وَالنُّجُومُ مُسَخَّرَاتٌ بِأَمْرِهِ ﴾</span>
+        <span class="ayah-fr">« Il a mis à votre service la nuit, le jour, le soleil et la lune. Les étoiles aussi sont soumises à Son commandement. » — An-Nahl : 12</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌊</span>
+        <p>Le mot <strong>سَخَّرَ</strong> (<em>sakhkhara</em>) signifie "mis au service". La lune n'est pas libre — elle est soumise à l'ordre d'Allah et mise au service des humains. Les marées qu'elle produit irriguent les côtes de <strong>toute la Terre deux fois par jour</strong>.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🐠</span>
+        <p>Sans les marées lunaires, les océans deviendraient <strong>stagnants et appauvris en oxygène</strong>. La quasi-totalité de la vie marine dépend de ce mouvement régulier que la lune produit par la volonté d'Allah depuis des milliards d'années.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(1)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(3)">Suivant → La Lune Fissurée</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 : Fissure de la lune -->
+    <div class="slide" id="sl-3">
+      <div class="scene-canvas" id="sc3" style="background:linear-gradient(180deg,#010610,#030e1c)"></div>
+      <div class="slide-num">Leçon 4 · 6 leçons</div>
+      <h2>La Fissure de la Lune — اِنشِقَاقُ الْقَمَرِ</h2>
+      <p class="slide-body">
+        L'un des plus grands miracles du Prophète ﷺ est la <strong style="color:var(--moon-silver)">fissure de la lune</strong>.
+        Les Qurayshites demandèrent un signe : la lune se fendit en deux, visible à tous,
+        puis se reconstitua. Le Coran le mentionne au passé comme un fait accompli.
+        Des siècles plus tard, la NASA a découvert une <strong style="color:var(--gold-light)">ligne de fissure</strong>
+        traversant toute la surface de la lune — appelée "Rima Ariadaeus".
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ اقْتَرَبَتِ السَّاعَةُ وَانشَقَّ الْقَمَرُ ﴾</span>
+        <span class="ayah-fr">« L'Heure s'est approchée et la lune s'est fendue. » — Al-Qamar : 1</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌙</span>
+        <p>Le verset utilise le verbe <strong>اِنشَقَّ</strong> (<em>inshaqqa</em>) au passé accompli — comme si le fait était déjà réalisé et indiscutable. C'est un style coranique qui souligne la <strong>certitude absolue</strong> de l'événement.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🔬</span>
+        <p>Des géologues de la NASA ont identifié des <strong>vallées et fractures</strong> traversant toute la surface lunaire, inexplicables par les seuls impacts de météorites. Ces formations suggèrent que la lune a subi une fracture interne — une découverte qui résonne avec le verset.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(2)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(4)">Suivant → L'Orbite Parfaite</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 : Orbite et stabilité -->
+    <div class="slide" id="sl-4">
+      <div class="scene-canvas" id="sc4" style="background:linear-gradient(180deg,#010610,#030e1c)"></div>
+      <div class="slide-num">Leçon 5 · 6 leçons</div>
+      <h2>L'Orbite Parfaite — فِي فَلَكٍ يَسْبَحُونَ</h2>
+      <p class="slide-body">
+        La lune orbite autour de la Terre à une distance de
+        <strong style="color:var(--moon-silver)">384 400 km</strong> en exactement
+        <strong style="color:var(--gold-light)">29,5 jours</strong>.
+        Cette distance est parfaite : trop proche, les marées détruiraient les côtes ;
+        trop loin, les océans seraient stagnants. Allah a placé la lune exactement
+        là où elle devait être, ni plus, ni moins.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَالْقَمَرَ قَدَّرْنَاهُ مَنَازِلَ حَتَّىٰ عَادَ كَالْعُرْجُونِ الْقَدِيمِ ﴾</span>
+        <span class="ayah-fr">« Et pour la lune, Nous lui avons assigné des phases, jusqu'à ce qu'elle revienne comme une vieille branche de palmier recourbée. » — Yâ-Sîn : 39</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">📐</span>
+        <p>La comparaison avec <strong>العُرْجُون</strong> (<em>al-urjûn</em> — branche de palmier recourbée) décrit avec une précision poétique parfaite le croissant de lune à sa phase finale. Une image que seul quelqu'un vivant parmi les palmiers pouvait imaginer.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">⚖️</span>
+        <p>La lune est exactement à la bonne taille et à la bonne distance pour que, vue de la Terre, elle <strong>couvre précisément le soleil lors d'une éclipse</strong>. Cette coïncidence parfaite n'est pas un hasard — c'est le décret d'Allah.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(3)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(5)">Suivant → La Lune et le Croyant</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 : Lune et croyant -->
+    <div class="slide" id="sl-5">
+      <div class="scene-canvas" id="sc5" style="background:linear-gradient(180deg,#010610,#030e1c)"></div>
+      <div class="slide-num">Leçon 6 · 6 leçons</div>
+      <h2>La Lune et le Croyant — آيَةٌ وَتَفَكُّرٌ</h2>
+      <p class="slide-body">
+        La lune est interdite d'adoration en Islam — elle n'est qu'une créature d'Allah.
+        Mais elle est un <strong style="color:var(--gold-light)">signe (آية)</strong> puissant :
+        elle rythme le calendrier islamique, guide les croyants dans la nuit,
+        et invite à la réflexion sur la grandeur de Celui qui l'a créée.
+        Le Prophète ﷺ a dit : <strong style="color:var(--moon-silver)">"Ne vous prosternez ni devant le soleil ni devant la lune,
+        mais prosternez-vous devant Allah qui les a créés."</strong>
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَمِنْ آيَاتِهِ اللَّيْلُ وَالنَّهَارُ وَالشَّمْسُ وَالْقَمَرُ ۚ لَا تَسْجُدُوا لِلشَّمْسِ وَلَا لِلْقَمَرِ وَاسْجُدُوا لِلَّهِ الَّذِي خَلَقَهُنَّ ﴾</span>
+        <span class="ayah-fr">« Parmi Ses signes : la nuit, le jour, le soleil et la lune. Ne vous prosternez ni devant le soleil ni devant la lune, mais prosternez-vous devant Allah qui les a créés. » — Fussilat : 37</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🚫</span>
+        <p>Ce verset est d'une clarté absolue : la lune est un <strong>signe vers Allah</strong>, non un objet d'adoration. Beaucoup de civilisations anciennes adoraient la lune — le Coran corrige cette erreur avec fermeté et précision.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🤲</span>
+        <p>Chaque fois que tu vois le croissant de lune, souviens-toi : ce signe t'annonce un nouveau mois islamique, peut-être le Ramadan, peut-être l'Aïd. Allah a suspendu cette <strong>horloge lumineuse dans le ciel</strong> pour toi, croyant, où que tu sois sur Terre.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(4)">← Précédent</button>
+        <button class="btn-quiz" onclick="startQuiz()">🎯 Tester mes connaissances →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="screen-quiz" class="screen">
+  <div id="quiz-wrap">
+    <div id="quiz-header">
+      <div class="score-pill" id="score-pill">⭐ 0</div>
+      <div class="prog-wrap"><div id="qprog"></div></div>
+      <div class="q-count" id="q-count">1 / 8</div>
+    </div>
+    <div id="q-card">
+      <div id="q-icon">🌙</div>
+      <div id="q-text"></div>
+      <div id="options"></div>
+    </div>
+    <div id="fb-box">
+      <div id="fb-text"></div>
+      <div id="fb-ayah"></div>
+    </div>
+    <button id="qnext">Question suivante →</button>
+    <div id="end-screen">
+      <div id="end-badge"></div>
+      <div id="end-title"></div>
+      <div id="end-big"></div>
+      <div id="end-sub">points sur 8</div>
+      <div id="end-msg"></div>
+      <div class="end-btns">
+        <button id="restart-btn" onclick="restartQuiz()">↺ Recommencer le quiz</button>
+        <button id="review-btn" onclick="reviewIntro()">📖 Revoir les leçons</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ══ HEADER ══ */
+(function(){
+  const sb=document.getElementById('hstars');
+  for(let i=0;i<100;i++){
+    const s=document.createElement('div');s.className='hstar';
+    const z=Math.random()*2.5+.5;
+    s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--op:${(.2+Math.random()*.7).toFixed(2)};--dur:${(2+Math.random()*5).toFixed(1)}s;--del:${(Math.random()*6).toFixed(1)}s;opacity:${(.2+Math.random()*.7).toFixed(2)}`;
+    sb.appendChild(s);
+  }
+})();
+
+/* ══ SCENE HELPERS ══ */
+function makeMoon(el,x,y,r,opacity,craters){
+  const m=document.createElement('div');
+  m.style.cssText=`position:absolute;top:${y}px;left:${x}px;width:${r*2}px;height:${r*2}px;border-radius:50%;background:radial-gradient(circle at 34% 32%,#f0f4ff,#dce8ff 35%,#b8ccee 65%,#8aaad8);box-shadow:0 0 ${r*0.7}px ${r*0.2}px rgba(180,200,240,${opacity*0.6});opacity:${opacity};transform:translate(-50%,-50%)`;
+  if(craters) craters.forEach(([cx,cy,cr])=>{
+    const c=document.createElement('div');
+    c.style.cssText=`position:absolute;border-radius:50%;width:${cr}px;height:${cr}px;top:${cy}%;left:${cx}%;background:rgba(100,130,180,.2);border:1px solid rgba(100,130,180,.15)`;
+    m.appendChild(c);
+  });
+  el.appendChild(m);
+  return m;
+}
+
+/* Sc0 : nûr vs siraj */
+function buildSc0(el){
+  // dark background
+  // Sun left — bright source
+  const sun=document.createElement('div');
+  sun.style.cssText='position:absolute;top:50%;left:55px;transform:translateY(-50%);width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 38%,#ffe880,#f5a623);box-shadow:0 0 40px 12px rgba(245,166,35,.6),0 0 80px 24px rgba(245,166,35,.25);animation:shimmer 4s ease-in-out infinite';
+  el.appendChild(sun);
+  const sunLbl=document.createElement('div');
+  sunLbl.style.cssText='position:absolute;top:50%;left:55px;transform:translateX(-50%) translateY(42px);text-align:center;font-size:10px;font-family:Lato,sans-serif;color:rgba(255,200,60,.7);white-space:nowrap';
+  sunLbl.innerHTML='ضِيَاء<br><span style="font-size:9px;color:rgba(255,200,60,.45)">lumière propre</span>';
+  el.appendChild(sunLbl);
+  // Light ray from sun to moon
+  const ray=document.createElement('div');
+  ray.style.cssText='position:absolute;top:50%;left:85px;width:120px;height:2px;background:linear-gradient(to right,rgba(255,220,60,.6),rgba(255,220,60,.15));border-radius:2px;transform:translateY(-50%);animation:shimmer 3s ease-in-out infinite .5s';
+  el.appendChild(ray);
+  // Moon right — reflected
+  makeMoon(el,280,100,38,.9,[[22,25,10],[55,55,7],[35,65,8]]);
+  const moonLbl=document.createElement('div');
+  moonLbl.style.cssText='position:absolute;top:50%;left:280px;transform:translateX(-50%) translateY(46px);text-align:center;font-size:10px;font-family:Lato,sans-serif;color:rgba(180,200,240,.7);white-space:nowrap';
+  moonLbl.innerHTML='نُور<br><span style="font-size:9px;color:rgba(180,200,240,.45)">lumière réfléchie</span>';
+  el.appendChild(moonLbl);
+  // reflected ray going out
+  const ray2=document.createElement('div');
+  ray2.style.cssText='position:absolute;top:50%;left:315px;width:20px;height:2px;background:linear-gradient(to right,rgba(180,200,240,.5),transparent);border-radius:2px;transform:translateY(-50%);animation:shimmer 3s ease-in-out infinite 1s';
+  el.appendChild(ray2);
+  // arrow between
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg.innerHTML=`
+    <text x="170" y="170" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.5)"></text>
+    <text x="170" y="186" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" fill="rgba(212,168,67,.35)"></text>
+  `;
+  el.appendChild(svg);
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.5);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  
+  el.appendChild(lbl);
+}
+
+/* Sc1 : 8 moon phases */
+function buildSc1(el){
+  const phases=[
+    {name:'Nouvelle',shape:'circle',fill:'rgba(20,30,60,.9)',border:'rgba(180,200,240,.3)',x:30,y:50},
+    {name:'Croissant',shape:'crescent-r',x:80,y:50},
+    {name:'1er quartier',shape:'half-r',x:130,y:50},
+    {name:'Gibbeuse',shape:'gibb-r',x:180,y:50},
+    {name:'Pleine',shape:'full',x:230,y:50},
+    {name:'Gibbeuse D',shape:'gibb-l',x:280,y:50},
+    {name:'Dernier quartier',shape:'half-l',x:160,y:130},
+    {name:'Croissant D',shape:'crescent-l',x:100,y:130},
+  ];
+  const moonSize=22;
+  phases.forEach((p,i)=>{
+    const container=document.createElement('div');
+    container.style.cssText=`position:absolute;top:${p.y}px;left:${p.x}px;transform:translate(-50%,-50%);text-align:center`;
+    // moon SVG
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('width',moonSize*2+'');svg.setAttribute('height',moonSize*2+'');
+    svg.setAttribute('viewBox',`0 0 ${moonSize*2} ${moonSize*2}`);
+    let moonSVG='';
+    const cx=moonSize,cy=moonSize,r=moonSize-2;
+    if(p.shape==='full') moonSVG=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(220,232,255,.85)" filter="url(#mg)"/>`;
+    else if(p.shape==='circle') moonSVG=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(15,25,50,.95)" stroke="rgba(180,200,240,.3)" stroke-width="1.5"/>`;
+    else if(p.shape==='half-r') moonSVG=`<path d="M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} Z" fill="rgba(220,232,255,.85)"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(180,200,240,.2)" stroke-width="1"/>`;
+    else if(p.shape==='half-l') moonSVG=`<path d="M ${cx} ${cy-r} A ${r} ${r} 0 0 0 ${cx} ${cy+r} Z" fill="rgba(220,232,255,.85)"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(180,200,240,.2)" stroke-width="1"/>`;
+    else if(p.shape==='crescent-r') moonSVG=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(220,232,255,.75)"/><circle cx="${cx-r*0.35}" cy="${cy}" r="${r*0.85}" fill="rgba(15,25,60,.95)"/>`;
+    else if(p.shape==='crescent-l') moonSVG=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(220,232,255,.75)"/><circle cx="${cx+r*0.35}" cy="${cy}" r="${r*0.85}" fill="rgba(15,25,60,.95)"/>`;
+    else if(p.shape==='gibb-r') moonSVG=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(220,232,255,.85)"/><circle cx="${cx-r*0.55}" cy="${cy}" r="${r*0.7}" fill="rgba(15,25,60,.9)"/>`;
+    else if(p.shape==='gibb-l') moonSVG=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(220,232,255,.85)"/><circle cx="${cx+r*0.55}" cy="${cy}" r="${r*0.7}" fill="rgba(15,25,60,.9)"/>`;
+    svg.innerHTML=`<defs><filter id="mg"><feGaussianBlur stdDeviation=".5" result="blur"/><feComposite in="SourceGraphic" in2="blur"/></filter></defs>${moonSVG}`;
+    container.appendChild(svg);
+    // label
+    const lbl=document.createElement('div');
+    lbl.style.cssText='font-size:8px;color:rgba(180,200,240,.55);font-family:Lato,sans-serif;margin-top:3px;white-space:nowrap';
+    lbl.textContent=p.name;
+    container.appendChild(lbl);
+    el.appendChild(container);
+  });
+  // cycle arrow
+  const svg2=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg2.setAttribute('viewBox','0 0 340 200');svg2.setAttribute('width','100%');svg2.setAttribute('height','200');
+  svg2.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg2.innerHTML=`
+    <text x="170" y="110" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.45)">مَنَازِلُ الْقَمَرِ — 29,5 jours</text>
+    <text x="170" y="190" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" fill="rgba(212,168,67,.35)">Al-Baqara : 189 — مَوَاقِيتُ لِلنَّاسِ وَالْحَجِّ</text>
+  `;
+  el.appendChild(svg2);
+}
+
+/* Sc2 : Tides */
+function buildSc2(el){
+  el.style.background='linear-gradient(180deg,#01060e,#02101a)';
+  // Earth
+  const earth=document.createElement('div');
+  earth.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 35%,#1a5fa0,#0d3a6a);box-shadow:0 0 14px rgba(74,159,224,.3)';
+  el.appendChild(earth);
+  // Moon orbiting
+  const orbitWrap=document.createElement('div');
+  orbitWrap.style.cssText='position:absolute;top:50%;left:50%;width:0;height:0;animation:orbitRotate 10s linear infinite';
+  const moonOrbit=document.createElement('div');
+  moonOrbit.style.cssText='position:absolute;top:-105px;left:-18px;width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 34% 32%,#f0f4ff,#dce8ff 40%,#b8ccee);box-shadow:0 0 14px 4px rgba(180,200,240,.4)';
+  orbitWrap.appendChild(moonOrbit);
+  el.appendChild(orbitWrap);
+  // orbit path
+  const orbitPath=document.createElement('div');
+  orbitPath.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:210px;height:210px;border-radius:50%;border:1px dashed rgba(180,200,240,.15)';
+  el.appendChild(orbitPath);
+  // tide indicators on earth sides
+  [['-125px','50%'],['95px','50%']].forEach(([l,t],i)=>{
+    const tide=document.createElement('div');
+    tide.style.cssText=`position:absolute;top:${t};left:calc(50% + ${l});transform:translateY(-50%);width:18px;background:linear-gradient(to top,rgba(30,100,200,.5),rgba(60,140,220,.3));border-radius:4px;animation:tideRise ${(3+i*.5).toFixed(1)}s ease-in-out infinite ${i*.8}s`;
+    el.appendChild(tide);
+    const tLbl=document.createElement('div');
+    tLbl.style.cssText=`position:absolute;top:calc(50% + 40px);left:calc(50% + ${l});transform:translateX(-50%);font-size:9px;color:rgba(100,160,220,.6);font-family:Lato,sans-serif;white-space:nowrap`;
+    tLbl.textContent='Marée';
+    el.appendChild(tLbl);
+  });
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.5);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  lbl.textContent='سَخَّرَ لَكُمُ الْقَمَرَ — La lune mise au service';
+  el.appendChild(lbl);
+  // gravity lines
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg.innerHTML=`<text x="170" y="22" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" fill="rgba(180,200,240,.4)">Force d'attraction lunaire → Marées 2x/jour</text>`;
+  el.appendChild(svg);
+}
+
+/* Sc3 : Moon split */
+function buildSc3(el){
+  // full moon with crack
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <radialGradient id="moonG" cx="34%" cy="32%" r="60%">
+        <stop offset="0%" stop-color="#f0f4ff"/>
+        <stop offset="40%" stop-color="#dce8ff"/>
+        <stop offset="70%" stop-color="#b8ccee"/>
+        <stop offset="100%" stop-color="#8aaad8"/>
+      </radialGradient>
+      <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
+    </defs>
+    <!-- glow -->
+    <circle cx="170" cy="95" r="75" fill="rgba(180,200,240,.06)"/>
+    <circle cx="170" cy="95" r="60" fill="rgba(180,200,240,.08)"/>
+    <!-- left half -->
+    <path d="M 170 35 A 60 60 0 0 0 170 155 Z" fill="url(#moonG)" opacity=".9"/>
+    <!-- right half - slightly separated -->
+    <path d="M 172 35 A 60 60 0 0 1 172 155 Z" fill="url(#moonG)" opacity=".85"/>
+    <!-- crack line -->
+    <line x1="170" y1="35" x2="171" y2="155" stroke="rgba(30,50,100,.8)" stroke-width="3"/>
+    <line x1="169" y1="35" x2="170" y2="155" stroke="rgba(100,140,200,.4)" stroke-width="1"/>
+    <!-- craters -->
+    <circle cx="145" cy="75" r="8" fill="rgba(100,130,180,.2)" stroke="rgba(100,130,180,.15)" stroke-width="1"/>
+    <circle cx="155" cy="110" r="5" fill="rgba(100,130,180,.2)" stroke="rgba(100,130,180,.15)" stroke-width="1"/>
+    <circle cx="190" cy="80" r="6" fill="rgba(100,130,180,.2)" stroke="rgba(100,130,180,.15)" stroke-width="1"/>
+    <circle cx="185" cy="120" r="4" fill="rgba(100,130,180,.2)" stroke="rgba(100,130,180,.15)" stroke-width="1"/>
+    <!-- stars around -->
+    <circle cx="60" cy="40" r="1.5" fill="rgba(255,255,255,.8)"/>
+    <circle cx="290" cy="60" r="1" fill="rgba(255,255,255,.7)"/>
+    <circle cx="40" cy="130" r="1.5" fill="rgba(255,255,255,.6)"/>
+    <circle cx="310" cy="140" r="1" fill="rgba(255,255,255,.8)"/>
+    <circle cx="80" cy="170" r="1" fill="rgba(255,255,255,.5)"/>
+    <!-- verse ref -->
+    <text x="170" y="182" text-anchor="middle" font-family="Scheherazade New,serif" font-size="14" fill="rgba(212,168,67,.55)">اقْتَرَبَتِ السَّاعَةُ وَانشَقَّ الْقَمَرُ</text>
+    <text x="170" y="196" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(212,168,67,.35)">Al-Qamar : 1</text>
+  `;
+  el.appendChild(svg);
+  // flash animation
+  const flash=document.createElement('div');
+  flash.style.cssText='position:absolute;inset:0;background:rgba(255,255,255,.04);animation:shimmer 4s ease-in-out infinite';
+  el.appendChild(flash);
+}
+
+/* Sc4 : Orbit + eclipse */
+function buildSc4(el){
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <radialGradient id="sunG2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffe880"/><stop offset="100%" stop-color="#f5a623"/></radialGradient>
+      <radialGradient id="earthG" cx="35%" cy="35%" r="55%"><stop offset="0%" stop-color="#4a9fe0"/><stop offset="100%" stop-color="#0d3a6a"/></radialGradient>
+      <radialGradient id="moonG2" cx="34%" cy="32%" r="60%"><stop offset="0%" stop-color="#f0f4ff"/><stop offset="100%" stop-color="#8aaad8"/></radialGradient>
+    </defs>
+    <!-- sun far left -->
+    <circle cx="30" cy="100" r="24" fill="url(#sunG2)" opacity=".9"/>
+    <circle cx="30" cy="100" r="32" fill="rgba(245,166,35,.15)"/>
+    <text x="30" y="138" text-anchor="middle" font-size="9" fill="rgba(255,200,60,.6)" font-family="Lato">Soleil</text>
+    <!-- earth center -->
+    <circle cx="170" cy="100" r="28" fill="url(#earthG)"/>
+    <text x="170" y="138" text-anchor="middle" font-size="9" fill="rgba(100,180,240,.6)" font-family="Lato">Terre</text>
+    <!-- orbit ellipse -->
+    <ellipse cx="170" cy="100" rx="100" ry="65" fill="none" stroke="rgba(180,200,240,.12)" stroke-width="1" stroke-dasharray="4,4"/>
+    <!-- moon on orbit -->
+    <circle cx="265" cy="65" r="16" fill="url(#moonG2)" opacity=".9"/>
+    <circle cx="265" cy="65" r="20" fill="rgba(180,200,240,.08)"/>
+    <text x="265" y="90" text-anchor="middle" font-size="9" fill="rgba(180,200,240,.6)" font-family="Lato">Lune</text>
+    <!-- distance label -->
+    <line x1="170" y1="104" x2="249" y2="69" stroke="rgba(212,168,67,.25)" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="218" y="82" text-anchor="middle" font-size="8" fill="rgba(212,168,67,.5)" font-family="Lato">384 400 km</text>
+    <!-- 29.5 days label -->
+    <text x="170" y="178" text-anchor="middle" font-size="10" fill="rgba(180,200,240,.5)" font-family="Lato">1 révolution = 29,5 jours — par décret d'Allah</text>
+    <!-- eclipse note -->
+    <text x="170" y="16" text-anchor="middle" font-family="Scheherazade New,serif" font-size="12" fill="rgba(212,168,67,.5)">وَالْقَمَرَ قَدَّرْنَاهُ مَنَازِلَ — Yâ-Sîn : 39</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc5 : Croyant sous la lune */
+function buildSc5(el){
+  // many stars
+  for(let i=0;i<60;i++){
+    const s=document.createElement('div');
+    s.style.cssText=`position:absolute;border-radius:50%;background:#fff;width:${Math.random()*2.5+.5}px;height:${Math.random()*2.5+.5}px;top:${Math.random()*85}%;left:${Math.random()*100}%;opacity:${(.2+Math.random()*.7).toFixed(2)};animation:shimmer ${(2+Math.random()*4).toFixed(1)}s ease-in-out infinite ${(Math.random()*4).toFixed(1)}s`;
+    el.appendChild(s);
+  }
+  // crescent moon
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <radialGradient id="mG5" cx="34%" cy="32%" r="60%">
+        <stop offset="0%" stop-color="#f0f4ff"/>
+        <stop offset="100%" stop-color="#8aaad8"/>
+      </radialGradient>
+    </defs>
+    <!-- crescent -->
+    <circle cx="260" cy="48" r="32" fill="url(#mG5)" opacity=".85"/>
+    <circle cx="248" cy="44" r="26" fill="rgba(3,14,28,.95)"/>
+    <circle cx="260" cy="48" r="32" fill="none" stroke="rgba(180,200,240,.2)" stroke-width="1"/>
+    <!-- mosque silhouette -->
+    <rect x="110" y="148" width="60" height="30" fill="rgba(180,200,240,.12)"/>
+    <polygon points="140,138 140,148 110,148" fill="rgba(180,200,240,.12)"/>
+    <polygon points="140,138 140,148 170,148" fill="rgba(180,200,240,.1)"/>
+    <rect x="136" y="118" width="8" height="22" fill="rgba(180,200,240,.15)"/>
+    <ellipse cx="140" cy="118" rx="6" ry="8" fill="rgba(180,200,240,.15)"/>
+    <rect x="154" y="130" width="5" height="18" fill="rgba(180,200,240,.12)"/>
+    <ellipse cx="156.5" cy="130" rx="4" ry="5" fill="rgba(180,200,240,.12)"/>
+    <!-- person -->
+    <circle cx="210" cy="158" r="7" fill="rgba(212,168,67,.6)"/>
+    <line x1="210" y1="165" x2="210" y2="182" stroke="rgba(212,168,67,.55)" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="210" y1="170" x2="200" y2="178" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="210" y1="170" x2="220" y2="178" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="210" y1="182" x2="204" y2="196" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="210" y1="182" x2="216" y2="196" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <!-- ground -->
+    <rect x="0" y="194" width="340" height="6" fill="rgba(20,40,60,.6)"/>
+    <!-- dhikr words -->
+    <text x="50" y="55" font-family="Scheherazade New,serif" font-size="14" fill="rgba(212,168,67,.4)">سُبْحَانَ اللهِ</text>
+    <text x="30" y="100" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.35)">آيَة</text>
+    <text x="55" y="140" font-family="Scheherazade New,serif" font-size="12" fill="rgba(212,168,67,.3)">نُور</text>
+    <!-- bottom ref -->
+    <text x="170" y="196" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(212,168,67,.35)">فُصِّلَت : ٣٧ — Fussilat : 37</text>
+  `;
+  el.appendChild(svg);
+}
+
+const sceneFns=[buildSc0,buildSc1,buildSc2,buildSc3,buildSc4,buildSc5];
+sceneFns.forEach((fn,i)=>fn(document.getElementById('sc'+i)));
+
+/* ══ SLIDE DOTS ══ */
+const NSLIDES=6;
+const dotsEl=document.getElementById('slide-dots');
+for(let i=0;i<NSLIDES;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=(()=>{const n=i;return()=>goSlide(n);})();
+  dotsEl.appendChild(d);
+}
+let curSlide=0;
+function goSlide(n){
+  document.getElementById('sl-'+curSlide).classList.remove('active');
+  curSlide=n;
+  document.getElementById('sl-'+n).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>{ d.className='dot'+(i===n?' active':i<n?' done':''); });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══ QUIZ ══ */
+const Q=[
+  {
+    icon:'🌙',
+    q:"Comment le Coran qualifie-t-il la lune, et qu'est-ce que cela signifie ?",
+    opts:["Siraj — lampe ardente","Nûr — lumière réfléchie","Diyâ — éclat lumineux","Wahhâj — lumière ardente"],
+    ans:1,
+    fb:"Le Coran appelle la lune 'نُور' (nûr — lumière reçue et réfléchie), par opposition au soleil appelé 'ضِيَاء' (diyâ — lumière propre). La lune ne produit aucune lumière propre : elle réfléchit celle du soleil. Une distinction scientifique révélée 14 siècles avant nos télescopes.",
+    ayah:"« C'est Lui qui a fait du soleil un éclat lumineux et de la lune une lumière. » — Yunus : 5"
+  },
+  {
+    icon:'📅',
+    q:"À quoi servent les phases de la lune selon le Coran (Al-Baqara : 189) ?",
+    opts:["À décorer la nuit","À être des repères temporels pour les gens et le pèlerinage","À régulation des marées","À orienter les navigateurs"],
+    ans:1,
+    fb:"Allah dit que les croissants de lune sont des 'مَوَاقِيت' (mawâqît — repères temporels précis) pour les gens et pour le Hajj. Tout le calendrier islamique est basé sur la lune : Ramadan, Hajj, Aïd — le croyant n'a qu'à lever les yeux.",
+    ayah:"« Ils t'interrogent sur les croissants de lune. Dis : ce sont des indicateurs de temps pour les gens et pour le pèlerinage. » — Al-Baqara : 189"
+  },
+  {
+    icon:'🌊',
+    q:"Quel phénomène naturel essentiel la lune provoque-t-elle sur Terre ?",
+    opts:["Les éclipses solaires","Les marées des océans","Les tremblements de terre","Les aurores boréales"],
+    ans:1,
+    fb:"La lune exerce une force d'attraction gravitationnelle sur les océans, provoquant les marées deux fois par jour. Ce mouvement constant oxygène les océans, permet la vie marine et nettoie les côtes — tout cela par la puissance qu'Allah a mise dans la lune.",
+    ayah:"« Il a mis à votre service la nuit, le jour, le soleil et la lune. Les étoiles aussi sont soumises à Son commandement. » — An-Nahl : 12"
+  },
+  {
+    icon:'⚡',
+    q:"Que signifie le verset 'اقْتَرَبَتِ السَّاعَةُ وَانشَقَّ الْقَمَرُ' (Al-Qamar : 1) ?",
+    opts:["L'heure s'approche et la lune brille","L'heure s'est approchée et la lune s'est fendue","La lune annonce la fin du monde","La lune se rapproche de la Terre"],
+    ans:1,
+    fb:"Ce verset décrit le miracle de la fissure de la lune accomplie par le Prophète ﷺ. Le verbe 'انشَقَّ' (inshaqqa) est au passé accompli, soulignant la certitude absolue de l'événement. Des siècles plus tard, la NASA a découvert des fractures traversant toute la surface lunaire.",
+    ayah:"« L'Heure s'est approchée et la lune s'est fendue. » — Al-Qamar : 1"
+  },
+  {
+    icon:'📐',
+    q:"À quelle distance la lune orbite-t-elle autour de la Terre ?",
+    opts:["38 400 km","384 400 km","3 844 000 km","38 440 km"],
+    ans:1,
+    fb:"La lune orbite à exactement 384 400 km de la Terre. Cette distance est parfaite : trop proche, les marées détruiraient les côtes ; trop loin, les océans seraient stagnants. Allah a placé la lune exactement là où elle devait être.",
+    ayah:"« Et pour la lune, Nous lui avons assigné des phases, jusqu'à ce qu'elle revienne comme une vieille branche de palmier recourbée. » — Yâ-Sîn : 39"
+  },
+  {
+    icon:'🌴',
+    q:"À quoi le Coran compare-t-il le croissant de lune à sa phase finale ?",
+    opts:["À un fil d'argent","À une vieille branche de palmier recourbée","À un arc de flèche","À un sourcil fin"],
+    ans:1,
+    fb:"Le Coran compare le croissant final à 'العُرْجُون القَدِيم' — une vieille branche de palmier recourbée et desséchée. Cette image poétique d'une précision parfaite ne pouvait venir que du Créateur qui connaît toute chose.",
+    ayah:"« Et pour la lune, Nous lui avons assigné des phases, jusqu'à ce qu'elle revienne comme une vieille branche de palmier recourbée. » — Yâ-Sîn : 39"
+  },
+  {
+    icon:'🚫',
+    q:"Que dit le Coran concernant l'adoration du soleil et de la lune ?",
+    opts:["Il encourage à les contempler et les adorer","Il interdit de se prosterner devant eux et ordonne de n'adorer qu'Allah","Il dit qu'ils sont des dieux secondaires","Il ne mentionne pas ce sujet"],
+    ans:1,
+    fb:"Le Coran est explicite : 'Ne vous prosternez ni devant le soleil ni devant la lune, mais prosternez-vous devant Allah qui les a créés.' La lune est un signe vers Allah — non un objet d'adoration. Beaucoup de civilisations anciennes adoraient la lune ; le Coran corrige cette erreur.",
+    ayah:"« Ne vous prosternez ni devant le soleil ni devant la lune, mais prosternez-vous devant Allah qui les a créés. » — Fussilat : 37"
+  },
+  {
+    icon:'🔭',
+    q:"Quelle est la particularité extraordinaire de la taille apparente de la lune vue de la Terre ?",
+    opts:["Elle paraît plus grande que le soleil","Elle couvre précisément le soleil lors d'une éclipse totale","Elle change de taille chaque nuit","Elle est toujours invisible près du soleil"],
+    ans:1,
+    fb:"La lune est exactement à la bonne taille et à la bonne distance pour couvrir précisément le soleil lors d'une éclipse totale. Cette coïncidence parfaite — parmi toutes les lunes du système solaire — n'est pas un hasard. C'est le décret précis d'Allah, le Créateur de toute chose.",
+    ayah:"« Il a créé toute chose et en a fixé la mesure avec précision. » — Al-Furqan : 2"
+  }
+];
+
+let cur=0,score=0,answered=false;
+function startQuiz(){
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-quiz').classList.add('active');
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderQ(){
+  answered=false;
+  const q=Q[cur];
+  document.getElementById('q-icon').textContent=q.icon;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('q-count').textContent=`${cur+1} / ${Q.length}`;
+  document.getElementById('qprog').style.width=`${(cur/Q.length)*100}%`;
+  const opts=document.getElementById('options');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=o;
+    b.onclick=()=>pick(i);opts.appendChild(b);
+  });
+}
+function pick(i){
+  if(answered)return;answered=true;
+  const q=Q[cur];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  if(i!==q.ans)document.querySelectorAll('.opt')[i].classList.add('wrong');
+  else score++;
+  document.getElementById('fb-text').textContent=q.fb;
+  document.getElementById('fb-ayah').textContent=q.ayah;
+  document.getElementById('fb-box').style.display='block';
+  document.getElementById('qnext').style.display='block';
+  document.getElementById('score-pill').textContent=`⭐ ${score}`;
+}
+document.getElementById('qnext').onclick=()=>{ cur++;if(cur>=Q.length)showEnd();else renderQ(); };
+function showEnd(){
+  document.getElementById('q-card').style.display='none';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='none';
+  const pct=score/Q.length;
+  let badge,title,msg;
+  if(pct===1){ badge='🌟';title='Exceptionnel — بارك الله فيك';msg="Tu as répondu correctement à toutes les questions ! La prochaine fois que tu vois le croissant de lune, souviens-toi : c'est un signe d'Allah et le début d'un nouveau mois islamique."; }
+  else if(pct>=.625){ badge='🌙';title='Très bien — أحسنت';msg="Tu connais bien les signes d'Allah dans la lune. Relis les leçons sur les phases et la fissure de la lune — des merveilles qui renforcent la foi."; }
+  else { badge='⭐';title='Bon début — استمر في التعلم';msg="La prochaine nuit claire, lève les yeux vers la lune et médite : nûr réfléchi, phases calculées, marées régulées — tout par la volonté d'Allah."; }
+  document.getElementById('end-badge').textContent=badge;
+  document.getElementById('end-title').textContent=title;
+  document.getElementById('end-big').textContent=score;
+  document.getElementById('end-msg').textContent=msg;
+  document.getElementById('end-screen').style.display='block';
+  document.getElementById('qprog').style.width='100%';
+}
+function restartQuiz(){
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+}
+function reviewIntro(){
+  document.getElementById('screen-quiz').classList.remove('active');
+  document.getElementById('screen-intro').classList.add('active');
+  goSlide(0);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
