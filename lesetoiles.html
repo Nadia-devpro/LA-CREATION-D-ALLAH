@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Étoiles — Un Signe de la Création d'Allah</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #030d1a;
+  --gold: #d4a843;
+  --gold-light: #f5d57a;
+  --silver-dim: #7a9bbf;
+  --white: #eef3ff;
+  --text: #d8e8ff;
+  --text-dim: #7a9bbf;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--night); color:var(--text); font-family:'Lato',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ══ HEADER ══ */
+#sky-header {
+  position:relative; width:100%; height:240px; overflow:hidden;
+  background:linear-gradient(180deg,#000308 0%,#020814 40%,#040f22 70%,#060f28 100%);
+}
+.hstar {
+  position:absolute; border-radius:50%; background:#fff;
+  animation:twinkle var(--dur,3s) ease-in-out infinite var(--del,0s);
+}
+@keyframes twinkle { 0%,100%{ opacity:var(--op,.7); transform:scale(1); } 50%{ opacity:.05; transform:scale(.4); } }
+
+/* shooting star */
+.shooting {
+  position:absolute; height:2px; border-radius:2px;
+  background:linear-gradient(to right,rgba(255,255,255,.95),transparent);
+  animation:shoot var(--ss,4s) linear infinite var(--sd,0s);
+}
+@keyframes shoot {
+  0%{ transform:translateX(0) translateY(0); opacity:1; width:0; }
+  20%{ width:80px; opacity:1; }
+  60%{ width:80px; transform:translateX(160px) translateY(40px); opacity:.6; }
+  100%{ width:0; transform:translateX(280px) translateY(70px); opacity:0; }
+}
+
+/* constellation lines in header */
+.cline {
+  position:absolute; height:1px;
+  background:rgba(255,255,255,.15);
+  transform-origin:left center;
+  animation:clineGlow 4s ease-in-out infinite var(--cld,0s);
+}
+@keyframes clineGlow { 0%,100%{ opacity:.1; } 50%{ opacity:.4; } }
+
+/* big bright star center */
+.h-bright-star {
+  position:absolute; border-radius:50%;
+  background:radial-gradient(circle,#fff 20%,rgba(200,220,255,.6) 50%,transparent 70%);
+  animation:starPulse var(--sp,3s) ease-in-out infinite var(--spd,0s);
+}
+@keyframes starPulse {
+  0%,100%{ transform:scale(1); opacity:var(--so,.9); }
+  50%{ transform:scale(1.4); opacity:1; }
+}
+
+#sky-label {
+  position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+  text-align:center; white-space:nowrap; z-index:3;
+}
+#sky-label h1 { font-family:'Scheherazade New',serif; font-size:24px; color:var(--gold-light); text-shadow:0 0 20px rgba(212,168,67,.5); }
+#sky-label p { font-size:11px; color:var(--silver-dim); letter-spacing:2.5px; text-transform:uppercase; margin-top:3px; }
+
+/* ══ SCREENS ══ */
+#app { display:flex; flex-direction:column; min-height:100vh; }
+.screen { display:none; flex:1; }
+.screen.active { display:block; }
+
+/* ══ INTRO ══ */
+#intro-wrap { max-width:700px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#skip-intro { text-align:right; margin-bottom:1rem; }
+#skip-intro button { background:none; border:none; color:var(--text-dim); font-size:12px; cursor:pointer; letter-spacing:.5px; font-family:'Lato',sans-serif; text-decoration:underline; text-underline-offset:3px; }
+#skip-intro button:hover { color:var(--text); }
+#slide-dots { display:flex; justify-content:center; gap:8px; margin-bottom:2rem; }
+.dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.15); transition:background .3s,transform .3s; cursor:pointer; }
+.dot.active { background:var(--gold); transform:scale(1.3); }
+.dot.done { background:rgba(212,168,67,.4); }
+.slide { display:none; animation:slideIn .45s ease; }
+.slide.active { display:block; }
+@keyframes slideIn { from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
+
+.scene-canvas {
+  width:100%; height:200px; border-radius:14px; margin-bottom:1.4rem;
+  overflow:hidden; position:relative; border:1px solid rgba(255,255,255,.07);
+  background:linear-gradient(180deg,#000308,#020814);
+}
+
+/* ══ SCENE ANIMATIONS ══ */
+@keyframes shimmer { 0%,100%{ opacity:.35; } 50%{ opacity:1; } }
+@keyframes float { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-5px); } }
+@keyframes sparklePop { 0%,100%{ transform:scale(0); opacity:0; } 50%{ transform:scale(1); opacity:.9; } }
+@keyframes expandRing { 0%{ width:0;height:0;opacity:.8; } 100%{ width:120px;height:120px;margin-left:-60px;margin-top:-60px;opacity:0; } }
+@keyframes supernovaFlash { 0%,80%,100%{ opacity:0; } 82%,88%{ opacity:1; } 85%{ opacity:.3; } }
+@keyframes orbit { from{ transform:rotate(0deg) translateX(var(--orx,60px)) rotate(0deg); } to{ transform:rotate(360deg) translateX(var(--orx,60px)) rotate(-360deg); } }
+@keyframes shootSc { 0%{ transform:translateX(0) translateY(0); opacity:1; width:0; } 25%{ width:60px; opacity:1; } 70%{ width:60px; transform:translateX(130px) translateY(35px); opacity:.5; } 100%{ width:0; transform:translateX(220px) translateY(60px); opacity:0; } }
+@keyframes navBlink { 0%,100%{ opacity:.3; } 50%{ opacity:1; } }
+@keyframes tasbihFloat { 0%,100%{ transform:translateY(0) translateX(0); opacity:.5; } 50%{ transform:translateY(-8px) translateX(var(--tx,4px)); opacity:1; } }
+
+/* ── TEXT / LAYOUT ── */
+.slide-num { font-size:11px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:.5rem; font-weight:700; }
+.slide h2 { font-family:'Scheherazade New',serif; font-size:22px; color:var(--gold-light); line-height:1.4; margin-bottom:.75rem; text-shadow:0 0 16px rgba(212,168,67,.3); }
+.slide-body { font-size:14.5px; line-height:1.75; color:var(--text); margin-bottom:1.1rem; }
+.ayah-box { background:rgba(212,168,67,.07); border-left:3px solid var(--gold); border-radius:0 10px 10px 0; padding:.85rem 1rem; margin-bottom:1.3rem; }
+.ayah-ar { font-family:'Scheherazade New',serif; font-size:17px; color:var(--gold); line-height:1.8; display:block; margin-bottom:.3rem; }
+.ayah-fr { font-size:13px; color:var(--silver-dim); font-style:italic; line-height:1.5; }
+.key-fact { display:flex; gap:10px; align-items:flex-start; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:.85rem 1rem; margin-bottom:.75rem; }
+.key-fact-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+.key-fact p { font-size:13.5px; line-height:1.6; color:var(--text); }
+.key-fact p strong { color:var(--gold-light); font-weight:700; }
+.slide-nav { display:flex; gap:10px; margin-top:1.5rem; }
+.btn-prev,.btn-next,.btn-quiz { padding:11px 24px; border-radius:10px; font-size:14px; font-family:'Lato',sans-serif; cursor:pointer; font-weight:700; letter-spacing:.3px; transition:background .2s,border-color .2s,transform .1s; }
+.btn-prev { background:transparent; border:1px solid rgba(255,255,255,.15); color:var(--text-dim); }
+.btn-prev:hover { background:rgba(255,255,255,.05); }
+.btn-next { flex:1; background:linear-gradient(135deg,rgba(212,168,67,.22),rgba(212,168,67,.1)); border:1px solid rgba(212,168,67,.5); color:var(--gold-light); }
+.btn-next:hover { background:linear-gradient(135deg,rgba(212,168,67,.35),rgba(212,168,67,.18)); border-color:rgba(212,168,67,.75); }
+.btn-quiz { flex:1; background:linear-gradient(135deg,rgba(58,173,114,.25),rgba(58,173,114,.1)); border:1px solid rgba(58,173,114,.5); color:#7de0b0; }
+.btn-quiz:hover { background:linear-gradient(135deg,rgba(58,173,114,.38),rgba(58,173,114,.2)); border-color:rgba(58,173,114,.75); }
+.btn-prev:active,.btn-next:active,.btn-quiz:active { transform:scale(.97); }
+
+/* ══ QUIZ ══ */
+#quiz-wrap { max-width:680px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
+.score-pill { background:rgba(212,168,67,.13); border:1px solid rgba(212,168,67,.35); border-radius:20px; padding:5px 16px; font-size:13px; color:var(--gold); font-weight:700; }
+.prog-wrap { flex:1; margin:0 14px; height:4px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; }
+#qprog { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:4px; transition:width .5s ease; width:0%; }
+.q-count { font-size:13px; color:var(--text-dim); white-space:nowrap; }
+#q-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:16px; padding:1.75rem; margin-bottom:1.2rem; }
+#q-icon { width:36px;height:36px;border-radius:10px;background:rgba(212,168,67,.14);border:1px solid rgba(212,168,67,.3);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:1rem; }
+#q-text { font-size:15.5px;line-height:1.65;color:var(--white);margin-bottom:1.4rem; }
+#options { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+.opt { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:12px 14px; font-size:13.5px; color:var(--text); font-family:'Lato',sans-serif; cursor:pointer; text-align:left; line-height:1.4; transition:background .17s,border-color .17s,transform .1s; }
+.opt:hover:not(:disabled) { background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.4);transform:translateY(-1px); }
+.opt:active:not(:disabled) { transform:scale(.98); }
+.opt.correct { background:rgba(58,173,114,.18);border-color:rgba(58,173,114,.6);color:#7de0b0; }
+.opt.wrong   { background:rgba(224,82,82,.15); border-color:rgba(224,82,82,.5);color:#f5a0a0; }
+.opt:disabled { cursor:default; }
+#fb-box { background:rgba(212,168,67,.07); border:1px solid rgba(212,168,67,.2); border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.2rem; display:none; animation:fadeUp .35s ease; }
+#fb-text { font-size:14px;line-height:1.7;color:var(--text);margin-bottom:.7rem; }
+#fb-ayah { font-family:'Scheherazade New',serif; font-size:15px; color:var(--gold); border-left:2px solid var(--gold); padding-left:12px; line-height:1.7; }
+#qnext { width:100%; padding:13px; background:linear-gradient(135deg,rgba(212,168,67,.2),rgba(212,168,67,.08)); border:1px solid rgba(212,168,67,.45); border-radius:10px; color:var(--gold-light); font-family:'Lato',sans-serif; font-size:15px; font-weight:700; cursor:pointer; display:none; letter-spacing:.4px; transition:background .2s,border-color .2s; }
+#qnext:hover { background:linear-gradient(135deg,rgba(212,168,67,.32),rgba(212,168,67,.16));border-color:rgba(212,168,67,.7); }
+#end-screen { display:none;text-align:center;padding:2.5rem 1rem;animation:fadeUp .5s ease; }
+#end-badge { width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,67,.2),rgba(212,168,67,.04));border:2px solid rgba(212,168,67,.5);margin:0 auto 1.4rem;display:flex;align-items:center;justify-content:center;font-size:36px; }
+#end-title { font-family:'Scheherazade New',serif;font-size:22px;color:var(--gold-light);margin-bottom:.5rem; }
+#end-big { font-size:52px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:.4rem; }
+#end-sub { font-size:13px;color:var(--text-dim);margin-bottom:.5rem; }
+#end-msg { font-size:14px;color:var(--text);line-height:1.65;max-width:400px;margin:0 auto 2rem; }
+.end-btns { display:flex;gap:10px;justify-content:center;flex-wrap:wrap; }
+#restart-btn,#review-btn { padding:11px 28px; border-radius:10px; font-family:'Lato',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:background .2s,border-color .2s; }
+#restart-btn { background:transparent;border:1px solid rgba(212,168,67,.5);color:var(--gold); }
+#restart-btn:hover { background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.8); }
+#review-btn { background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--text-dim); }
+#review-btn:hover { background:rgba(255,255,255,.06); }
+@keyframes fadeUp { from{ opacity:0;transform:translateY(10px); } to{ opacity:1;transform:translateY(0); } }
+@media(max-width:480px){
+  #options{ grid-template-columns:1fr; }
+  .slide h2{ font-size:19px; }
+  #sky-label h1{ font-size:20px; }
+  #intro-wrap,#quiz-wrap{ padding:1.4rem 1rem 2.5rem; }
+  .slide-nav{ flex-direction:column; }
+  .btn-prev{ order:2; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ HEADER ══ -->
+<div id="sky-header">
+  <div id="hstars"></div>
+  <div id="hshoot"></div>
+  <div id="hconst"></div>
+  <div id="sky-label">
+    <h1>النُّجُومُ — آيَةٌ مِنْ آيَاتِ اللهِ</h1>
+    <p>Les Étoiles — Un Signe de la Création d'Allah</p>
+  </div>
+</div>
+
+<!-- ══ INTRO ══ -->
+<div id="screen-intro" class="screen active">
+  <div id="intro-wrap">
+    <div id="skip-intro"><button onclick="startQuiz()">Passer directement au quiz →</button></div>
+    <div id="slide-dots"></div>
+
+    <!-- SLIDE 0 : Lampes du ciel -->
+    <div class="slide active" id="sl-0">
+      <div class="scene-canvas" id="sc0"></div>
+      <div class="slide-num">Leçon 1 · 6 leçons</div>
+      <h2>Les Étoiles — Lampes du Ciel Terrestre</h2>
+      <p class="slide-body">
+        Allah a orné le ciel le plus bas — celui que nous voyons —
+        de <strong style="color:var(--gold-light)">lampes brillantes (مَصَابِيح)</strong>.
+        Ces lampes ne sont pas une simple décoration : elles servent de
+        <strong style="color:var(--gold-light)">guides dans les ténèbres</strong>,
+        de projectiles contre les diables qui voudraient espionner les nouvelles du ciel,
+        et de signes de contemplation pour les croyants.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَلَقَدْ زَيَّنَّا السَّمَاءَ الدُّنْيَا بِمَصَابِيحَ وَجَعَلْنَاهَا رُجُومًا لِّلشَّيَاطِينِ ﴾</span>
+        <span class="ayah-fr">« Nous avons orné le ciel le plus proche de lampes et Nous en avons fait des projectiles contre les diables. » — Al-Mulk : 5</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">💡</span>
+        <p>Le mot <strong>مَصَابِيح</strong> (<em>masâbîh</em> — lampes) est remarquable : les étoiles <strong>produisent leur propre lumière</strong> par fusion nucléaire, exactement comme une lampe produit sa lumière par combustion. Un choix de mot d'une précision scientifique parfaite.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌌</span>
+        <p>Il existe environ <strong>200 milliards de milliards d'étoiles</strong> dans l'univers observable. Chacune est une lampe allumée par Allah, suspendue dans l'immensité de Sa création depuis des milliards d'années.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-next" onclick="goSlide(1)">Suivant → Les Étoiles comme Guides</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 1 : Navigation -->
+    <div class="slide" id="sl-1">
+      <div class="scene-canvas" id="sc1"></div>
+      <div class="slide-num">Leçon 2 · 6 leçons</div>
+      <h2>Les Étoiles — Guides dans les Ténèbres</h2>
+      <p class="slide-body">
+        Avant les GPS, les boussoles et les cartes, les hommes traversaient
+        les déserts et les océans en se guidant par les étoiles.
+        Allah a explicitement mentionné cette fonction :
+        les étoiles sont des <strong style="color:var(--gold-light)">guides (هُدًى)</strong>
+        dans les ténèbres de la terre et de la mer.
+        L'étoile Polaire, toujours au nord, a guidé des millions de voyageurs depuis la nuit des temps.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَهُوَ الَّذِي جَعَلَ لَكُمُ النُّجُومَ لِتَهْتَدُوا بِهَا فِي ظُلُمَاتِ الْبَرِّ وَالْبَحْرِ ﴾</span>
+        <span class="ayah-fr">« C'est Lui qui a fait pour vous les étoiles afin de vous guider dans les ténèbres de la terre et de la mer. » — Al-An'am : 97</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🧭</span>
+        <p>L'étoile Polaire (Polaris) est alignée avec l'axe de rotation de la Terre et pointe toujours vers le nord. Allah l'a placée là — un GPS naturel <strong>disponible gratuitement pour toute l'humanité</strong> depuis des millénaires.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🚢</span>
+        <p>Les grands navigateurs arabes, polynésiens et européens traversaient des océans entiers en utilisant les étoiles. Aujourd'hui encore, les astronautes et les pilotes utilisent la navigation stellaire comme <strong>système de secours</strong>.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(0)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(2)">Suivant → Les Étoiles Filantes</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 : Étoiles filantes / shayatin -->
+    <div class="slide" id="sl-2">
+      <div class="scene-canvas" id="sc2"></div>
+      <div class="slide-num">Leçon 3 · 6 leçons</div>
+      <h2>Les Étoiles Filantes — رُجُومًا لِلشَّيَاطِينِ</h2>
+      <p class="slide-body">
+        Le Coran mentionne que les étoiles servent aussi de
+        <strong style="color:var(--gold-light)">projectiles (رُجُوم)</strong>
+        contre les diables qui tentent d'espionner les nouvelles du ciel.
+        Les étoiles filantes que nous voyons sont des phénomènes réels :
+        des fragments qui brûlent en entrant dans l'atmosphère.
+        Allah a relié ce phénomène visible à une réalité spirituelle invisible.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ إِلَّا مَنِ اسْتَرَقَ السَّمْعَ فَأَتْبَعَهُ شِهَابٌ مُّبِينٌ ﴾</span>
+        <span class="ayah-fr">« Sauf celui qui surprend furtivement quelque chose, et il est alors poursuivi par un trait de feu visible. » — Al-Hijr : 18</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">☄️</span>
+        <p>Le mot <strong>شِهَاب</strong> (<em>shihâb</em> — trait de feu) décrit exactement ce que nous voyons : une étoile filante est un fragment rocheux qui brûle en entrant dans l'atmosphère terrestre à des vitesses atteignant <strong>70 km/s</strong>.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🛡️</span>
+        <p>Il existe donc une double réalité : les étoiles filantes sont un <strong>phénomène physique</strong> (météores) et simultanément un <strong>phénomène spirituel</strong> (protection du ciel). Allah seul peut créer des réalités qui opèrent sur ces deux plans à la fois.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(1)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(3)">Suivant → La Taille des Étoiles</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 : Taille et distance -->
+    <div class="slide" id="sl-3">
+      <div class="scene-canvas" id="sc3"></div>
+      <div class="slide-num">Leçon 4 · 6 leçons</div>
+      <h2>La Taille des Étoiles — عَظَمَةُ الْخَلْقِ</h2>
+      <p class="slide-body">
+        Les étoiles nous semblent minuscules — de simples points lumineux.
+        En réalité, elles sont d'une <strong style="color:var(--gold-light)">taille colossale</strong>.
+        Notre soleil, déjà immense, est une étoile de taille moyenne.
+        L'étoile UY Scuti est <strong style="color:var(--gold-light)">1 700 fois plus grande que le soleil</strong>.
+        Si Allah avait mis UY Scuti à la place de notre soleil,
+        elle engloutirait Jupiter. Médite sur la puissance d'Allah.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ أَفَلَمْ يَنظُرُوا إِلَى السَّمَاءِ فَوْقَهُمْ كَيْفَ بَنَيْنَاهَا وَزَيَّنَّاهَا وَمَا لَهَا مِن فُرُوجٍ ﴾</span>
+        <span class="ayah-fr">« N'ont-ils donc pas regardé le ciel au-dessus d'eux, comment Nous l'avons construit et embelli, et il n'y a pas de fissures. » — Qaf : 6</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌟</span>
+        <p>Comparaison vertigineuse :<br>
+        <span style="display:block;background:rgba(212,168,67,.08);border-radius:8px;padding:8px 12px;margin:6px 0;font-family:monospace;font-size:12px;color:var(--gold-light);line-height:1.8">
+        Terre → Soleil : x 109<br>
+        Soleil → Bételgeuse : x 700<br>
+        Soleil → UY Scuti : x 1 700<br>
+        Et Allah a créé des milliards de ces géantes.
+        </span></p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">📏</span>
+        <p>La lumière de l'étoile la plus proche (Proxima Centauri) met <strong>4,2 années</strong> pour nous parvenir, voyageant à 300 000 km/s. Quand tu regardes cette étoile, tu vois la lumière qu'elle a émise <strong>4,2 ans avant</strong> que tu lèves les yeux.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(2)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(4)">Suivant → La Mort des Étoiles</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 : Mort des étoiles / supernova -->
+    <div class="slide" id="sl-4">
+      <div class="scene-canvas" id="sc4"></div>
+      <div class="slide-num">Leçon 5 · 6 leçons</div>
+      <h2>La Mort des Étoiles — النَّجْمُ الثَّاقِبُ</h2>
+      <p class="slide-body">
+        Le Coran jure par <strong style="color:var(--gold-light)">النَّجْمُ الثَّاقِبُ</strong>
+        — "l'étoile perçante" ou "l'étoile qui perce l'obscurité".
+        Quand une étoile massive meurt, elle explose en
+        <strong style="color:var(--gold-light)">supernova</strong> — une explosion si violente
+        qu'elle peut être plus lumineuse que toute une galaxie pendant quelques semaines.
+        Les éléments créés lors de cette explosion — fer, or, carbone — constituent
+        la matière de nos corps et de notre Terre.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَالسَّمَاءِ وَالطَّارِقِ ﴝ وَمَا أَدْرَاكَ مَا الطَّارِقُ ﴝ النَّجْمُ الثَّاقِبُ ﴾</span>
+        <span class="ayah-fr">« Par le ciel et l'astre nocturne ! Et qui te dira ce qu'est l'astre nocturne ? C'est l'étoile perçante. » — At-Tariq : 1-3</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">💥</span>
+        <p>Une supernova libère en quelques secondes plus d'énergie que notre soleil n'en produira en toute sa vie — soit environ <strong>10⁴⁴ joules</strong>. C'est la force qu'Allah a mise dans une seule étoile mourante.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">⚗️</span>
+        <p>Le fer dans ton sang, le calcium dans tes os, l'oxygène que tu respires — tous ces éléments ont été <strong>forgés dans des étoiles</strong> puis dispersés par des supernovas. Tu es littéralement fait de poussière d'étoiles — créé par Allah.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(3)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(5)">Suivant → Les Étoiles Glorifient Allah</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 : Tasbih des étoiles -->
+    <div class="slide" id="sl-5">
+      <div class="scene-canvas" id="sc5"></div>
+      <div class="slide-num">Leçon 6 · 6 leçons</div>
+      <h2>Les Étoiles Glorifient Allah — تُسَبِّحُ النُّجُومُ</h2>
+      <p class="slide-body">
+        Tout dans l'univers glorifie Allah — y compris les étoiles.
+        Chaque étoile, par son existence, sa lumière, sa fusion nucléaire,
+        son orbite précise dans la galaxie, est un acte de
+        <strong style="color:var(--gold-light)">tasbih (تَسْبِيح)</strong> permanent.
+        La prochaine fois que tu regardes une étoile,
+        souviens-toi : cette lumière a voyagé des années pour t'atteindre,
+        émise par une boule de feu qui <strong style="color:var(--gold-light)">glorifie Allah depuis des milliards d'années</strong>.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَالنَّجْمُ وَالشَّجَرُ يَسْجُدَانِ ﴾</span>
+        <span class="ayah-fr">« Et les étoiles et les arbres se prosternent. » — Ar-Rahman : 6</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌟</span>
+        <p>Le Coran dit que les étoiles (<strong>النَّجْم</strong>) se prosternent devant Allah. Cette prosternation n'est pas comme la nôtre — c'est leur soumission totale aux lois qu'Allah leur a imposées : gravité, fusion, orbite. <strong>Chaque étoile obéit à Allah</strong> à chaque seconde.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🤲</span>
+        <p>Quand tu contemples le ciel étoilé la nuit, tu assistes à un <strong>tasbih universel</strong> — des centaines de milliards d'étoiles glorifiant leur Créateur simultanément. Rejoins ce tasbih en disant : <strong>سُبْحَانَ اللهِ وَبِحَمْدِهِ</strong>.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(4)">← Précédent</button>
+        <button class="btn-quiz" onclick="startQuiz()">🎯 Tester mes connaissances →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="screen-quiz" class="screen">
+  <div id="quiz-wrap">
+    <div id="quiz-header">
+      <div class="score-pill" id="score-pill">⭐ 0</div>
+      <div class="prog-wrap"><div id="qprog"></div></div>
+      <div class="q-count" id="q-count">1 / 8</div>
+    </div>
+    <div id="q-card">
+      <div id="q-icon">⭐</div>
+      <div id="q-text"></div>
+      <div id="options"></div>
+    </div>
+    <div id="fb-box">
+      <div id="fb-text"></div>
+      <div id="fb-ayah"></div>
+    </div>
+    <button id="qnext">Question suivante →</button>
+    <div id="end-screen">
+      <div id="end-badge"></div>
+      <div id="end-title"></div>
+      <div id="end-big"></div>
+      <div id="end-sub">points sur 8</div>
+      <div id="end-msg"></div>
+      <div class="end-btns">
+        <button id="restart-btn" onclick="restartQuiz()">↺ Recommencer le quiz</button>
+        <button id="review-btn" onclick="reviewIntro()">📖 Revoir les leçons</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ══ HEADER ══ */
+(function(){
+  const sb=document.getElementById('hstars');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div');s.className='hstar';
+    const z=Math.random()*3+.5;
+    s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--op:${(.2+Math.random()*.8).toFixed(2)};--dur:${(1.5+Math.random()*5).toFixed(1)}s;--del:${(Math.random()*6).toFixed(1)}s;opacity:${(.2+Math.random()*.8).toFixed(2)}`;
+    sb.appendChild(s);
+  }
+  // bright stars
+  [[180,45],[60,80],[290,60],[130,30],[240,90]].forEach(([l,t],i)=>{
+    const bs=document.createElement('div');bs.className='h-bright-star';
+    const sz=4+Math.random()*4;
+    bs.style.cssText=`width:${sz}px;height:${sz}px;top:${t}px;left:${l}px;--sp:${(2+Math.random()*3).toFixed(1)}s;--spd:${(Math.random()*3).toFixed(1)}s;--so:${(.7+Math.random()*.3).toFixed(2)}`;
+    sb.appendChild(bs);
+  });
+  // shooting stars
+  const sw=document.getElementById('hshoot');
+  for(let i=0;i<4;i++){
+    const sh=document.createElement('div');sh.className='shooting';
+    sh.style.cssText=`top:${10+i*22}%;left:${Math.random()*30}%;--ss:${(5+Math.random()*4).toFixed(1)}s;--sd:${(Math.random()*6).toFixed(1)}s`;
+    sw.appendChild(sh);
+  }
+  // constellation lines (Orion-like)
+  const pts=[[160,60],[185,80],[170,105],[195,105],[180,130],[200,155],[160,155]];
+  const cw=document.getElementById('hconst');
+  for(let i=0;i<pts.length-1;i++){
+    const [x1,y1]=pts[i],[x2,y2]=pts[i+1];
+    const len=Math.sqrt((x2-x1)**2+(y2-y1)**2);
+    const angle=Math.atan2(y2-y1,x2-x1)*180/Math.PI;
+    const cl=document.createElement('div');cl.className='cline';
+    cl.style.cssText=`width:${len}px;top:${y1}px;left:${x1}px;transform:rotate(${angle}deg);--cld:${(i*.4).toFixed(1)}s`;
+    cw.appendChild(cl);
+    // star dot at each point
+    const dot=document.createElement('div');
+    dot.style.cssText=`position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;top:${y1-2}px;left:${x1-2}px;opacity:.8;animation:starPulse ${(2+Math.random()*3).toFixed(1)}s ease-in-out infinite ${(Math.random()*3).toFixed(1)}s`;
+    cw.appendChild(dot);
+  }
+})();
+
+/* ══ SCENE BUILDERS ══ */
+
+function addStars(el, count, maxSz, maxOp){
+  for(let i=0;i<count;i++){
+    const s=document.createElement('div');
+    const z=Math.random()*maxSz+.5;
+    s.style.cssText=`position:absolute;border-radius:50%;background:#fff;width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;opacity:${(.1+Math.random()*maxOp).toFixed(2)};animation:shimmer ${(2+Math.random()*4).toFixed(1)}s ease-in-out infinite ${(Math.random()*4).toFixed(1)}s`;
+    el.appendChild(s);
+  }
+}
+
+/* Sc0 : Lampes du ciel */
+function buildSc0(el){
+  addStars(el,80,3,.9);
+  // big bright stars as "lamps"
+  [[70,55],[170,40],[260,65],[120,120],[220,130],[50,150],[300,110]].forEach(([x,y],i)=>{
+    const bs=document.createElement('div');
+    const sz=5+Math.random()*6;
+    bs.style.cssText=`position:absolute;border-radius:50%;top:${y}px;left:${x}px;width:${sz}px;height:${sz}px;background:radial-gradient(circle,#fff 30%,rgba(200,220,255,.6) 60%,transparent 80%);box-shadow:0 0 ${sz*2}px ${sz}px rgba(200,220,255,.3);animation:starPulse ${(2+Math.random()*3).toFixed(1)}s ease-in-out infinite ${(i*.4).toFixed(1)}s;--sp:${(2+i*.4).toFixed(1)}s;--spd:${(i*.4).toFixed(1)}s;--so:.9`;
+    el.appendChild(bs);
+  });
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg.innerHTML=`
+    <text x="170" y="175" text-anchor="middle" font-family="Scheherazade New,serif" font-size="15" fill="rgba(212,168,67,.55)">مَصَابِيحُ السَّمَاءِ — Lampes du ciel</text>
+    <text x="170" y="191" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" fill="rgba(212,168,67,.35)">Al-Mulk : 5 — 200 milliards de milliards d'étoiles</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc1 : Navigation stellaire */
+function buildSc1(el){
+  addStars(el,60,2.5,.8);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <radialGradient id="polarG"><stop offset="0%" stop-color="#fff"/><stop offset="40%" stop-color="rgba(200,220,255,.8)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+    </defs>
+    <!-- North pole star -->
+    <circle cx="170" cy="30" r="7" fill="url(#polarG)"/>
+    <circle cx="170" cy="30" r="14" fill="rgba(200,220,255,.08)"/>
+    <text x="170" y="18" text-anchor="middle" font-size="9" fill="rgba(200,220,255,.7)" font-family="Lato">Polaris — Nord ↑</text>
+    <!-- compass directions -->
+    <text x="170" y="110" text-anchor="middle" font-size="10" fill="rgba(212,168,67,.5)" font-family="Lato">N</text>
+    <!-- dashed line from star down -->
+    <line x1="170" y1="37" x2="170" y2="100" stroke="rgba(212,168,67,.3)" stroke-width="1" stroke-dasharray="4,4"/>
+    <!-- ship on sea -->
+    <path d="M 100 160 Q 120 145 170 140 Q 220 145 240 160 Q 220 170 170 172 Q 120 170 100 160 Z" fill="rgba(100,60,20,.5)" stroke="rgba(140,90,40,.4)" stroke-width="1"/>
+    <rect x="162" y="118" width="4" height="24" fill="rgba(180,140,80,.5)"/>
+    <path d="M 166 118 L 200 128 L 166 138 Z" fill="rgba(200,180,140,.3)"/>
+    <!-- sea waves -->
+    <path d="M 60 172 Q 80 162 100 172 Q 120 182 140 172 Q 160 162 180 172 Q 200 182 220 172 Q 240 162 260 172 Q 280 182 300 172" stroke="rgba(60,100,180,.3)" stroke-width="2" fill="none"/>
+    <!-- navigation lines from star -->
+    <line x1="170" y1="37" x2="140" y2="150" stroke="rgba(212,168,67,.2)" stroke-width="1" stroke-dasharray="3,5"/>
+    <line x1="170" y1="37" x2="200" y2="150" stroke="rgba(212,168,67,.2)" stroke-width="1" stroke-dasharray="3,5"/>
+    <!-- Orion constellation -->
+    <circle cx="60" cy="55" r="2.5" fill="rgba(255,255,255,.7)"/>
+    <circle cx="75" cy="70" r="2" fill="rgba(255,255,255,.6)"/>
+    <circle cx="55" cy="80" r="2" fill="rgba(255,255,255,.6)"/>
+    <circle cx="80" cy="55" r="2" fill="rgba(255,255,255,.5)"/>
+    <line x1="60" y1="55" x2="75" y2="70" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+    <line x1="75" y1="70" x2="55" y2="80" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+    <text x="65" y="100" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.35)" font-family="Lato">Orion</text>
+    <text x="170" y="195" text-anchor="middle" font-size="10" fill="rgba(212,168,67,.4)" font-family="Lato">Al-An'am : 97 — لِتَهْتَدُوا بِهَا فِي ظُلُمَاتِ الْبَرِّ وَالْبَحْرِ</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc2 : Shooting stars / shayatin */
+function buildSc2(el){
+  addStars(el,70,2,.8);
+  // shooting stars
+  for(let i=0;i<5;i++){
+    const sh=document.createElement('div');
+    sh.style.cssText=`position:absolute;height:2px;border-radius:2px;background:linear-gradient(to right,rgba(255,255,255,.95),transparent);top:${15+i*30}%;left:${5+Math.random()*20}%;animation:shootSc ${(2.5+Math.random()*2).toFixed(1)}s linear infinite ${(Math.random()*4).toFixed(1)}s`;
+    el.appendChild(sh);
+  }
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg.innerHTML=`
+    <!-- heaven line -->
+    <line x1="0" y1="100" x2="340" y2="100" stroke="rgba(212,168,67,.15)" stroke-width="1" stroke-dasharray="6,4"/>
+    <text x="10" y="95" font-size="8" fill="rgba(212,168,67,.4)" font-family="Lato">السَّمَاء — Le ciel</text>
+    <text x="10" y="115" font-size="8" fill="rgba(100,150,200,.4)" font-family="Lato">الأَرْض — La terre</text>
+    <!-- shihab labels -->
+    <text x="170" y="175" text-anchor="middle" font-family="Scheherazade New,serif" font-size="14" fill="rgba(212,168,67,.55)">شِهَابٌ مُبِينٌ — Trait de feu visible</text>
+    <text x="170" y="191" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" fill="rgba(212,168,67,.35)">Al-Hijr : 18 — jusqu'à 70 km/s</text>
+    <!-- atmosphere arc -->
+    <path d="M 0 130 Q 170 80 340 130" stroke="rgba(100,150,200,.15)" stroke-width="2" fill="rgba(100,150,200,.04)"/>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc3 : Star sizes comparison */
+function buildSc3(el){
+  addStars(el,40,1.5,.5);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <radialGradient id="earthG2" cx="35%" cy="35%" r="55%"><stop offset="0%" stop-color="#4a9fe0"/><stop offset="100%" stop-color="#0d3a6a"/></radialGradient>
+      <radialGradient id="sunG3" cx="38%" cy="38%" r="55%"><stop offset="0%" stop-color="#ffe880"/><stop offset="100%" stop-color="#f5a623"/></radialGradient>
+      <radialGradient id="beetleG" cx="38%" cy="38%" r="55%"><stop offset="0%" stop-color="#ffaa88"/><stop offset="100%" stop-color="#cc4400"/></radialGradient>
+      <radialGradient id="uyscutiG" cx="38%" cy="38%" r="55%"><stop offset="0%" stop-color="#ffccaa"/><stop offset="100%" stop-color="#aa3300"/></radialGradient>
+    </defs>
+    <!-- Earth — tiny -->
+    <circle cx="28" cy="155" r="5" fill="url(#earthG2)"/>
+    <text x="28" y="170" text-anchor="middle" font-size="7" fill="rgba(100,180,240,.7)" font-family="Lato">Terre</text>
+    <!-- Sun -->
+    <circle cx="75" cy="148" r="14" fill="url(#sunG3)" opacity=".85"/>
+    <circle cx="75" cy="148" r="18" fill="rgba(245,166,35,.1)"/>
+    <text x="75" y="174" text-anchor="middle" font-size="7" fill="rgba(255,200,60,.7)" font-family="Lato">Soleil</text>
+    <text x="75" y="182" text-anchor="middle" font-size="7" fill="rgba(255,200,60,.5)" font-family="Lato">×109 Terre</text>
+    <!-- Betelgeuse -->
+    <circle cx="175" cy="118" r="44" fill="url(#beetleG)" opacity=".6"/>
+    <text x="175" y="172" text-anchor="middle" font-size="7" fill="rgba(255,150,100,.7)" font-family="Lato">Bételgeuse</text>
+    <text x="175" y="180" text-anchor="middle" font-size="7" fill="rgba(255,150,100,.5)" font-family="Lato">×700 Soleil</text>
+    <!-- UY Scuti — huge, partially visible -->
+    <circle cx="310" cy="100" r="88" fill="url(#uyscutiG)" opacity=".35"/>
+    <text x="296" y="192" text-anchor="middle" font-size="7" fill="rgba(255,180,120,.7)" font-family="Lato">UY Scuti</text>
+    <text x="296" y="200" text-anchor="middle" font-size="7" fill="rgba(255,180,120,.5)" font-family="Lato">×1700 Soleil</text>
+    <!-- title -->
+    <text x="170" y="14" text-anchor="middle" font-family="Scheherazade New,serif" font-size="12" fill="rgba(212,168,67,.55)">عَظَمَةُ الْخَلْقِ — La grandeur de la création</text>
+    <text x="170" y="28" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(212,168,67,.35)">Qaf : 6 — كَيْفَ بَنَيْنَاهَا وَزَيَّنَّاهَا</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc4 : Supernova */
+function buildSc4(el){
+  addStars(el,50,2,.7);
+  // supernova explosion rings
+  for(let i=0;i<3;i++){
+    const ring=document.createElement('div');
+    ring.style.cssText=`position:absolute;top:50%;left:50%;border-radius:50%;border:2px solid rgba(255,${160-i*30},${80-i*20},.5);animation:expandRing ${(2+i*.7).toFixed(1)}s ease-out infinite ${(i*.8).toFixed(1)}s`;
+    el.appendChild(ring);
+  }
+  // supernova flash
+  const flash=document.createElement('div');
+  flash.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:radial-gradient(circle,#fff 20%,rgba(255,200,100,.8) 50%,transparent 70%);animation:supernovaFlash 5s ease-in-out infinite';
+  el.appendChild(flash);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg.innerHTML=`
+    <!-- elements produced -->
+    <text x="60" y="50" font-size="11" fill="rgba(255,200,100,.6)" font-family="Lato">⚙️ Fer</text>
+    <text x="240" y="50" font-size="11" fill="rgba(255,200,100,.6)" font-family="Lato">🦴 Calcium</text>
+    <text x="55" y="155" font-size="11" fill="rgba(255,200,100,.6)" font-family="Lato">💨 Oxygène</text>
+    <text x="230" y="155" font-size="11" fill="rgba(255,200,100,.6)" font-family="Lato">💛 Or</text>
+    <!-- arrows from center -->
+    <line x1="170" y1="100" x2="90" y2="55" stroke="rgba(255,200,100,.2)" stroke-width="1"/>
+    <line x1="170" y1="100" x2="252" y2="55" stroke="rgba(255,200,100,.2)" stroke-width="1"/>
+    <line x1="170" y1="100" x2="88" y2="148" stroke="rgba(255,200,100,.2)" stroke-width="1"/>
+    <line x1="170" y1="100" x2="245" y2="148" stroke="rgba(255,200,100,.2)" stroke-width="1"/>
+    <text x="170" y="180" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">النَّجْمُ الثَّاقِبُ — At-Tariq : 3</text>
+    <text x="170" y="194" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(212,168,67,.35)">Tu es fait de poussière d'étoiles — créé par Allah</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc5 : Tasbih des étoiles */
+function buildSc5(el){
+  // many stars of different brightness
+  addStars(el,100,3,.95);
+  // tasbih words floating
+  const words=[
+    {t:'سُبْحَانَ اللهِ',x:'5%',y:'8%',sz:14,tx:'6px'},{t:'اللهُ أَكْبَر',x:'60%',y:'5%',sz:13,tx:'-5px'},
+    {t:'يَسْجُدُ',x:'7%',y:'50%',sz:15,tx:'4px'},{t:'تَسْبِيح',x:'70%',y:'48%',sz:13,tx:'-4px'},
+    {t:'آية',x:'40%',y:'10%',sz:16,tx:'3px'},{t:'نُجُوم',x:'22%',y:'68%',sz:14,tx:'5px'},
+    {t:'خَلَقَ',x:'72%',y:'70%',sz:13,tx:'-3px'},
+  ];
+  words.forEach((w,i)=>{
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;left:${w.x};top:${w.y};font-family:Scheherazade New,serif;font-size:${w.sz}px;color:rgba(212,168,67,.45);animation:tasbihFloat ${(4+Math.random()*3).toFixed(1)}s ease-in-out infinite ${(i*.55).toFixed(1)}s;--tx:${w.tx}`;
+    d.textContent=w.t;
+    el.appendChild(d);
+  });
+  // person looking up
+  const person=document.createElement('div');
+  person.style.cssText='position:absolute;bottom:18px;left:50%;transform:translateX(-50%)';
+  person.innerHTML=`<svg width="38" height="65" viewBox="0 0 38 65">
+    <circle cx="19" cy="10" r="8" fill="rgba(212,168,67,.6)"/>
+    <line x1="19" y1="18" x2="19" y2="48" stroke="rgba(212,168,67,.55)" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="19" y1="28" x2="6" y2="20" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="19" y1="28" x2="32" y2="20" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="19" y1="48" x2="11" y2="63" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="19" y1="48" x2="27" y2="63" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
+  el.appendChild(person);
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.5);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  lbl.textContent='وَالنَّجْمُ وَالشَّجَرُ يَسْجُدَانِ — Ar-Rahman : 6';
+  el.appendChild(lbl);
+}
+
+const sceneFns=[buildSc0,buildSc1,buildSc2,buildSc3,buildSc4,buildSc5];
+sceneFns.forEach((fn,i)=>fn(document.getElementById('sc'+i)));
+
+/* ══ SLIDE DOTS ══ */
+const NSLIDES=6;
+const dotsEl=document.getElementById('slide-dots');
+for(let i=0;i<NSLIDES;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=(()=>{const n=i;return()=>goSlide(n);})();
+  dotsEl.appendChild(d);
+}
+let curSlide=0;
+function goSlide(n){
+  document.getElementById('sl-'+curSlide).classList.remove('active');
+  curSlide=n;
+  document.getElementById('sl-'+n).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>{ d.className='dot'+(i===n?' active':i<n?' done':''); });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══ QUIZ ══ */
+const Q=[
+  {
+    icon:'💡',
+    q:"Quel mot le Coran utilise-t-il pour désigner les étoiles comme ornement du ciel ?",
+    opts:["نُجُوم (nujûm — étoiles)","مَصَابِيح (masâbîh — lampes)","نُور (nûr — lumière)","شُهُب (shuhub — traits de feu)"],
+    ans:1,
+    fb:"Le Coran utilise 'مَصَابِيح' (masâbîh — lampes) pour désigner les étoiles. Ce terme est remarquable car les étoiles produisent effectivement leur propre lumière par fusion nucléaire, exactement comme une lampe produit sa lumière par combustion.",
+    ayah:"« Nous avons orné le ciel le plus proche de lampes (مَصَابِيح). » — Al-Mulk : 5"
+  },
+  {
+    icon:'🧭',
+    q:"Quelle fonction Allah a-t-Il assignée aux étoiles selon Al-An'am : 97 ?",
+    opts:["Décorer uniquement la nuit","Guider les hommes dans les ténèbres de la terre et de la mer","Annoncer les saisons","Mesurer le temps"],
+    ans:1,
+    fb:"Allah dit qu'Il a créé les étoiles 'لِتَهْتَدُوا بِهَا' — pour que vous vous guidiez par elles dans les ténèbres de la terre et de la mer. L'étoile Polaire, toujours au nord, a guidé des millions de voyageurs depuis la nuit des temps.",
+    ayah:"« C'est Lui qui a fait pour vous les étoiles afin de vous guider dans les ténèbres de la terre et de la mer. » — Al-An'am : 97"
+  },
+  {
+    icon:'☄️',
+    q:"Que représentent les étoiles filantes selon le Coran ?",
+    opts:["Des étoiles qui meurent","Des projectiles contre les diables qui espionnent le ciel","Des messages d'Allah aux hommes","Des fragments de la lune"],
+    ans:1,
+    fb:"Le Coran décrit les étoiles filantes comme des 'شِهَاب مُبِين' (trait de feu visible) — des projectiles contre les diables qui tentent d'espionner le ciel. Les étoiles filantes sont aussi un phénomène physique réel : des météores brûlant dans l'atmosphère à 70 km/s.",
+    ayah:"« Sauf celui qui surprend furtivement quelque chose, et il est alors poursuivi par un trait de feu visible. » — Al-Hijr : 18"
+  },
+  {
+    icon:'🌟',
+    q:"Combien de fois l'étoile UY Scuti est-elle plus grande que notre soleil ?",
+    opts:["109 fois","700 fois","1 700 fois","10 000 fois"],
+    ans:2,
+    fb:"UY Scuti est 1 700 fois plus grande que notre soleil. Si elle le remplaçait, elle engloutirait Jupiter. Médite : notre soleil est déjà 109 fois plus grand que la Terre — et il existe des étoiles 1 700 fois plus grandes. Telle est la grandeur de la création d'Allah.",
+    ayah:"« N'ont-ils donc pas regardé le ciel au-dessus d'eux, comment Nous l'avons construit et embelli ? » — Qaf : 6"
+  },
+  {
+    icon:'📏',
+    q:"Combien de temps met la lumière de l'étoile la plus proche pour nous parvenir ?",
+    opts:["8 minutes et 20 secondes","4,2 années","100 années","1 seconde"],
+    ans:1,
+    fb:"La lumière de Proxima Centauri, l'étoile la plus proche après le soleil, met 4,2 années pour nous parvenir en voyageant à 300 000 km/s. Quand tu regardes cette étoile, tu vois une lumière émise il y a 4,2 ans — tu regardes le passé.",
+    ayah:"« N'ont-ils donc pas regardé le ciel au-dessus d'eux, comment Nous l'avons construit et embelli ? » — Qaf : 6"
+  },
+  {
+    icon:'💥',
+    q:"Que sont les supernovas et quel est leur rôle dans notre existence ?",
+    opts:["Des étoiles qui naissent","Des explosions d'étoiles qui fabriquent et dispersent les éléments dont nous sommes faits","Des collisions de galaxies","Des trous noirs en formation"],
+    ans:1,
+    fb:"Une supernova est l'explosion d'une étoile massive à sa mort. C'est lors de ces explosions que sont créés et dispersés les éléments lourds : fer, calcium, oxygène, or. Le fer dans ton sang et le calcium dans tes os ont été forgés dans des étoiles — par la volonté d'Allah.",
+    ayah:"« Par le ciel et l'astre nocturne ! C'est l'étoile perçante. » — At-Tariq : 1-3"
+  },
+  {
+    icon:'🙏',
+    q:"Que dit le Coran sur la prosternation des étoiles (Ar-Rahman : 6) ?",
+    opts:["Les étoiles ne font rien de spécial","Les étoiles et les arbres se prosternent devant Allah","Seuls les anges se prosternent","Les étoiles brillent pour les hommes"],
+    ans:1,
+    fb:"Ar-Rahman : 6 dit 'وَالنَّجْمُ وَالشَّجَرُ يَسْجُدَانِ' — les étoiles et les arbres se prosternent. Cette prosternation est leur soumission totale aux lois d'Allah : gravité, fusion nucléaire, orbite galactique. Chaque étoile obéit à Allah à chaque seconde.",
+    ayah:"« Et les étoiles et les arbres se prosternent. » — Ar-Rahman : 6"
+  },
+  {
+    icon:'🌌',
+    q:"Combien d'étoiles existe-t-il approximativement dans l'univers observable ?",
+    opts:["1 milliard","200 milliards","200 milliards de milliards","Infini, impossible à estimer"],
+    ans:2,
+    fb:"Les astronomes estiment qu'il existe environ 200 milliards de milliards d'étoiles dans l'univers observable — soit 2 × 10²³ étoiles. Chacune est une lampe allumée par Allah. Médite sur la puissance infinie de Celui qui les a toutes créées et les maintient.",
+    ayah:"« Nous avons orné le ciel le plus proche de lampes. » — Al-Mulk : 5"
+  }
+];
+
+let cur=0,score=0,answered=false;
+function startQuiz(){
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-quiz').classList.add('active');
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderQ(){
+  answered=false;
+  const q=Q[cur];
+  document.getElementById('q-icon').textContent=q.icon;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('q-count').textContent=`${cur+1} / ${Q.length}`;
+  document.getElementById('qprog').style.width=`${(cur/Q.length)*100}%`;
+  const opts=document.getElementById('options');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=o;
+    b.onclick=()=>pick(i);opts.appendChild(b);
+  });
+}
+function pick(i){
+  if(answered)return;answered=true;
+  const q=Q[cur];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  if(i!==q.ans)document.querySelectorAll('.opt')[i].classList.add('wrong');
+  else score++;
+  document.getElementById('fb-text').textContent=q.fb;
+  document.getElementById('fb-ayah').textContent=q.ayah;
+  document.getElementById('fb-box').style.display='block';
+  document.getElementById('qnext').style.display='block';
+  document.getElementById('score-pill').textContent=`⭐ ${score}`;
+}
+document.getElementById('qnext').onclick=()=>{ cur++;if(cur>=Q.length)showEnd();else renderQ(); };
+function showEnd(){
+  document.getElementById('q-card').style.display='none';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='none';
+  const pct=score/Q.length;
+  let badge,title,msg;
+  if(pct===1){ badge='🌟';title='Exceptionnel — بارك الله فيك';msg="Tu as répondu correctement à toutes les questions ! La prochaine nuit étoilée, lève les yeux et souviens-toi : 200 milliards de milliards de lampes allumées par Allah, toutes en état de tasbih."; }
+  else if(pct>=.625){ badge='⭐';title='Très bien — أحسنت';msg="Tu connais bien les signes d'Allah dans les étoiles. Relis les leçons sur la supernova et les masâbîh — des merveilles qui dépassent l'imagination."; }
+  else { badge='💫';title='Bon début — استمر في التعلم';msg="La prochaine nuit claire, contemple le ciel étoilé et dis سُبْحَانَ اللهِ. Tu rejoins ainsi le tasbih universel que toutes ces étoiles accomplissent depuis des milliards d'années."; }
+  document.getElementById('end-badge').textContent=badge;
+  document.getElementById('end-title').textContent=title;
+  document.getElementById('end-big').textContent=score;
+  document.getElementById('end-msg').textContent=msg;
+  document.getElementById('end-screen').style.display='block';
+  document.getElementById('qprog').style.width='100%';
+}
+function restartQuiz(){
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+}
+function reviewIntro(){
+  document.getElementById('screen-quiz').classList.remove('active');
+  document.getElementById('screen-intro').classList.add('active');
+  goSlide(0);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
