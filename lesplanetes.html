@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Planètes — Un Signe de la Création d'Allah</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #030d1a;
+  --gold: #d4a843;
+  --gold-light: #f5d57a;
+  --silver-dim: #7a9bbf;
+  --white: #eef3ff;
+  --text: #d8e8ff;
+  --text-dim: #7a9bbf;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--night); color:var(--text); font-family:'Lato',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ══ HEADER ══ */
+#sky-header {
+  position:relative; width:100%; height:240px; overflow:hidden;
+  background:linear-gradient(180deg,#000308 0%,#020814 40%,#040d20 70%,#060e26 100%);
+}
+.hstar { position:absolute; border-radius:50%; background:#fff; animation:twinkle var(--dur,3s) ease-in-out infinite var(--del,0s); }
+@keyframes twinkle { 0%,100%{ opacity:var(--op,.6); } 50%{ opacity:.04; } }
+
+/* orbiting planets in header */
+.h-orbit-wrap {
+  position:absolute; top:50%; left:50%;
+  width:0; height:0;
+  animation:orbitSpin var(--os,12s) linear infinite var(--osd,0s);
+}
+@keyframes orbitSpin { from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+.h-planet {
+  position:absolute; border-radius:50%;
+  animation:counterSpin var(--os,12s) linear infinite var(--osd,0s);
+}
+@keyframes counterSpin { from{ transform:rotate(0deg); } to{ transform:rotate(-360deg); } }
+.h-orbit-path {
+  position:absolute; top:50%; left:50%; border-radius:50%;
+  border:1px dashed rgba(255,255,255,.08);
+  transform:translate(-50%,-50%);
+}
+/* Saturn rings in header */
+.h-ring {
+  position:absolute; border-radius:50%; border:3px solid;
+  top:50%; left:50%; transform:translate(-50%,-50%) rotateX(70deg);
+}
+
+#sky-label {
+  position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+  text-align:center; white-space:nowrap; z-index:5;
+}
+#sky-label h1 { font-family:'Scheherazade New',serif; font-size:24px; color:var(--gold-light); text-shadow:0 0 20px rgba(212,168,67,.5); }
+#sky-label p { font-size:11px; color:var(--silver-dim); letter-spacing:2.5px; text-transform:uppercase; margin-top:3px; }
+
+/* ══ SCREENS ══ */
+#app { display:flex; flex-direction:column; min-height:100vh; }
+.screen { display:none; flex:1; }
+.screen.active { display:block; }
+
+/* ══ INTRO ══ */
+#intro-wrap { max-width:700px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#skip-intro { text-align:right; margin-bottom:1rem; }
+#skip-intro button { background:none; border:none; color:var(--text-dim); font-size:12px; cursor:pointer; letter-spacing:.5px; font-family:'Lato',sans-serif; text-decoration:underline; text-underline-offset:3px; }
+#skip-intro button:hover { color:var(--text); }
+#slide-dots { display:flex; justify-content:center; gap:8px; margin-bottom:2rem; }
+.dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.15); transition:background .3s,transform .3s; cursor:pointer; }
+.dot.active { background:var(--gold); transform:scale(1.3); }
+.dot.done { background:rgba(212,168,67,.4); }
+.slide { display:none; animation:slideIn .45s ease; }
+.slide.active { display:block; }
+@keyframes slideIn { from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
+
+.scene-canvas {
+  width:100%; height:200px; border-radius:14px; margin-bottom:1.4rem;
+  overflow:hidden; position:relative; border:1px solid rgba(255,255,255,.07);
+  background:linear-gradient(180deg,#000308,#020814);
+}
+
+/* ══ SCENE ANIMATIONS ══ */
+@keyframes shimmer { 0%,100%{ opacity:.35; } 50%{ opacity:1; } }
+@keyframes planetOrbit { from{ transform:rotate(0deg) translateX(var(--orx,80px)) rotate(0deg); } to{ transform:rotate(360deg) translateX(var(--orx,80px)) rotate(-360deg); } }
+@keyframes planetPulse { 0%,100%{ box-shadow:0 0 var(--ps,8px) var(--pc,rgba(255,255,255,.2)); } 50%{ box-shadow:0 0 calc(var(--ps,8px)*1.8) var(--pc,rgba(255,255,255,.2)); } }
+@keyframes ringRotate { from{ transform:translate(-50%,-50%) rotateX(70deg) rotate(0deg); } to{ transform:translate(-50%,-50%) rotateX(70deg) rotate(360deg); } }
+@keyframes earthSpin { from{ transform:translate(-50%,-50%) rotate(0deg); } to{ transform:translate(-50%,-50%) rotate(360deg); } }
+@keyframes gravityPulse { 0%,100%{ opacity:.15; transform:translate(-50%,-50%) scale(1); } 50%{ opacity:.4; transform:translate(-50%,-50%) scale(1.05); } }
+@keyframes tasbihFloat { 0%,100%{ transform:translateY(0) translateX(0); opacity:.5; } 50%{ transform:translateY(-7px) translateX(var(--tx,4px)); opacity:1; } }
+@keyframes sparklePop { 0%,100%{ transform:scale(0); opacity:0; } 50%{ transform:scale(1); opacity:.9; } }
+
+/* ── TEXT / LAYOUT ── */
+.slide-num { font-size:11px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:.5rem; font-weight:700; }
+.slide h2 { font-family:'Scheherazade New',serif; font-size:22px; color:var(--gold-light); line-height:1.4; margin-bottom:.75rem; text-shadow:0 0 16px rgba(212,168,67,.3); }
+.slide-body { font-size:14.5px; line-height:1.75; color:var(--text); margin-bottom:1.1rem; }
+.ayah-box { background:rgba(212,168,67,.07); border-left:3px solid var(--gold); border-radius:0 10px 10px 0; padding:.85rem 1rem; margin-bottom:1.3rem; }
+.ayah-ar { font-family:'Scheherazade New',serif; font-size:17px; color:var(--gold); line-height:1.8; display:block; margin-bottom:.3rem; }
+.ayah-fr { font-size:13px; color:var(--silver-dim); font-style:italic; line-height:1.5; }
+.key-fact { display:flex; gap:10px; align-items:flex-start; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:.85rem 1rem; margin-bottom:.75rem; }
+.key-fact-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+.key-fact p { font-size:13.5px; line-height:1.6; color:var(--text); }
+.key-fact p strong { color:var(--gold-light); font-weight:700; }
+.slide-nav { display:flex; gap:10px; margin-top:1.5rem; }
+.btn-prev,.btn-next,.btn-quiz { padding:11px 24px; border-radius:10px; font-size:14px; font-family:'Lato',sans-serif; cursor:pointer; font-weight:700; letter-spacing:.3px; transition:background .2s,border-color .2s,transform .1s; }
+.btn-prev { background:transparent; border:1px solid rgba(255,255,255,.15); color:var(--text-dim); }
+.btn-prev:hover { background:rgba(255,255,255,.05); }
+.btn-next { flex:1; background:linear-gradient(135deg,rgba(212,168,67,.22),rgba(212,168,67,.1)); border:1px solid rgba(212,168,67,.5); color:var(--gold-light); }
+.btn-next:hover { background:linear-gradient(135deg,rgba(212,168,67,.35),rgba(212,168,67,.18)); border-color:rgba(212,168,67,.75); }
+.btn-quiz { flex:1; background:linear-gradient(135deg,rgba(58,173,114,.25),rgba(58,173,114,.1)); border:1px solid rgba(58,173,114,.5); color:#7de0b0; }
+.btn-quiz:hover { background:linear-gradient(135deg,rgba(58,173,114,.38),rgba(58,173,114,.2)); border-color:rgba(58,173,114,.75); }
+.btn-prev:active,.btn-next:active,.btn-quiz:active { transform:scale(.97); }
+
+/* ══ QUIZ ══ */
+#quiz-wrap { max-width:680px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
+.score-pill { background:rgba(212,168,67,.13); border:1px solid rgba(212,168,67,.35); border-radius:20px; padding:5px 16px; font-size:13px; color:var(--gold); font-weight:700; }
+.prog-wrap { flex:1; margin:0 14px; height:4px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; }
+#qprog { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:4px; transition:width .5s ease; width:0%; }
+.q-count { font-size:13px; color:var(--text-dim); white-space:nowrap; }
+#q-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:16px; padding:1.75rem; margin-bottom:1.2rem; }
+#q-icon { width:36px;height:36px;border-radius:10px;background:rgba(212,168,67,.14);border:1px solid rgba(212,168,67,.3);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:1rem; }
+#q-text { font-size:15.5px;line-height:1.65;color:var(--white);margin-bottom:1.4rem; }
+#options { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+.opt { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:12px 14px; font-size:13.5px; color:var(--text); font-family:'Lato',sans-serif; cursor:pointer; text-align:left; line-height:1.4; transition:background .17s,border-color .17s,transform .1s; }
+.opt:hover:not(:disabled) { background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.4);transform:translateY(-1px); }
+.opt:active:not(:disabled) { transform:scale(.98); }
+.opt.correct { background:rgba(58,173,114,.18);border-color:rgba(58,173,114,.6);color:#7de0b0; }
+.opt.wrong   { background:rgba(224,82,82,.15); border-color:rgba(224,82,82,.5);color:#f5a0a0; }
+.opt:disabled { cursor:default; }
+#fb-box { background:rgba(212,168,67,.07); border:1px solid rgba(212,168,67,.2); border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.2rem; display:none; animation:fadeUp .35s ease; }
+#fb-text { font-size:14px;line-height:1.7;color:var(--text);margin-bottom:.7rem; }
+#fb-ayah { font-family:'Scheherazade New',serif; font-size:15px; color:var(--gold); border-left:2px solid var(--gold); padding-left:12px; line-height:1.7; }
+#qnext { width:100%; padding:13px; background:linear-gradient(135deg,rgba(212,168,67,.2),rgba(212,168,67,.08)); border:1px solid rgba(212,168,67,.45); border-radius:10px; color:var(--gold-light); font-family:'Lato',sans-serif; font-size:15px; font-weight:700; cursor:pointer; display:none; letter-spacing:.4px; transition:background .2s,border-color .2s; }
+#qnext:hover { background:linear-gradient(135deg,rgba(212,168,67,.32),rgba(212,168,67,.16));border-color:rgba(212,168,67,.7); }
+#end-screen { display:none;text-align:center;padding:2.5rem 1rem;animation:fadeUp .5s ease; }
+#end-badge { width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,67,.2),rgba(212,168,67,.04));border:2px solid rgba(212,168,67,.5);margin:0 auto 1.4rem;display:flex;align-items:center;justify-content:center;font-size:36px; }
+#end-title { font-family:'Scheherazade New',serif;font-size:22px;color:var(--gold-light);margin-bottom:.5rem; }
+#end-big { font-size:52px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:.4rem; }
+#end-sub { font-size:13px;color:var(--text-dim);margin-bottom:.5rem; }
+#end-msg { font-size:14px;color:var(--text);line-height:1.65;max-width:400px;margin:0 auto 2rem; }
+.end-btns { display:flex;gap:10px;justify-content:center;flex-wrap:wrap; }
+#restart-btn,#review-btn { padding:11px 28px; border-radius:10px; font-family:'Lato',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:background .2s,border-color .2s; }
+#restart-btn { background:transparent;border:1px solid rgba(212,168,67,.5);color:var(--gold); }
+#restart-btn:hover { background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.8); }
+#review-btn { background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--text-dim); }
+#review-btn:hover { background:rgba(255,255,255,.06); }
+@keyframes fadeUp { from{ opacity:0;transform:translateY(10px); } to{ opacity:1;transform:translateY(0); } }
+@media(max-width:480px){
+  #options{ grid-template-columns:1fr; }
+  .slide h2{ font-size:19px; }
+  #sky-label h1{ font-size:20px; }
+  #intro-wrap,#quiz-wrap{ padding:1.4rem 1rem 2.5rem; }
+  .slide-nav{ flex-direction:column; }
+  .btn-prev{ order:2; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ HEADER ══ -->
+<div id="sky-header">
+  <div id="hstars"></div>
+  <div id="solar-system"></div>
+  <div id="sky-label">
+    <h1>الْكَوَاكِبُ — آيَةٌ مِنْ آيَاتِ اللهِ</h1>
+    <p>Les Planètes — Un Signe de la Création d'Allah</p>
+  </div>
+</div>
+
+<!-- ══ INTRO ══ -->
+<div id="screen-intro" class="screen active">
+  <div id="intro-wrap">
+    <div id="skip-intro"><button onclick="startQuiz()">Passer directement au quiz →</button></div>
+    <div id="slide-dots"></div>
+
+    <!-- SLIDE 0 : Le système solaire -->
+    <div class="slide active" id="sl-0">
+      <div class="scene-canvas" id="sc0"></div>
+      <div class="slide-num">Leçon 1 · 6 leçons</div>
+      <h2>Le Système Solaire — نِظَامٌ مُتَوَازِنٌ</h2>
+      <p class="slide-body">
+        Notre système solaire compte <strong style="color:var(--gold-light)">8 planètes</strong>
+        tournant autour du soleil selon des orbites précises, dans un équilibre parfait.
+        Ni trop proches pour brûler, ni trop loin pour geler —
+        chaque planète est à sa place exacte par le
+        <strong style="color:var(--gold-light)">décret précis d'Allah</strong>.
+        Ce système fonctionne depuis 4,6 milliards d'années sans la moindre collision.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَكُلٌّ فِي فَلَكٍ يَسْبَحُونَ ﴾</span>
+        <span class="ayah-fr">« Et chacun nage dans une orbite. » — Yâ-Sîn : 40</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌀</span>
+        <p>Le verbe <strong>يَسْبَحُونَ</strong> (<em>yasbahûn</em> — ils nagent) décrit un mouvement fluide, continu et harmonieux dans un milieu. Appliqué aux planètes, il évoque parfaitement leur déplacement orbital régulier dans le vide spatial.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">⚖️</span>
+        <p>Si Jupiter n'était pas à sa place actuelle, elle n'absorberait pas les astéroïdes qui menacent la Terre. Allah a placé Jupiter comme un <strong>bouclier géant</strong> protégeant notre planète depuis des milliards d'années.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-next" onclick="goSlide(1)">Suivant → La Terre, Planète de la Vie</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 1 : La Terre -->
+    <div class="slide" id="sl-1">
+      <div class="scene-canvas" id="sc1"></div>
+      <div class="slide-num">Leçon 2 · 6 leçons</div>
+      <h2>La Terre — الْأَرْضُ مَهْدًا</h2>
+      <p class="slide-body">
+        Parmi toutes les planètes connues, la Terre est la seule à réunir
+        <strong style="color:var(--gold-light)">toutes les conditions nécessaires à la vie</strong> :
+        eau liquide, atmosphère respirables, température modérée, champ magnétique protecteur,
+        distance parfaite du soleil.
+        Allah l'a préparée comme un <strong style="color:var(--gold-light)">berceau (مَهْد)</strong>
+        pour Ses créatures — avec une précision qui défie toute probabilité.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ أَلَمْ نَجْعَلِ الْأَرْضَ مِهَادًا ﴾</span>
+        <span class="ayah-fr">« N'avons-Nous pas fait de la terre un berceau ? » — An-Naba : 6</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌍</span>
+        <p>La Terre se trouve dans la <strong>zone habitable</strong> du soleil — ni trop chaude ni trop froide. Si elle était 5% plus proche du soleil, les océans s'évaporeraient. 5% plus loin, ils gèleraient. Allah l'a placée exactement là où il fallait.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🧲</span>
+        <p>Le champ magnétique terrestre nous protège des <strong>vents solaires mortels</strong>. Sans lui, l'atmosphère serait soufflée dans l'espace comme sur Mars. Allah a mis ce bouclier invisible autour de notre planète.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(0)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(2)">Suivant → Saturne et ses Anneaux</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 : Saturne -->
+    <div class="slide" id="sl-2">
+      <div class="scene-canvas" id="sc2"></div>
+      <div class="slide-num">Leçon 3 · 6 leçons</div>
+      <h2>Saturne — جَمَالُ الْخَلْقِ</h2>
+      <p class="slide-body">
+        Saturne est l'une des plus belles planètes du système solaire.
+        Ses <strong style="color:var(--gold-light)">anneaux spectaculaires</strong>
+        sont composés de milliards de fragments de glace et de roche,
+        s'étendant sur <strong style="color:var(--gold-light)">280 000 km</strong>
+        de diamètre mais seulement quelques centaines de mètres d'épaisseur.
+        Cette beauté mathématique est une œuvre d'Allah —
+        parfaite dans ses proportions, visible depuis la Terre à l'œil nu.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ صُنْعَ اللَّهِ الَّذِي أَتْقَنَ كُلَّ شَيْءٍ ﴾</span>
+        <span class="ayah-fr">« Telle est l'œuvre d'Allah qui a tout façonné à la perfection. » — An-Naml : 88</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">💫</span>
+        <p>Les anneaux de Saturne sont si fins par rapport à leur largeur que si on les réduisait à l'échelle d'une feuille de papier, cette feuille ferait <strong>2,5 km de large</strong>. Une finesse absolue — une perfection d'Allah.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🪐</span>
+        <p>Saturne est si légère qu'elle <strong>flotterait sur l'eau</strong> — c'est la seule planète du système solaire avec une densité inférieure à celle de l'eau. Allah a créé des planètes aux propriétés inimaginables pour l'esprit humain.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(1)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(3)">Suivant → Jupiter, le Bouclier</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 : Jupiter -->
+    <div class="slide" id="sl-3">
+      <div class="scene-canvas" id="sc3"></div>
+      <div class="slide-num">Leçon 4 · 6 leçons</div>
+      <h2>Jupiter — الْحَارِسُ الْعَظِيمُ</h2>
+      <p class="slide-body">
+        Jupiter est la plus grande planète du système solaire :
+        <strong style="color:var(--gold-light)">1 300 Terres</strong> tiendraient en elle.
+        Sa gravité colossale attire et absorbe la plupart des astéroïdes et comètes
+        qui se dirigeraient vers la Terre.
+        Sans Jupiter, la Terre subirait des impacts dévastateurs
+        <strong style="color:var(--gold-light)">1 000 fois plus fréquents</strong>.
+        Allah a placé ce gardien géant exactement là où il fallait.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَجَعَلْنَا السَّمَاءَ سَقْفًا مَّحْفُوظًا ﴾</span>
+        <span class="ayah-fr">« Nous avons fait du ciel un toit bien gardé. » — Al-Anbiya : 32</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🛡️</span>
+        <p>En 1994, la comète Shoemaker-Levy 9 s'est fracassée sur Jupiter en 21 fragments. Si cette comète avait frappé la Terre, elle aurait causé une <strong>extinction de masse</strong>. Jupiter l'a absorbée à notre place — par la volonté d'Allah.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌀</span>
+        <p>La Grande Tache Rouge de Jupiter est une tempête qui dure depuis <strong>plus de 350 ans</strong>, avec des vents atteignant 500 km/h. Un seul phénomène météorologique de Jupiter est plus grand que la Terre entière.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(2)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(4)">Suivant → Les Planètes Glorifient Allah</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 : Planètes soumises -->
+    <div class="slide" id="sl-4">
+      <div class="scene-canvas" id="sc4"></div>
+      <div class="slide-num">Leçon 5 · 6 leçons</div>
+      <h2>Les Planètes Soumises — كُلٌّ فِي فَلَكٍ يَسْبَحُونَ</h2>
+      <p class="slide-body">
+        Chaque planète suit son orbite avec une précision absolue,
+        depuis des milliards d'années, sans jamais dévier.
+        Ce n'est pas une coïncidence — c'est la <strong style="color:var(--gold-light)">soumission (تَسْخِير)</strong>
+        de toute la création aux lois qu'Allah a établies.
+        Les planètes n'ont pas le choix : elles obéissent à Allah
+        à chaque seconde de leur existence.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَسَخَّرَ الشَّمْسَ وَالْقَمَرَ كُلٌّ يَجْرِي لِأَجَلٍ مُّسَمًّى ﴾</span>
+        <span class="ayah-fr">« Il a assujetti le soleil et la lune, chacun courant jusqu'à un terme fixé. » — Az-Zumar : 5</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">📐</span>
+        <p>La précision des orbites planétaires est telle que les astronomes peuvent prédire la position de chaque planète avec une précision de quelques kilomètres, <strong>des siècles à l'avance</strong>. Des lois immuables posées par Allah.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">⏱️</span>
+        <p>Une année sur Neptune dure <strong>165 années terrestres</strong>. Depuis sa découverte en 1846, Neptune n'a accompli qu'une seule révolution complète autour du soleil — en 2011. Chaque planète suit le terme fixé par Allah.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(3)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(5)">Suivant → Contempler la Création</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 : Contemplation -->
+    <div class="slide" id="sl-5">
+      <div class="scene-canvas" id="sc5"></div>
+      <div class="slide-num">Leçon 6 · 6 leçons</div>
+      <h2>Contempler — أَفَلَا يَتَفَكَّرُونَ</h2>
+      <p class="slide-body">
+        Les planètes sont interdites d'adoration en Islam — elles ne sont que des créatures d'Allah.
+        Mais les contempler et réfléchir à leur création est un acte de foi.
+        <strong style="color:var(--gold-light)">8 planètes, des centaines de lunes, des milliards d'astéroïdes</strong>
+        — tout cela nage dans ses orbites depuis 4,6 milliards d'années
+        sans la moindre collision majeure. Médite sur la puissance d'Allah.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ إِنَّ فِي خَلْقِ السَّمَاوَاتِ وَالْأَرْضِ وَاخْتِلَافِ اللَّيْلِ وَالنَّهَارِ لَآيَاتٍ لِّأُولِي الْأَلْبَابِ ﴾</span>
+        <span class="ayah-fr">« Dans la création des cieux et de la terre et dans l'alternance de la nuit et du jour, il y a des signes pour les hommes doués d'intelligence. » — Âl 'Imran : 190</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🧠</span>
+        <p>Allah s'adresse aux <strong>أُولِي الْأَلْبَاب</strong> (<em>ûlî-l-albâb</em> — hommes doués d'intelligence). Comprendre la création des planètes n'affaiblit pas la foi — elle la <strong>renforce</strong>. Plus on sait, plus on s'émerveille.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🤲</span>
+        <p>La prochaine fois que tu vois une planète dans le ciel (Vénus, Jupiter, Mars sont visibles à l'œil nu), souviens-toi : tu regardes une sphère géante qui nage dans son orbite depuis des milliards d'années, soumise à Allah. <strong>Médite sur Sa grandeur.</strong></p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(4)">← Précédent</button>
+        <button class="btn-quiz" onclick="startQuiz()">🎯 Tester mes connaissances →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="screen-quiz" class="screen">
+  <div id="quiz-wrap">
+    <div id="quiz-header">
+      <div class="score-pill" id="score-pill">⭐ 0</div>
+      <div class="prog-wrap"><div id="qprog"></div></div>
+      <div class="q-count" id="q-count">1 / 8</div>
+    </div>
+    <div id="q-card">
+      <div id="q-icon">🪐</div>
+      <div id="q-text"></div>
+      <div id="options"></div>
+    </div>
+    <div id="fb-box">
+      <div id="fb-text"></div>
+      <div id="fb-ayah"></div>
+    </div>
+    <button id="qnext">Question suivante →</button>
+    <div id="end-screen">
+      <div id="end-badge"></div>
+      <div id="end-title"></div>
+      <div id="end-big"></div>
+      <div id="end-sub">points sur 8</div>
+      <div id="end-msg"></div>
+      <div class="end-btns">
+        <button id="restart-btn" onclick="restartQuiz()">↺ Recommencer le quiz</button>
+        <button id="review-btn" onclick="reviewIntro()">📖 Revoir les leçons</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ══ HEADER ══ */
+(function(){
+  const sb=document.getElementById('hstars');
+  for(let i=0;i<100;i++){
+    const s=document.createElement('div');s.className='hstar';
+    const z=Math.random()*2.5+.4;
+    s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--op:${(.15+Math.random()*.7).toFixed(2)};--dur:${(2+Math.random()*5).toFixed(1)}s;--del:${(Math.random()*6).toFixed(1)}s;opacity:${(.15+Math.random()*.7).toFixed(2)}`;
+    sb.appendChild(s);
+  }
+  // solar system in header
+  const ss=document.getElementById('solar-system');
+  ss.style.cssText='position:absolute;top:50%;left:50%;width:0;height:0';
+  // sun
+  const sun=document.createElement('div');
+  sun.style.cssText='position:absolute;width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 38%,#ffe880,#f5a623);box-shadow:0 0 30px 10px rgba(245,166,35,.45);transform:translate(-50%,-50%);animation:shimmer 4s ease-in-out infinite';
+  ss.appendChild(sun);
+  // planets
+  const planets=[
+    {r:55,sz:6,color:'#b0b0c0',speed:'8s',delay:'0s',name:''},       // Mercury
+    {r:80,sz:9,color:'#e8c880',speed:'12s',delay:'2s',name:''},       // Venus
+    {r:108,sz:10,color:'#4a9fe0',speed:'16s',delay:'5s',name:'🌍'},   // Earth
+    {r:138,sz:7,color:'#c05030',speed:'22s',delay:'1s',name:''},      // Mars
+    {r:175,sz:20,color:'#c8a060',speed:'35s',delay:'3s',name:''},     // Jupiter
+    {r:210,sz:16,color:'#d4b870',speed:'50s',delay:'7s',name:'🪐'},   // Saturn
+  ];
+  planets.forEach((p,i)=>{
+    // orbit path
+    const op=document.createElement('div');
+    op.className='h-orbit-path';
+    op.style.cssText=`width:${p.r*2}px;height:${p.r*2}px;top:50%;left:50%;transform:translate(-50%,-50%);border:1px dashed rgba(255,255,255,.07);border-radius:50%;position:absolute`;
+    ss.appendChild(op);
+    // orbit wrapper
+    const ow=document.createElement('div');
+    ow.className='h-orbit-wrap';
+    ow.style.cssText=`position:absolute;top:0;left:0;width:0;height:0;animation:orbitSpin ${p.speed} linear infinite ${p.delay}`;
+    const pl=document.createElement('div');
+    pl.className='h-planet';
+    pl.style.cssText=`width:${p.sz}px;height:${p.sz}px;border-radius:50%;background:${p.color};top:${-p.r-p.sz/2}px;left:${-p.sz/2}px;box-shadow:0 0 ${p.sz}px rgba(255,255,255,.2);animation:counterSpin ${p.speed} linear infinite ${p.delay}`;
+    if(p.name) pl.textContent=p.name;
+    ow.appendChild(pl);
+    ss.appendChild(ow);
+  });
+})();
+
+/* ══ SCENE HELPERS ══ */
+function addStars(el,count){
+  for(let i=0;i<count;i++){
+    const s=document.createElement('div');
+    const z=Math.random()*2+.4;
+    s.style.cssText=`position:absolute;border-radius:50%;background:#fff;width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;opacity:${(.1+Math.random()*.6).toFixed(2)};animation:shimmer ${(2+Math.random()*4).toFixed(1)}s ease-in-out infinite ${(Math.random()*4).toFixed(1)}s`;
+    el.appendChild(s);
+  }
+}
+
+function drawPlanet(el,x,y,r,grad,rings,label,labelColor){
+  const ns='http://www.w3.org/2000/svg';
+  // using div for planet
+  const p=document.createElement('div');
+  p.style.cssText=`position:absolute;top:${y}px;left:${x}px;transform:translate(-50%,-50%);width:${r*2}px;height:${r*2}px;border-radius:50%;background:${grad};box-shadow:0 0 ${r}px rgba(255,255,255,.15)`;
+  if(rings){
+    rings.forEach(([rw,color])=>{
+      const ring=document.createElement('div');
+      ring.style.cssText=`position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotateX(72deg);width:${rw}px;height:${rw*.3}px;border-radius:50%;border:3px solid ${color};pointer-events:none`;
+      p.appendChild(ring);
+    });
+  }
+  el.appendChild(p);
+  if(label){
+    const lbl=document.createElement('div');
+    lbl.style.cssText=`position:absolute;top:${y+r+8}px;left:${x}px;transform:translateX(-50%);font-size:10px;color:${labelColor||'rgba(212,168,67,.6)'};font-family:Lato,sans-serif;white-space:nowrap;text-align:center`;
+    lbl.textContent=label;
+    el.appendChild(lbl);
+  }
+  return p;
+}
+
+/* Sc0 : Solar system top view */
+function buildSc0(el){
+  addStars(el,50);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <radialGradient id="sunH" cx="38%" cy="38%" r="55%"><stop offset="0%" stop-color="#ffe880"/><stop offset="100%" stop-color="#f5a623"/></radialGradient>
+    </defs>
+    <!-- sun -->
+    <circle cx="170" cy="100" r="18" fill="url(#sunH)"/>
+    <circle cx="170" cy="100" r="24" fill="rgba(245,166,35,.1)"/>
+    <!-- orbit circles -->
+    <circle cx="170" cy="100" r="32" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+    <circle cx="170" cy="100" r="46" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+    <circle cx="170" cy="100" r="60" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+    <circle cx="170" cy="100" r="76" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+    <circle cx="170" cy="100" r="96" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+    <circle cx="170" cy="100" r="112" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+    <!-- Mercury -->
+    <circle cx="202" cy="100" r="3" fill="#b0b0c0"/>
+    <text x="202" y="92" text-anchor="middle" font-size="7" fill="rgba(180,180,190,.6)" font-family="Lato">♀</text>
+    <!-- Venus -->
+    <circle cx="216" cy="100" r="4.5" fill="#e8c880"/>
+    <!-- Earth -->
+    <circle cx="230" cy="100" r="5" fill="#4a9fe0"/>
+    <text x="230" y="90" text-anchor="middle" font-size="8" fill="rgba(74,159,224,.7)" font-family="Lato">🌍</text>
+    <!-- Mars -->
+    <circle cx="246" cy="100" r="3.5" fill="#c05030"/>
+    <!-- Jupiter -->
+    <circle cx="170" cy="4" r="10" fill="#c8a060"/>
+    <text x="190" y="8" font-size="7" fill="rgba(200,160,96,.6)" font-family="Lato">Jupiter</text>
+    <!-- Saturn -->
+    <circle cx="58" cy="100" r="8" fill="#d4b870"/>
+    <ellipse cx="58" cy="100" rx="16" ry="5" fill="none" stroke="rgba(212,184,112,.4)" stroke-width="2" transform="rotate(-15 58 100)"/>
+    <text x="38" y="90" font-size="7" fill="rgba(212,184,112,.6)" font-family="Lato">Saturne</text>
+    <!-- labels -->
+    <text x="170" y="185" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">وَكُلٌّ فِي فَلَكٍ يَسْبَحُونَ — Yâ-Sîn : 40</text>
+    <text x="170" y="198" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(212,168,67,.35)">8 planètes — 4,6 milliards d'années d'équilibre parfait</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc1 : Earth conditions */
+function buildSc1(el){
+  addStars(el,40);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <radialGradient id="earthG" cx="35%" cy="35%" r="55%"><stop offset="0%" stop-color="#4a9fe0"/><stop offset="50%" stop-color="#1a6b30"/><stop offset="100%" stop-color="#0d3a6a"/></radialGradient>
+      <radialGradient id="atmoG" cx="50%" cy="50%" r="50%"><stop offset="75%" stop-color="transparent"/><stop offset="100%" stop-color="rgba(100,160,255,.15)"/></radialGradient>
+    </defs>
+    <!-- magnetic field lines -->
+    <path d="M 170 10 Q 280 60 280 100 Q 280 140 170 190" stroke="rgba(100,150,255,.12)" stroke-width="2" fill="none"/>
+    <path d="M 170 10 Q 60 60 60 100 Q 60 140 170 190" stroke="rgba(100,150,255,.12)" stroke-width="2" fill="none"/>
+    <path d="M 170 25 Q 260 65 260 100 Q 260 135 170 175" stroke="rgba(100,150,255,.1)" stroke-width="1.5" fill="none"/>
+    <path d="M 170 25 Q 80 65 80 100 Q 80 135 170 175" stroke="rgba(100,150,255,.1)" stroke-width="1.5" fill="none"/>
+    <!-- atmosphere glow -->
+    <circle cx="170" cy="100" r="60" fill="url(#atmoG)"/>
+    <!-- Earth -->
+    <circle cx="170" cy="100" r="48" fill="url(#earthG)"/>
+    <!-- cloud bands -->
+    <path d="M 125 85 Q 170 78 215 85" stroke="rgba(255,255,255,.2)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M 122 110 Q 170 104 218 110" stroke="rgba(255,255,255,.18)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- condition labels -->
+    <text x="10" y="45" font-size="9" fill="rgba(100,200,255,.65)" font-family="Lato">💧 Eau liquide</text>
+    <text x="10" y="62" font-size="9" fill="rgba(150,220,150,.65)" font-family="Lato">🌿 Vie</text>
+    <text x="10" y="79" font-size="9" fill="rgba(200,200,255,.65)" font-family="Lato">🧲 Champ magnétique</text>
+    <text x="240" y="45" font-size="9" fill="rgba(255,220,100,.65)" font-family="Lato">☀️ Distance parfaite</text>
+    <text x="250" y="62" font-size="9" fill="rgba(200,240,200,.65)" font-family="Lato">🌡️ Température</text>
+    <text x="255" y="79" font-size="9" fill="rgba(180,210,255,.65)" font-family="Lato">💨 Atmosphère</text>
+    <!-- label -->
+    <text x="170" y="182" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">أَلَمْ نَجْعَلِ الْأَرْضَ مِهَادًا — An-Naba : 6</text>
+    <text x="170" y="196" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(212,168,67,.35)">La seule planète connue réunissant toutes les conditions de vie</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc2 : Saturn with rings */
+function buildSc2(el){
+  addStars(el,60);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <radialGradient id="satG" cx="35%" cy="30%" r="65%">
+        <stop offset="0%" stop-color="#f0e0a0"/>
+        <stop offset="40%" stop-color="#d4b870"/>
+        <stop offset="100%" stop-color="#a08040"/>
+      </radialGradient>
+    </defs>
+    <!-- rings back -->
+    <ellipse cx="170" cy="108" rx="100" ry="22" fill="none" stroke="rgba(210,180,100,.35)" stroke-width="10"/>
+    <ellipse cx="170" cy="108" rx="88" ry="19" fill="none" stroke="rgba(220,190,110,.3)" stroke-width="7"/>
+    <ellipse cx="170" cy="108" rx="76" ry="16" fill="none" stroke="rgba(200,170,90,.25)" stroke-width="5"/>
+    <!-- planet body -->
+    <circle cx="170" cy="100" r="50" fill="url(#satG)"/>
+    <!-- bands on Saturn -->
+    <path d="M 120 90 Q 170 84 220 90" stroke="rgba(180,140,60,.3)" stroke-width="6" fill="none"/>
+    <path d="M 122 108 Q 170 103 218 108" stroke="rgba(160,120,50,.25)" stroke-width="5" fill="none"/>
+    <path d="M 124 120 Q 170 116 216 120" stroke="rgba(180,140,60,.2)" stroke-width="4" fill="none"/>
+    <!-- rings front -->
+    <ellipse cx="170" cy="108" rx="100" ry="22" fill="none" stroke="rgba(210,180,100,.2)" stroke-width="10" clip-path="url(#bottom)"/>
+    <!-- ring labels -->
+    <text x="280" y="112" font-size="9" fill="rgba(210,180,100,.6)" font-family="Lato">← 280 000 km</text>
+    <line x1="270" y1="108" x2="68" y2="108" stroke="rgba(212,168,67,.2)" stroke-width="1" stroke-dasharray="3,4"/>
+    <!-- labels -->
+    <text x="170" y="182" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">صُنْعَ اللَّهِ الَّذِي أَتْقَنَ كُلَّ شَيْءٍ</text>
+    <text x="170" y="196" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(212,168,67,.35)">An-Naml : 88 — Saturne flotterait sur l'eau</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc3 : Jupiter shield */
+function buildSc3(el){
+  addStars(el,50);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <radialGradient id="jupG" cx="35%" cy="30%" r="65%">
+        <stop offset="0%" stop-color="#e0c090"/>
+        <stop offset="40%" stop-color="#c8a060"/>
+        <stop offset="100%" stop-color="#906030"/>
+      </radialGradient>
+      <radialGradient id="earthSm" cx="35%" cy="35%" r="55%"><stop offset="0%" stop-color="#4a9fe0"/><stop offset="100%" stop-color="#0d3a6a"/></radialGradient>
+    </defs>
+    <!-- Jupiter big -->
+    <circle cx="100" cy="100" r="65" fill="url(#jupG)"/>
+    <!-- Jupiter bands -->
+    <path d="M 35 80 Q 100 73 165 80" stroke="rgba(150,90,40,.4)" stroke-width="8" fill="none"/>
+    <path d="M 35 100 Q 100 94 165 100" stroke="rgba(130,70,30,.35)" stroke-width="6" fill="none"/>
+    <path d="M 35 118 Q 100 113 165 118" stroke="rgba(150,90,40,.3)" stroke-width="7" fill="none"/>
+    <!-- Great Red Spot -->
+    <ellipse cx="80" cy="105" rx="14" ry="9" fill="rgba(180,60,30,.5)" stroke="rgba(200,80,40,.3)" stroke-width="1"/>
+    <text x="80" y="124" text-anchor="middle" font-size="7" fill="rgba(200,100,60,.6)" font-family="Lato">Grande Tache Rouge</text>
+    <!-- asteroids/comets heading toward Earth, deflected -->
+    <line x1="320" y1="20" x2="170" y2="85" stroke="rgba(255,200,100,.5)" stroke-width="2" stroke-dasharray="5,3"/>
+    <line x1="310" y1="50" x2="175" y2="90" stroke="rgba(255,200,100,.4)" stroke-width="1.5" stroke-dasharray="4,4"/>
+    <!-- Earth small top right -->
+    <circle cx="290" cy="60" r="18" fill="url(#earthSm)"/>
+    <text x="290" y="85" text-anchor="middle" font-size="8" fill="rgba(74,159,224,.6)" font-family="Lato">Terre</text>
+    <!-- shield text -->
+    <text x="100" y="178" text-anchor="middle" font-family="Scheherazade New,serif" font-size="12" fill="rgba(212,168,67,.55)">الْحَارِسُ الْعَظِيمُ — Le Grand Gardien</text>
+    <text x="100" y="193" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(212,168,67,.35)">1 300 Terres tiendraient dans Jupiter</text>
+    <!-- size comparison -->
+    <text x="260" y="130" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.4)" font-family="Lato">Comète</text>
+    <text x="260" y="142" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.35)" font-family="Lato">absorbée ↙</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc4 : All planets in orbits */
+function buildSc4(el){
+  addStars(el,55);
+  // animated orbiting planets
+  const sun=document.createElement('div');
+  sun.style.cssText='position:absolute;top:100px;left:170px;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 38%,#ffe880,#f5a623);box-shadow:0 0 20px 6px rgba(245,166,35,.4);animation:shimmer 4s ease-in-out infinite';
+  el.appendChild(sun);
+  const planets=[
+    {orx:38,sz:5,color:'#b0b0c0',speed:'5s',delay:'0s'},
+    {orx:55,sz:7,color:'#e8c880',speed:'8s',delay:'1s'},
+    {orx:72,sz:8,color:'#4a9fe0',speed:'12s',delay:'3s'},
+    {orx:88,sz:6,color:'#c05030',speed:'18s',delay:'6s'},
+    {orx:110,sz:16,color:'#c8a060',speed:'28s',delay:'2s'},
+    {orx:130,sz:13,color:'#d4b870',speed:'40s',delay:'8s'},
+    {orx:148,sz:9,color:'#90b8d8',speed:'55s',delay:'4s'},
+    {orx:163,sz:9,color:'#4060a0',speed:'70s',delay:'9s'},
+  ];
+  planets.forEach(p=>{
+    const ow=document.createElement('div');
+    ow.style.cssText=`position:absolute;top:100px;left:170px;width:0;height:0;animation:planetOrbit ${p.speed} linear infinite ${p.delay};--orx:${p.orx}px`;
+    const pl=document.createElement('div');
+    pl.style.cssText=`position:absolute;width:${p.sz}px;height:${p.sz}px;border-radius:50%;background:${p.color};top:${-p.orx-p.sz/2}px;left:${-p.sz/2}px;box-shadow:0 0 ${p.sz/2}px rgba(255,255,255,.2)`;
+    ow.appendChild(pl);
+    el.appendChild(ow);
+    // orbit path
+    const op=document.createElement('div');
+    op.style.cssText=`position:absolute;top:100px;left:170px;transform:translate(-50%,-50%);width:${p.orx*2}px;height:${p.orx*2}px;border-radius:50%;border:1px dashed rgba(255,255,255,.06)`;
+    el.appendChild(op);
+  });
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg.innerHTML=`
+    <text x="170" y="185" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">كُلٌّ يَجْرِي لِأَجَلٍ مُّسَمًّى — Az-Zumar : 5</text>
+    <text x="170" y="198" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(212,168,67,.35)">Chacun court jusqu'au terme fixé par Allah</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc5 : Contemplation */
+function buildSc5(el){
+  addStars(el,80);
+  // floating planets small
+  [['🌍',60,70,'14s'],['🪐',250,55,'18s'],['♦',150,120,'22s'],['🔴',200,140,'16s']].forEach(([t,x,y,d])=>{
+    const p=document.createElement('div');
+    p.style.cssText=`position:absolute;top:${y}px;left:${x}px;font-size:18px;animation:tasbihFloat ${d} ease-in-out infinite;--tx:${Math.random()>0.5?'6px':'-6px'}`;
+    p.textContent=t;
+    el.appendChild(p);
+  });
+  // tasbih words
+  const words=[
+    {t:'سُبْحَانَ اللهِ',x:'4%',y:'8%',sz:13},{t:'أَتْقَنَ',x:'68%',y:'6%',sz:14},
+    {t:'يَسْبَحُونَ',x:'6%',y:'55%',sz:13},{t:'تَسْخِير',x:'70%',y:'52%',sz:12},
+    {t:'آيَات',x:'42%',y:'5%',sz:15},
+  ];
+  words.forEach((w,i)=>{
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;left:${w.x};top:${w.y};font-family:Scheherazade New,serif;font-size:${w.sz}px;color:rgba(212,168,67,.42);animation:tasbihFloat ${(4+Math.random()*3).toFixed(1)}s ease-in-out infinite ${(i*.6).toFixed(1)}s;--tx:${i%2===0?'5px':'-5px'}`;
+    d.textContent=w.t;
+    el.appendChild(d);
+  });
+  // person
+  const person=document.createElement('div');
+  person.style.cssText='position:absolute;bottom:18px;left:50%;transform:translateX(-50%)';
+  person.innerHTML=`<svg width="38" height="65" viewBox="0 0 38 65">
+    <circle cx="19" cy="10" r="8" fill="rgba(212,168,67,.6)"/>
+    <line x1="19" y1="18" x2="19" y2="48" stroke="rgba(212,168,67,.55)" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="19" y1="28" x2="6" y2="20" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="19" y1="28" x2="32" y2="20" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="19" y1="48" x2="11" y2="63" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="19" y1="48" x2="27" y2="63" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
+  el.appendChild(person);
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.5);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  lbl.textContent='لَآيَاتٍ لِّأُولِي الْأَلْبَابِ — Âl \'Imran : 190';
+  el.appendChild(lbl);
+}
+
+const sceneFns=[buildSc0,buildSc1,buildSc2,buildSc3,buildSc4,buildSc5];
+sceneFns.forEach((fn,i)=>fn(document.getElementById('sc'+i)));
+
+/* ══ SLIDE DOTS ══ */
+const NSLIDES=6;
+const dotsEl=document.getElementById('slide-dots');
+for(let i=0;i<NSLIDES;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=(()=>{const n=i;return()=>goSlide(n);})();
+  dotsEl.appendChild(d);
+}
+let curSlide=0;
+function goSlide(n){
+  document.getElementById('sl-'+curSlide).classList.remove('active');
+  curSlide=n;
+  document.getElementById('sl-'+n).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>{ d.className='dot'+(i===n?' active':i<n?' done':''); });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══ QUIZ ══ */
+const Q=[
+  {
+    icon:'🌀',
+    q:"Quel verbe coranique décrit le mouvement des planètes dans leurs orbites ?",
+    opts:["يَدُورُونَ (ils tournent)","يَسْبَحُونَ (ils nagent)","يَطِيرُونَ (ils volent)","يَجْرِيَانِ (ils courent)"],
+    ans:1,
+    fb:"يَسْبَحُونَ (yasbahûn — ils nagent) décrit un mouvement fluide, continu et harmonieux dans un milieu. Appliqué aux planètes, il évoque parfaitement leur déplacement orbital régulier dans le vide spatial — un choix de mot d'une précision remarquable.",
+    ayah:"« Et chacun nage dans une orbite. » — Yâ-Sîn : 40"
+  },
+  {
+    icon:'🌍',
+    q:"Quel mot le Coran utilise-t-il pour décrire la Terre comme lieu de vie ?",
+    opts:["سَكَن (demeure)","مِهَاد (berceau)","فِرَاش (tapis)","مَكَان (endroit)"],
+    ans:1,
+    fb:"Allah dit 'أَلَمْ نَجْعَلِ الْأَرْضَ مِهَادًا' — la Terre comme berceau (mihâd). Un berceau est conçu avec soin pour protéger et nourrir — c'est exactement ce qu'Allah a fait : Il a préparé la Terre avec toutes les conditions nécessaires à la vie.",
+    ayah:"« N'avons-Nous pas fait de la terre un berceau ? » — An-Naba : 6"
+  },
+  {
+    icon:'🧲',
+    q:"Quel élément invisible protège la Terre des vents solaires mortels ?",
+    opts:["L'atmosphère uniquement","Le champ magnétique terrestre","La couche d'ozone","La gravité lunaire"],
+    ans:1,
+    fb:"Le champ magnétique terrestre dévie les vents solaires chargés de particules mortelles. Sans lui, l'atmosphère serait progressivement soufflée dans l'espace, comme cela s'est produit sur Mars. Allah a mis ce bouclier invisible autour de notre planète.",
+    ayah:"« N'avons-Nous pas fait de la terre un berceau ? » — An-Naba : 6"
+  },
+  {
+    icon:'🪐',
+    q:"Quelle est la particularité extraordinaire de la densité de Saturne ?",
+    opts:["Elle est 10 fois plus dense que la Terre","Elle flotterait sur l'eau","Elle est aussi dense que l'or","Elle est solide comme la roche"],
+    ans:1,
+    fb:"Saturne est la seule planète du système solaire avec une densité inférieure à celle de l'eau — elle flotterait si on la posait sur un océan suffisamment grand. Allah a créé des planètes aux propriétés inimaginables pour l'esprit humain.",
+    ayah:"« Telle est l'œuvre d'Allah qui a tout façonné à la perfection. » — An-Naml : 88"
+  },
+  {
+    icon:'🛡️',
+    q:"Quel rôle joue Jupiter vis-à-vis de la Terre ?",
+    opts:["Elle réchauffe notre planète","Elle absorbe les astéroïdes et comètes qui menacent la Terre","Elle régule les marées","Elle fournit de l'oxygène"],
+    ans:1,
+    fb:"La gravité colossale de Jupiter attire et absorbe la plupart des astéroïdes et comètes qui se dirigeraient vers la Terre. Sans Jupiter, la Terre subirait des impacts dévastateurs 1 000 fois plus fréquents. En 1994, la comète Shoemaker-Levy 9 s'est fracassée sur Jupiter à notre place.",
+    ayah:"« Nous avons fait du ciel un toit bien gardé. » — Al-Anbiya : 32"
+  },
+  {
+    icon:'⏱️',
+    q:"Combien d'années terrestres dure une année sur Neptune ?",
+    opts:["12 années","84 années","165 années","248 années"],
+    ans:2,
+    fb:"Une année sur Neptune dure 165 années terrestres. Depuis sa découverte en 1846, Neptune n'a accompli qu'une seule révolution complète autour du soleil — en 2011. Chaque planète suit exactement le terme que lui a fixé Allah.",
+    ayah:"« Il a assujetti le soleil et la lune, chacun courant jusqu'à un terme fixé. » — Az-Zumar : 5"
+  },
+  {
+    icon:'💫',
+    q:"Quelle est l'épaisseur des anneaux de Saturne par rapport à leur largeur de 280 000 km ?",
+    opts:["Plusieurs milliers de km","Quelques centaines de mètres seulement","La moitié de leur largeur","Environ 1 000 km"],
+    ans:1,
+    fb:"Les anneaux de Saturne s'étendent sur 280 000 km de diamètre mais n'ont que quelques centaines de mètres d'épaisseur. Ramenés à l'échelle d'une feuille de papier, ils feraient 2,5 km de large. Une finesse absolue — une perfection signée Allah.",
+    ayah:"« Telle est l'œuvre d'Allah qui a tout façonné à la perfection. » — An-Naml : 88"
+  },
+  {
+    icon:'🧠',
+    q:"À qui Allah s'adresse-t-Il quand Il invite à réfléchir à la création des cieux et de la terre (Âl 'Imran : 190) ?",
+    opts:["Aux prophètes uniquement","Aux hommes doués d'intelligence (ûlî-l-albâb)","Aux anges","Aux savants religieux uniquement"],
+    ans:1,
+    fb:"Allah s'adresse aux 'أُولِي الْأَلْبَاب' (ûlî-l-albâb — hommes doués d'intelligence). Comprendre la création des planètes — leurs orbites, leurs tailles, leurs rôles — ne s'oppose pas à la foi. Au contraire, plus on comprend la création, plus on s'émerveille devant son Créateur.",
+    ayah:"« Dans la création des cieux et de la terre, il y a des signes pour les hommes doués d'intelligence. » — Âl 'Imran : 190"
+  }
+];
+
+let cur=0,score=0,answered=false;
+function startQuiz(){
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-quiz').classList.add('active');
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderQ(){
+  answered=false;
+  const q=Q[cur];
+  document.getElementById('q-icon').textContent=q.icon;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('q-count').textContent=`${cur+1} / ${Q.length}`;
+  document.getElementById('qprog').style.width=`${(cur/Q.length)*100}%`;
+  const opts=document.getElementById('options');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=o;
+    b.onclick=()=>pick(i);opts.appendChild(b);
+  });
+}
+function pick(i){
+  if(answered)return;answered=true;
+  const q=Q[cur];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  if(i!==q.ans)document.querySelectorAll('.opt')[i].classList.add('wrong');
+  else score++;
+  document.getElementById('fb-text').textContent=q.fb;
+  document.getElementById('fb-ayah').textContent=q.ayah;
+  document.getElementById('fb-box').style.display='block';
+  document.getElementById('qnext').style.display='block';
+  document.getElementById('score-pill').textContent=`⭐ ${score}`;
+}
+document.getElementById('qnext').onclick=()=>{ cur++;if(cur>=Q.length)showEnd();else renderQ(); };
+function showEnd(){
+  document.getElementById('q-card').style.display='none';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='none';
+  const pct=score/Q.length;
+  let badge,title,msg;
+  if(pct===1){ badge='🌟';title='Exceptionnel — بارك الله فيك';msg="Tu as répondu correctement à toutes les questions ! La prochaine fois que tu vois Vénus ou Jupiter dans le ciel, souviens-toi : tu regardes un monde qui nage dans son orbite depuis des milliards d'années, soumis à Allah."; }
+  else if(pct>=.625){ badge='🪐';title='Très bien — أحسنت';msg="Tu connais bien les signes d'Allah dans les planètes. Relis les leçons sur Jupiter le bouclier et la Terre berceau — des merveilles qui renforcent la foi."; }
+  else { badge='🌍';title='Bon début — استمر في التعلم';msg="Chaque planète est un signe d'Allah. Reprends les leçons et médite : 8 planètes, des milliards d'années d'équilibre parfait — sans la moindre collision. Telle est la puissance d'Allah."; }
+  document.getElementById('end-badge').textContent=badge;
+  document.getElementById('end-title').textContent=title;
+  document.getElementById('end-big').textContent=score;
+  document.getElementById('end-msg').textContent=msg;
+  document.getElementById('end-screen').style.display='block';
+  document.getElementById('qprog').style.width='100%';
+}
+function restartQuiz(){
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+}
+function reviewIntro(){
+  document.getElementById('screen-quiz').classList.remove('active');
+  document.getElementById('screen-intro').classList.add('active');
+  goSlide(0);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
