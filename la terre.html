@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Terre — Un Signe de la Création d'Allah</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #030d1a;
+  --gold: #d4a843;
+  --gold-light: #f5d57a;
+  --silver-dim: #7a9bbf;
+  --white: #eef3ff;
+  --text: #d8e8ff;
+  --text-dim: #7a9bbf;
+  --earth-blue: #1a6bae;
+  --earth-green: #2d7a3a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--night); color:var(--text); font-family:'Lato',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ══ HEADER ══ */
+#sky-header {
+  position:relative; width:100%; height:240px; overflow:hidden;
+  background:linear-gradient(180deg,#000308 0%,#010814 40%,#020c1e 70%,#030e24 100%);
+}
+.hstar { position:absolute; border-radius:50%; background:#fff; animation:twinkle var(--dur,3s) ease-in-out infinite var(--del,0s); }
+@keyframes twinkle { 0%,100%{ opacity:var(--op,.6); } 50%{ opacity:.04; } }
+
+/* hero earth in header */
+#hero-earth {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-55%);
+  width:110px; height:110px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#4a9fe0 0%,#1a5fa0 30%,#1a6b30 55%,#0d3a6a 80%,#041020 100%);
+  box-shadow:0 0 50px 16px rgba(74,159,224,.25),0 0 100px 36px rgba(74,159,224,.1);
+  animation:earthSpin 20s linear infinite;
+  overflow:hidden;
+}
+@keyframes earthSpin { from{ transform:translate(-50%,-55%) rotate(0deg); } to{ transform:translate(-50%,-55%) rotate(360deg); } }
+/* atmosphere glow */
+#earth-atmo {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-55%);
+  width:130px; height:130px; border-radius:50%;
+  background:radial-gradient(circle,transparent 42%,rgba(100,160,255,.12) 50%,transparent 58%);
+  animation:atmoGlow 5s ease-in-out infinite;
+}
+@keyframes atmoGlow { 0%,100%{ opacity:.6; } 50%{ opacity:1; } }
+/* cloud bands on header earth */
+.h-cloud-band {
+  position:absolute; border-radius:40px;
+  background:rgba(255,255,255,.2);
+  animation:bandDrift var(--bd,8s) linear infinite var(--bdd,0s);
+}
+@keyframes bandDrift { from{ transform:translateX(-10px); } to{ transform:translateX(10px); } }
+/* stars */
+.hstar { position:absolute; border-radius:50%; background:#fff; animation:twinkle var(--dur,3s) ease-in-out infinite var(--del,0s); }
+
+#sky-label {
+  position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+  text-align:center; white-space:nowrap; z-index:3;
+}
+#sky-label h1 { font-family:'Scheherazade New',serif; font-size:24px; color:var(--gold-light); text-shadow:0 0 20px rgba(212,168,67,.5); }
+#sky-label p { font-size:11px; color:var(--silver-dim); letter-spacing:2.5px; text-transform:uppercase; margin-top:3px; }
+
+/* ══ SCREENS ══ */
+#app { display:flex; flex-direction:column; min-height:100vh; }
+.screen { display:none; flex:1; }
+.screen.active { display:block; }
+
+/* ══ INTRO ══ */
+#intro-wrap { max-width:700px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#skip-intro { text-align:right; margin-bottom:1rem; }
+#skip-intro button { background:none; border:none; color:var(--text-dim); font-size:12px; cursor:pointer; letter-spacing:.5px; font-family:'Lato',sans-serif; text-decoration:underline; text-underline-offset:3px; }
+#skip-intro button:hover { color:var(--text); }
+#slide-dots { display:flex; justify-content:center; gap:8px; margin-bottom:2rem; }
+.dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.15); transition:background .3s,transform .3s; cursor:pointer; }
+.dot.active { background:var(--gold); transform:scale(1.3); }
+.dot.done { background:rgba(212,168,67,.4); }
+.slide { display:none; animation:slideIn .45s ease; }
+.slide.active { display:block; }
+@keyframes slideIn { from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
+
+.scene-canvas {
+  width:100%; height:200px; border-radius:14px; margin-bottom:1.4rem;
+  overflow:hidden; position:relative; border:1px solid rgba(255,255,255,.07);
+  background:linear-gradient(180deg,#000308,#010814);
+}
+
+/* ══ SCENE ANIMATIONS ══ */
+@keyframes shimmer { 0%,100%{ opacity:.35; } 50%{ opacity:1; } }
+@keyframes float { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+@keyframes rise { 0%{ transform:translateY(0); opacity:.8; } 100%{ transform:translateY(-70px); opacity:0; } }
+@keyframes sway { 0%,100%{ transform:rotate(var(--sw,0deg)); transform-origin:bottom center; } 50%{ transform:rotate(calc(var(--sw,0deg)+5deg)); transform-origin:bottom center; } }
+@keyframes waveFlow { 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(12px); } }
+@keyframes mountainPulse { 0%,100%{ opacity:.7; } 50%{ opacity:1; } }
+@keyframes quakeTremor { 0%,100%{ transform:translateX(0); } 25%{ transform:translateX(-3px); } 75%{ transform:translateX(3px); } }
+@keyframes magneticPulse { 0%,100%{ opacity:.15; transform:translate(-50%,-50%) scale(1); } 50%{ opacity:.45; transform:translate(-50%,-50%) scale(1.06); } }
+@keyframes tasbihFloat { 0%,100%{ transform:translateY(0) translateX(0); opacity:.5; } 50%{ transform:translateY(-8px) translateX(var(--tx,4px)); opacity:1; } }
+@keyframes sparklePop { 0%,100%{ transform:scale(0); opacity:0; } 50%{ transform:scale(1); opacity:.9; } }
+@keyframes fallRain { from{ transform:translateY(-15px); opacity:0; } 15%{ opacity:1; } to{ transform:translateY(220px); opacity:0; } }
+@keyframes riverFlow { 0%{ background-position:0% 50%; } 100%{ background-position:200% 50%; } }
+
+/* ── TEXT / LAYOUT ── */
+.slide-num { font-size:11px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:.5rem; font-weight:700; }
+.slide h2 { font-family:'Scheherazade New',serif; font-size:22px; color:var(--gold-light); line-height:1.4; margin-bottom:.75rem; text-shadow:0 0 16px rgba(212,168,67,.3); }
+.slide-body { font-size:14.5px; line-height:1.75; color:var(--text); margin-bottom:1.1rem; }
+.ayah-box { background:rgba(212,168,67,.07); border-left:3px solid var(--gold); border-radius:0 10px 10px 0; padding:.85rem 1rem; margin-bottom:1.3rem; }
+.ayah-ar { font-family:'Scheherazade New',serif; font-size:17px; color:var(--gold); line-height:1.8; display:block; margin-bottom:.3rem; }
+.ayah-fr { font-size:13px; color:var(--silver-dim); font-style:italic; line-height:1.5; }
+.key-fact { display:flex; gap:10px; align-items:flex-start; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:.85rem 1rem; margin-bottom:.75rem; }
+.key-fact-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+.key-fact p { font-size:13.5px; line-height:1.6; color:var(--text); }
+.key-fact p strong { color:var(--gold-light); font-weight:700; }
+.slide-nav { display:flex; gap:10px; margin-top:1.5rem; }
+.btn-prev,.btn-next,.btn-quiz { padding:11px 24px; border-radius:10px; font-size:14px; font-family:'Lato',sans-serif; cursor:pointer; font-weight:700; letter-spacing:.3px; transition:background .2s,border-color .2s,transform .1s; }
+.btn-prev { background:transparent; border:1px solid rgba(255,255,255,.15); color:var(--text-dim); }
+.btn-prev:hover { background:rgba(255,255,255,.05); }
+.btn-next { flex:1; background:linear-gradient(135deg,rgba(212,168,67,.22),rgba(212,168,67,.1)); border:1px solid rgba(212,168,67,.5); color:var(--gold-light); }
+.btn-next:hover { background:linear-gradient(135deg,rgba(212,168,67,.35),rgba(212,168,67,.18)); border-color:rgba(212,168,67,.75); }
+.btn-quiz { flex:1; background:linear-gradient(135deg,rgba(58,173,114,.25),rgba(58,173,114,.1)); border:1px solid rgba(58,173,114,.5); color:#7de0b0; }
+.btn-quiz:hover { background:linear-gradient(135deg,rgba(58,173,114,.38),rgba(58,173,114,.2)); border-color:rgba(58,173,114,.75); }
+.btn-prev:active,.btn-next:active,.btn-quiz:active { transform:scale(.97); }
+
+/* ══ QUIZ ══ */
+#quiz-wrap { max-width:680px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
+.score-pill { background:rgba(212,168,67,.13); border:1px solid rgba(212,168,67,.35); border-radius:20px; padding:5px 16px; font-size:13px; color:var(--gold); font-weight:700; }
+.prog-wrap { flex:1; margin:0 14px; height:4px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; }
+#qprog { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:4px; transition:width .5s ease; width:0%; }
+.q-count { font-size:13px; color:var(--text-dim); white-space:nowrap; }
+#q-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:16px; padding:1.75rem; margin-bottom:1.2rem; }
+#q-icon { width:36px;height:36px;border-radius:10px;background:rgba(212,168,67,.14);border:1px solid rgba(212,168,67,.3);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:1rem; }
+#q-text { font-size:15.5px;line-height:1.65;color:var(--white);margin-bottom:1.4rem; }
+#options { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+.opt { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:12px 14px; font-size:13.5px; color:var(--text); font-family:'Lato',sans-serif; cursor:pointer; text-align:left; line-height:1.4; transition:background .17s,border-color .17s,transform .1s; }
+.opt:hover:not(:disabled) { background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.4);transform:translateY(-1px); }
+.opt:active:not(:disabled) { transform:scale(.98); }
+.opt.correct { background:rgba(58,173,114,.18);border-color:rgba(58,173,114,.6);color:#7de0b0; }
+.opt.wrong   { background:rgba(224,82,82,.15); border-color:rgba(224,82,82,.5);color:#f5a0a0; }
+.opt:disabled { cursor:default; }
+#fb-box { background:rgba(212,168,67,.07); border:1px solid rgba(212,168,67,.2); border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.2rem; display:none; animation:fadeUp .35s ease; }
+#fb-text { font-size:14px;line-height:1.7;color:var(--text);margin-bottom:.7rem; }
+#fb-ayah { font-family:'Scheherazade New',serif; font-size:15px; color:var(--gold); border-left:2px solid var(--gold); padding-left:12px; line-height:1.7; }
+#qnext { width:100%; padding:13px; background:linear-gradient(135deg,rgba(212,168,67,.2),rgba(212,168,67,.08)); border:1px solid rgba(212,168,67,.45); border-radius:10px; color:var(--gold-light); font-family:'Lato',sans-serif; font-size:15px; font-weight:700; cursor:pointer; display:none; letter-spacing:.4px; transition:background .2s,border-color .2s; }
+#qnext:hover { background:linear-gradient(135deg,rgba(212,168,67,.32),rgba(212,168,67,.16));border-color:rgba(212,168,67,.7); }
+#end-screen { display:none;text-align:center;padding:2.5rem 1rem;animation:fadeUp .5s ease; }
+#end-badge { width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,67,.2),rgba(212,168,67,.04));border:2px solid rgba(212,168,67,.5);margin:0 auto 1.4rem;display:flex;align-items:center;justify-content:center;font-size:36px; }
+#end-title { font-family:'Scheherazade New',serif;font-size:22px;color:var(--gold-light);margin-bottom:.5rem; }
+#end-big { font-size:52px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:.4rem; }
+#end-sub { font-size:13px;color:var(--text-dim);margin-bottom:.5rem; }
+#end-msg { font-size:14px;color:var(--text);line-height:1.65;max-width:400px;margin:0 auto 2rem; }
+.end-btns { display:flex;gap:10px;justify-content:center;flex-wrap:wrap; }
+#restart-btn,#review-btn { padding:11px 28px; border-radius:10px; font-family:'Lato',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:background .2s,border-color .2s; }
+#restart-btn { background:transparent;border:1px solid rgba(212,168,67,.5);color:var(--gold); }
+#restart-btn:hover { background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.8); }
+#review-btn { background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--text-dim); }
+#review-btn:hover { background:rgba(255,255,255,.06); }
+@keyframes fadeUp { from{ opacity:0;transform:translateY(10px); } to{ opacity:1;transform:translateY(0); } }
+@media(max-width:480px){
+  #options{ grid-template-columns:1fr; }
+  .slide h2{ font-size:19px; }
+  #sky-label h1{ font-size:20px; }
+  #intro-wrap,#quiz-wrap{ padding:1.4rem 1rem 2.5rem; }
+  .slide-nav{ flex-direction:column; }
+  .btn-prev{ order:2; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ HEADER ══ -->
+<div id="sky-header">
+  <div id="hstars"></div>
+  <div id="earth-atmo"></div>
+  <div id="hero-earth">
+    <div class="h-cloud-band" style="width:90px;height:12px;top:20px;left:5px;--bd:9s;--bdd:0s"></div>
+    <div class="h-cloud-band" style="width:80px;height:9px;top:50px;left:15px;--bd:11s;--bdd:1s"></div>
+    <div class="h-cloud-band" style="width:85px;height:10px;top:78px;left:8px;--bd:8s;--bdd:2s"></div>
+  </div>
+  <div id="sky-label">
+    <h1>الْأَرْضُ — آيَةٌ مِنْ آيَاتِ اللهِ</h1>
+    <p>La Terre — Un Signe de la Création d'Allah</p>
+  </div>
+</div>
+
+<!-- ══ INTRO ══ -->
+<div id="screen-intro" class="screen active">
+  <div id="intro-wrap">
+    <div id="skip-intro"><button onclick="startQuiz()">Passer directement au quiz →</button></div>
+    <div id="slide-dots"></div>
+
+    <!-- SLIDE 0 : La Terre berceau -->
+    <div class="slide active" id="sl-0">
+      <div class="scene-canvas" id="sc0"></div>
+      <div class="slide-num">Leçon 1 · 6 leçons</div>
+      <h2>La Terre — Un Berceau Préparé par Allah</h2>
+      <p class="slide-body">
+        Allah a créé la Terre comme un <strong style="color:var(--gold-light)">berceau (مِهَاد)</strong>
+        pour Ses créatures. Pas une planète au hasard — une planète
+        <strong style="color:var(--gold-light)">soigneusement préparée</strong> :
+        juste assez grande pour retenir une atmosphère, juste assez loin du soleil
+        pour avoir de l'eau liquide, inclinée à exactement 23,5° pour créer les saisons.
+        Chaque détail est une preuve de la sagesse d'Allah.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ أَلَمْ نَجْعَلِ الْأَرْضَ مِهَادًا ﴾</span>
+        <span class="ayah-fr">« N'avons-Nous pas fait de la terre un berceau ? » — An-Naba : 6</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌍</span>
+        <p>La Terre est inclinée à <strong>23,5° sur son axe</strong>. Sans cette inclinaison précise, il n'y aurait pas de saisons — les pôles seraient brûlants l'été et les tropiques glacés en hiver. Allah a incliné la Terre exactement comme il fallait.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">💧</span>
+        <p>La Terre est la seule planète connue où l'eau existe simultanément sous ses <strong>trois états</strong> : solide (glace), liquide (océans), gazeux (nuages). Un équilibre parfait rendu possible par la distance exacte au soleil voulue par Allah.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-next" onclick="goSlide(1)">Suivant → Les Montagnes</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 1 : Montagnes / pieux -->
+    <div class="slide" id="sl-1">
+      <div class="scene-canvas" id="sc1"></div>
+      <div class="slide-num">Leçon 2 · 6 leçons</div>
+      <h2>Les Montagnes — أَوْتَادًا</h2>
+      <p class="slide-body">
+        Le Coran décrit les montagnes comme des
+        <strong style="color:var(--gold-light)">pieux (أَوْتَاد)</strong>
+        fichés dans la terre pour la stabiliser.
+        La science moderne a confirmé que les montagnes ont des
+        <strong style="color:var(--gold-light)">racines profondes</strong>
+        qui s'enfoncent dans le manteau terrestre — exactement comme un pieu —
+        stabilisant les plaques tectoniques et évitant que la croûte terrestre
+        ne tremble sans cesse de manière catastrophique.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَالْجِبَالَ أَوْتَادًا ﴾</span>
+        <span class="ayah-fr">« Et les montagnes comme des pieux. » — An-Naba : 7</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🏔️</span>
+        <p>L'Himalaya a une racine qui s'enfonce à <strong>250 km</strong> dans le manteau terrestre — soit plusieurs fois sa hauteur visible. Cette "racine" est ce que le Coran appelle "pieu" — une description que la géologie n'a confirmée qu'au XXe siècle.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌋</span>
+        <p>Le Coran dit aussi que les montagnes empêchent la terre de "pencher" (An-Nahl : 15). Les scientifiques confirment que les chaînes de montagnes équilibrent la pression des plaques tectoniques, <strong>réduisant les tremblements de terre</strong>.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(0)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(2)">Suivant → L'Eau — Source de Vie</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 : L'eau source de vie -->
+    <div class="slide" id="sl-2">
+      <div class="scene-canvas" id="sc2"></div>
+      <div class="slide-num">Leçon 3 · 6 leçons</div>
+      <h2>L'Eau — أَصْلُ كُلِّ حَيَاةٍ</h2>
+      <p class="slide-body">
+        Allah a déclaré : <strong style="color:var(--gold-light)">"Nous avons fait de l'eau toute chose vivante"</strong>.
+        71% de la surface terrestre est couverte d'eau. Les océans régulent la température du globe,
+        produisent la moitié de l'oxygène que nous respirons,
+        abritent des millions d'espèces et alimentent le cycle de l'eau.
+        L'eau est le premier signe de la vie sur Terre — voulue et maintenue par Allah.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَجَعَلْنَا مِنَ الْمَاءِ كُلَّ شَيْءٍ حَيٍّ ۖ أَفَلَا يُؤْمِنُونَ ﴾</span>
+        <span class="ayah-fr">« Nous avons fait de l'eau toute chose vivante. Ne croient-ils donc pas ? » — Al-Anbiya : 30</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🧬</span>
+        <p>Toute cellule vivante est composée de <strong>70 à 90% d'eau</strong>. Sans eau, pas de réaction chimique possible, pas de transport de nutriments, pas de vie. Le Coran l'a dit en une phrase il y a 14 siècles.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌊</span>
+        <p>Les océans absorbent <strong>30% du CO₂</strong> produit par les hommes et régulent le climat mondial. Sans eux, la Terre serait inhabitable. Allah a couvert la Terre d'eau dans des proportions parfaites.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(1)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(3)">Suivant → L'Atmosphère Protectrice</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 : Atmosphère -->
+    <div class="slide" id="sl-3">
+      <div class="scene-canvas" id="sc3"></div>
+      <div class="slide-num">Leçon 4 · 6 leçons</div>
+      <h2>L'Atmosphère — السَّقْفُ الْمَحْفُوظُ</h2>
+      <p class="slide-body">
+        Allah a entouré la Terre d'une atmosphère — un
+        <strong style="color:var(--gold-light)">toit protecteur</strong>
+        qui accomplit simultanément plusieurs rôles vitaux :
+        elle nous fournit l'oxygène, filtre les rayons UV mortels,
+        brûle les météorites avant qu'elles n'atteignent le sol,
+        retient la chaleur du soleil la nuit et régule la température.
+        Un bouclier invisible d'une complexité absolue.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَجَعَلْنَا السَّمَاءَ سَقْفًا مَّحْفُوظًا ﴾</span>
+        <span class="ayah-fr">« Nous avons fait du ciel un toit bien gardé. » — Al-Anbiya : 32</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🛡️</span>
+        <p>L'atmosphère terrestre brûle environ <strong>100 tonnes de roches spatiales</strong> chaque jour. Sans elle, la surface de la Terre ressemblerait à celle de la lune — criblée de cratères et inhospitalière.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">☀️</span>
+        <p>La couche d'ozone absorbe <strong>97 à 99%</strong> des rayons ultraviolets du soleil. Sans elle, aucune vie terrestre ne serait possible. Allah a placé ce filtre invisible exactement là où il fallait — à 15 à 35 km d'altitude.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(2)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(4)">Suivant → La Diversité de la Vie</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 : Diversité de la vie -->
+    <div class="slide" id="sl-4">
+      <div class="scene-canvas" id="sc4"></div>
+      <div class="slide-num">Leçon 5 · 6 leçons</div>
+      <h2>La Diversité de la Vie — تَنَوُّعُ الْمَخْلُوقَاتِ</h2>
+      <p class="slide-body">
+        Sur la Terre qu'Allah a créée vivent des millions d'espèces différentes —
+        des bactéries microscopiques aux baleines de 30 mètres,
+        des déserts brûlants aux abysses glacés.
+        Chaque espèce est parfaitement adaptée à son environnement —
+        chacune une preuve de la <strong style="color:var(--gold-light)">sagesse et de la puissance d'Allah</strong>.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَمِن كُلِّ شَيْءٍ خَلَقْنَا زَوْجَيْنِ لَعَلَّكُمْ تَذَكَّرُونَ ﴾</span>
+        <span class="ayah-fr">« De toute chose Nous avons créé une paire, afin que vous vous souveniez. » — Adh-Dhariyat : 49</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌿</span>
+        <p>On estime à <strong>8,7 millions</strong> le nombre d'espèces vivantes sur Terre — dont seulement 1,2 million ont été répertoriées. Des millions d'espèces créées par Allah attendent encore d'être découvertes.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🐝</span>
+        <p>Allah a créé chaque espèce avec une <strong>paire complémentaire</strong> (mâle/femelle, prédateur/proie, plante/pollinisateur). Ce système d'interdépendances parfaites maintient l'équilibre de la vie sur Terre.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(3)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(5)">Suivant → La Terre nous Rappelle Allah</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 : Contemplation / khalifa -->
+    <div class="slide" id="sl-5">
+      <div class="scene-canvas" id="sc5"></div>
+      <div class="slide-num">Leçon 6 · 6 leçons</div>
+      <h2>L'Homme — خَلِيفَةٌ فِي الْأَرْضِ</h2>
+      <p class="slide-body">
+        Allah a créé la Terre et y a placé l'homme comme
+        <strong style="color:var(--gold-light)">khalifa (vicaire, représentant)</strong>.
+        Cette responsabilité est immense : l'homme doit contempler les signes d'Allah sur Terre,
+        en prendre soin, et ne jamais oublier que cette planète
+        est un <strong style="color:var(--gold-light)">don d'Allah</strong>
+        — temporaire, précieux, et porteur de signes vers son Créateur.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَهُوَ الَّذِي جَعَلَكُمْ خَلَائِفَ الْأَرْضِ ﴾</span>
+        <span class="ayah-fr">« C'est Lui qui vous a établis comme vicaires sur la terre. » — Al-An'am : 165</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🤲</span>
+        <p>Le mot <strong>خَلِيفَة</strong> (<em>khalîfa</em>) implique une <strong>responsabilité et une confiance</strong>. Allah a confié la Terre à l'homme — non pour la détruire, mais pour la contempler, en prendre soin et y adorer son Créateur.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌱</span>
+        <p>Chaque fois que tu plantes un arbre, préserves l'eau ou nourris un animal, tu accomplis ta mission de khalifa. Le Prophète ﷺ a dit : <strong>"Si l'Heure vient alors que l'un d'entre vous tient un plant, qu'il le plante."</strong> (Ahmad)</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(4)">← Précédent</button>
+        <button class="btn-quiz" onclick="startQuiz()">🎯 Tester mes connaissances →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="screen-quiz" class="screen">
+  <div id="quiz-wrap">
+    <div id="quiz-header">
+      <div class="score-pill" id="score-pill">⭐ 0</div>
+      <div class="prog-wrap"><div id="qprog"></div></div>
+      <div class="q-count" id="q-count">1 / 8</div>
+    </div>
+    <div id="q-card">
+      <div id="q-icon">🌍</div>
+      <div id="q-text"></div>
+      <div id="options"></div>
+    </div>
+    <div id="fb-box">
+      <div id="fb-text"></div>
+      <div id="fb-ayah"></div>
+    </div>
+    <button id="qnext">Question suivante →</button>
+    <div id="end-screen">
+      <div id="end-badge"></div>
+      <div id="end-title"></div>
+      <div id="end-big"></div>
+      <div id="end-sub">points sur 8</div>
+      <div id="end-msg"></div>
+      <div class="end-btns">
+        <button id="restart-btn" onclick="restartQuiz()">↺ Recommencer le quiz</button>
+        <button id="review-btn" onclick="reviewIntro()">📖 Revoir les leçons</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ══ HEADER ══ */
+(function(){
+  const sb=document.getElementById('hstars');
+  for(let i=0;i<80;i++){
+    const s=document.createElement('div');s.className='hstar';
+    const z=Math.random()*2+.4;
+    s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--op:${(.1+Math.random()*.6).toFixed(2)};--dur:${(2+Math.random()*5).toFixed(1)}s;--del:${(Math.random()*6).toFixed(1)}s;opacity:${(.1+Math.random()*.6).toFixed(2)}`;
+    sb.appendChild(s);
+  }
+})();
+
+/* ══ SCENE HELPERS ══ */
+function addStars(el,count,maxOp){
+  for(let i=0;i<count;i++){
+    const s=document.createElement('div');
+    const z=Math.random()*2+.4;
+    s.style.cssText=`position:absolute;border-radius:50%;background:#fff;width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;opacity:${(.05+Math.random()*(maxOp||.5)).toFixed(2)};animation:shimmer ${(2+Math.random()*4).toFixed(1)}s ease-in-out infinite ${(Math.random()*4).toFixed(1)}s`;
+    el.appendChild(s);
+  }
+}
+
+/* Sc0 : Earth from space with tilt */
+function buildSc0(el){
+  addStars(el,50,.6);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <radialGradient id="earthG0" cx="35%" cy="35%" r="60%">
+        <stop offset="0%" stop-color="#4a9fe0"/>
+        <stop offset="30%" stop-color="#1a6b30"/>
+        <stop offset="60%" stop-color="#1a5fa0"/>
+        <stop offset="100%" stop-color="#041020"/>
+      </radialGradient>
+      <radialGradient id="atmoG0" cx="50%" cy="50%" r="50%">
+        <stop offset="72%" stop-color="transparent"/>
+        <stop offset="88%" stop-color="rgba(100,160,255,.18)"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </radialGradient>
+      <radialGradient id="sunG0" cx="38%" cy="38%" r="55%">
+        <stop offset="0%" stop-color="#ffe880"/>
+        <stop offset="100%" stop-color="#f5a623"/>
+      </radialGradient>
+    </defs>
+    <!-- sun small -->
+    <circle cx="30" cy="50" r="20" fill="url(#sunG0)" opacity=".8"/>
+    <!-- atmosphere -->
+    <circle cx="200" cy="100" r="68" fill="url(#atmoG0)"/>
+    <!-- earth -->
+    <circle cx="200" cy="100" r="60" fill="url(#earthG0)"/>
+    <!-- cloud bands -->
+    <path d="M 145 80 Q 200 74 255 80" stroke="rgba(255,255,255,.22)" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M 143 105 Q 200 100 257 105" stroke="rgba(255,255,255,.18)" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M 148 128 Q 200 124 252 128" stroke="rgba(255,255,255,.15)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- tilt axis -->
+    <line x1="190" y1="30" x2="210" y2="170" stroke="rgba(212,168,67,.4)" stroke-width="1.5" stroke-dasharray="5,4"/>
+    <!-- 23.5° angle label -->
+    <text x="220" y="45" font-size="11" fill="rgba(212,168,67,.7)" font-family="Lato" font-weight="bold">23,5°</text>
+    <path d="M 197 40 A 20 20 0 0 1 210 55" stroke="rgba(212,168,67,.5)" stroke-width="1.5" fill="none"/>
+    <!-- labels -->
+    <text x="60" y="165" font-size="10" fill="rgba(74,159,224,.6)" font-family="Lato">71% eau</text>
+    <text x="60" y="178" font-size="10" fill="rgba(58,173,114,.6)" font-family="Lato">29% terres</text>
+    <text x="200" y="185" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">أَلَمْ نَجْعَلِ الْأَرْضَ مِهَادًا — An-Naba : 6</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc1 : Mountains with roots */
+function buildSc1(el){
+  el.style.background='linear-gradient(180deg,#000308,#020c10)';
+  addStars(el,25,.4);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="crustG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(80,50,20,.7)"/>
+        <stop offset="100%" stop-color="rgba(40,25,10,.9)"/>
+      </linearGradient>
+      <linearGradient id="mantleG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(180,60,20,.4)"/>
+        <stop offset="100%" stop-color="rgba(120,30,10,.6)"/>
+      </linearGradient>
+      <linearGradient id="snowG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(240,245,255,.9)"/>
+        <stop offset="100%" stop-color="rgba(200,215,240,.5)"/>
+      </linearGradient>
+    </defs>
+    <!-- sky -->
+    <rect x="0" y="0" width="340" height="110" fill="rgba(5,15,30,.8)"/>
+    <!-- crust layer -->
+    <rect x="0" y="110" width="340" height="35" fill="url(#crustG)"/>
+    <!-- mantle layer -->
+    <rect x="0" y="145" width="340" height="55" fill="url(#mantleG)"/>
+    <!-- labels layers -->
+    <text x="8" y="128" font-size="9" fill="rgba(200,180,140,.6)" font-family="Lato">Croûte terrestre</text>
+    <text x="8" y="165" font-size="9" fill="rgba(200,100,60,.6)" font-family="Lato">Manteau</text>
+    <!-- mountain 1 visible part -->
+    <polygon points="90,110 130,40 170,110" fill="rgba(80,65,50,.8)" stroke="rgba(100,80,60,.4)" stroke-width="1"/>
+    <polygon points="108,110 130,55 152,110" fill="rgba(60,50,40,.9)"/>
+    <polygon points="115,55 130,40 145,55" fill="url(#snowG)"/>
+    <!-- mountain 1 root (below surface) -->
+    <polygon points="90,110 70,175 170,175 170,110" fill="rgba(80,50,20,.5)" stroke="rgba(100,70,30,.3)" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="130" y1="110" x2="130" y2="175" stroke="rgba(212,168,67,.4)" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <!-- mountain 2 -->
+    <polygon points="200,110 240,55 280,110" fill="rgba(90,70,55,.8)" stroke="rgba(110,85,65,.4)" stroke-width="1"/>
+    <polygon points="220,55 240,55 240,75" fill="url(#snowG)"/>
+    <!-- mountain 2 root -->
+    <polygon points="200,110 185,175 285,175 280,110" fill="rgba(80,50,20,.45)" stroke="rgba(100,70,30,.3)" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="240" y1="110" x2="240" y2="175" stroke="rgba(212,168,67,.35)" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <!-- height arrows -->
+    <text x="62" y="80" font-size="8" fill="rgba(212,168,67,.6)" font-family="Lato">Partie visible</text>
+    <text x="62" y="145" font-size="8" fill="rgba(212,168,67,.5)" font-family="Lato">Racine (pieu)</text>
+    <text x="62" y="155" font-size="8" fill="rgba(212,168,67,.4)" font-family="Lato">≈ 250 km</text>
+    <!-- verse -->
+    <text x="170" y="196" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">وَالْجِبَالَ أَوْتَادًا — An-Naba : 7</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc2 : Water / oceans / life */
+function buildSc2(el){
+  el.style.background='linear-gradient(180deg,#020a14,#030f1a)';
+  // ocean waves
+  for(let i=0;i<4;i++){
+    const wave=document.createElement('div');
+    wave.style.cssText=`position:absolute;bottom:${30+i*12}px;left:0;right:0;height:${6+i*2}px;background:linear-gradient(to right,rgba(20,80,160,.${3+i}),rgba(30,100,180,.${3+i}),rgba(20,80,160,.${3+i}));border-radius:50%;animation:waveFlow ${(3+i*.8).toFixed(1)}s ease-in-out infinite ${(i*.4).toFixed(1)}s`;
+    el.appendChild(wave);
+  }
+  // rain drops
+  for(let i=0;i<18;i++){
+    const r=document.createElement('div');
+    r.style.cssText=`position:absolute;width:1.5px;height:12px;border-radius:2px;background:linear-gradient(to bottom,transparent,rgba(100,180,255,.7));left:${Math.random()*100}%;top:0;animation:fallRain ${(.8+Math.random()*.7).toFixed(2)}s linear infinite ${(Math.random()*2).toFixed(2)}s`;
+    el.appendChild(r);
+  }
+  // clouds
+  [[60,30,140,35],[180,20,120,28],[280,35,100,25]].forEach(([x,y,w,h])=>{
+    const c=document.createElement('div');
+    c.style.cssText=`position:absolute;top:${y}px;left:${x}px;width:${w}px;height:${h}px;background:rgba(160,200,240,.18);border-radius:${h/2}px;animation:waveFlow ${(8+Math.random()*6).toFixed(1)}s ease-in-out infinite`;
+    el.appendChild(c);
+  });
+  // sea life silhouettes
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg.innerHTML=`
+    <!-- fish -->
+    <path d="M 80 155 Q 95 148 100 155 Q 95 162 80 155 Z M 100 155 L 112 148 L 112 162 Z" fill="rgba(100,200,220,.5)"/>
+    <path d="M 200 162 Q 218 155 225 162 Q 218 169 200 162 Z M 225 162 L 240 155 L 240 169 Z" fill="rgba(80,180,200,.45)"/>
+    <!-- seaweed -->
+    <path d="M 150 200 Q 145 180 150 165 Q 155 150 150 135" stroke="rgba(30,120,50,.5)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M 260 200 Q 255 178 260 162 Q 265 148 260 132" stroke="rgba(30,120,50,.45)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- stats -->
+    <text x="170" y="20" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">وَجَعَلْنَا مِنَ الْمَاءِ كُلَّ شَيْءٍ حَيٍّ</text>
+    <text x="170" y="34" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(212,168,67,.35)">Al-Anbiya : 30 — 71% de la Terre couverte d'eau</text>
+    <text x="170" y="110" text-anchor="middle" font-family="Lato,sans-serif" font-size="10" fill="rgba(100,180,255,.45)">Eau liquide + solide + gazeuse simultanément</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc3 : Atmosphere layers */
+function buildSc3(el){
+  addStars(el,30,.5);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="atmoLayers" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(0,5,20,.0)"/>
+        <stop offset="30%" stop-color="rgba(10,20,60,.15)"/>
+        <stop offset="55%" stop-color="rgba(20,60,120,.2)"/>
+        <stop offset="75%" stop-color="rgba(30,100,180,.25)"/>
+        <stop offset="90%" stop-color="rgba(40,140,220,.3)"/>
+        <stop offset="100%" stop-color="rgba(20,80,160,.4)"/>
+      </linearGradient>
+    </defs>
+    <!-- atmosphere gradient -->
+    <rect x="0" y="0" width="340" height="200" fill="url(#atmoLayers)"/>
+    <!-- layer labels -->
+    <line x1="0" y1="30" x2="200" y2="30" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+    <text x="205" y="34" font-size="8" fill="rgba(180,200,240,.55)" font-family="Lato">Exosphère (500+ km)</text>
+    <line x1="0" y1="65" x2="200" y2="65" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+    <text x="205" y="69" font-size="8" fill="rgba(180,200,240,.55)" font-family="Lato">Thermosphère</text>
+    <line x1="0" y1="100" x2="200" y2="100" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+    <text x="205" y="104" font-size="8" fill="rgba(180,200,240,.6)" font-family="Lato">Mésosphère</text>
+    <!-- ozone layer -->
+    <rect x="0" y="128" width="200" height="12" fill="rgba(100,200,100,.12)" stroke="rgba(100,200,100,.25)" stroke-width="1"/>
+    <text x="205" y="137" font-size="8" fill="rgba(100,220,100,.7)" font-family="Lato">🛡️ Couche d'ozone (UV)</text>
+    <line x1="0" y1="148" x2="200" y2="148" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+    <text x="205" y="152" font-size="8" fill="rgba(180,200,240,.65)" font-family="Lato">Stratosphère</text>
+    <line x1="0" y1="172" x2="200" y2="172" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+    <text x="205" y="176" font-size="8" fill="rgba(180,200,240,.7)" font-family="Lato">Troposphère (vie)</text>
+    <!-- earth surface -->
+    <rect x="0" y="188" width="340" height="12" fill="rgba(30,100,50,.6)"/>
+    <!-- meteor burning -->
+    <line x1="60" y1="10" x2="90" y2="60" stroke="rgba(255,180,80,.7)" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="92" y="65" font-size="8" fill="rgba(255,180,80,.6)" font-family="Lato">Météore brûlé ☄️</text>
+    <line x1="160" y1="5" x2="182" y2="50" stroke="rgba(255,180,80,.55)" stroke-width="2" stroke-linecap="round"/>
+    <!-- verse -->
+    <text x="100" y="198" text-anchor="middle" font-family="Scheherazade New,serif" font-size="12" fill="rgba(212,168,67,.55)">سَقْفًا مَّحْفُوظًا — Al-Anbiya : 32</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc4 : Diversity of life */
+function buildSc4(el){
+  el.style.background='linear-gradient(180deg,#020c10,#041510)';
+  // ground
+  const gnd=document.createElement('div');
+  gnd.style.cssText='position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(180deg,rgba(20,60,20,.5),rgba(10,40,15,.8))';
+  el.appendChild(gnd);
+  // plants / trees
+  const trees=[
+    {x:25,h:80,c:'#2d7a3a',c2:'#1e5c28'},{x:65,h:60,c:'#3aad60',c2:'#2d8040'},
+    {x:105,h:90,c:'#1e6b30',c2:'#14502a'},{x:145,h:70,c:'#38c060',c2:'#28904a'},
+    {x:185,h:85,c:'#2d7a3a',c2:'#1e5c28'},{x:225,h:65,c:'#3aad60',c2:'#2d8040'},
+    {x:265,h:75,c:'#1e6b30',c2:'#14502a'},{x:305,h:55,c:'#38c060',c2:'#28904a'},
+  ];
+  trees.forEach((t,i)=>{
+    const pl=document.createElement('div');
+    pl.style.cssText=`position:absolute;bottom:38px;left:${t.x}px;animation:sway ${(3+Math.random()*2).toFixed(1)}s ease-in-out infinite ${(Math.random()*2).toFixed(1)}s;--sw:${(Math.random()*4-2).toFixed(0)}deg`;
+    pl.innerHTML=`<svg width="30" height="${t.h}" viewBox="0 0 30 ${t.h}"><line x1="15" y1="${t.h}" x2="15" y2="${t.h*.32}" stroke="${t.c}" stroke-width="3" stroke-linecap="round"/><ellipse cx="15" cy="${t.h*.27}" rx="12" ry="8" fill="${t.c}" opacity=".9"/><ellipse cx="7" cy="${t.h*.46}" rx="8" ry="5" fill="${t.c}" opacity=".7" transform="rotate(-28 7 ${t.h*.46})"/><ellipse cx="23" cy="${t.h*.4}" rx="8" ry="5" fill="${t.c}" opacity=".7" transform="rotate(28 23 ${t.h*.4})"/></svg>`;
+    el.appendChild(pl);
+  });
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg.innerHTML=`
+    <!-- sky -->
+    <text x="170" y="20" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">وَمِن كُلِّ شَيْءٍ خَلَقْنَا زَوْجَيْنِ</text>
+    <text x="170" y="34" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(212,168,67,.35)">Adh-Dhariyat : 49 — 8,7 millions d'espèces créées par Allah</text>
+    <!-- birds -->
+    <path d="M 80 55 Q 88 50 96 55" stroke="rgba(255,255,255,.5)" stroke-width="1.5" fill="none"/>
+    <path d="M 96 55 Q 104 50 112 55" stroke="rgba(255,255,255,.5)" stroke-width="1.5" fill="none"/>
+    <path d="M 200 45 Q 208 40 216 45" stroke="rgba(255,255,255,.45)" stroke-width="1.5" fill="none"/>
+    <path d="M 230 65 Q 238 60 246 65" stroke="rgba(255,255,255,.4)" stroke-width="1.5" fill="none"/>
+    <!-- butterfly -->
+    <ellipse cx="155" cy="75" rx="8" ry="5" fill="rgba(255,180,50,.4)" transform="rotate(-30 155 75)"/>
+    <ellipse cx="165" cy="75" rx="8" ry="5" fill="rgba(255,180,50,.4)" transform="rotate(30 165 75)"/>
+    <line x1="160" y1="70" x2="160" y2="82" stroke="rgba(100,60,20,.5)" stroke-width="1.5"/>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc5 : Man as khalifa / contemplation */
+function buildSc5(el){
+  addStars(el,60,.7);
+  // earth small top
+  const earthDiv=document.createElement('div');
+  earthDiv.style.cssText='position:absolute;top:18px;left:50%;transform:translateX(-50%);width:55px;height:55px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#4a9fe0 0%,#1a6b30 40%,#1a5fa0 75%,#041020 100%);box-shadow:0 0 20px 6px rgba(74,159,224,.25);animation:shimmer 5s ease-in-out infinite';
+  el.appendChild(earthDiv);
+  // tasbih words
+  const words=[
+    {t:'خَلِيفَة',x:'4%',y:'8%',sz:16,tx:'6px'},{t:'مِهَاد',x:'70%',y:'6%',sz:14,tx:'-5px'},
+    {t:'آيَة',x:'6%',y:'55%',sz:15,tx:'4px'},{t:'أَمَانَة',x:'72%',y:'52%',sz:13,tx:'-4px'},
+    {t:'رَحْمَة',x:'40%',y:'12%',sz:13,tx:'3px'},{t:'شُكْر',x:'22%',y:'70%',sz:14,tx:'5px'},
+  ];
+  words.forEach((w,i)=>{
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;left:${w.x};top:${w.y};font-family:Scheherazade New,serif;font-size:${w.sz}px;color:rgba(212,168,67,.42);animation:tasbihFloat ${(4+Math.random()*3).toFixed(1)}s ease-in-out infinite ${(i*.6).toFixed(1)}s;--tx:${w.tx}`;
+    d.textContent=w.t;
+    el.appendChild(d);
+  });
+  // person with raised hands + small tree
+  const person=document.createElement('div');
+  person.style.cssText='position:absolute;bottom:22px;left:45%;transform:translateX(-50%)';
+  person.innerHTML=`<svg width="38" height="65" viewBox="0 0 38 65">
+    <circle cx="19" cy="10" r="8" fill="rgba(212,168,67,.6)"/>
+    <line x1="19" y1="18" x2="19" y2="48" stroke="rgba(212,168,67,.55)" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="19" y1="28" x2="6" y2="20" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="19" y1="28" x2="32" y2="20" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="19" y1="48" x2="11" y2="63" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="19" y1="48" x2="27" y2="63" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
+  el.appendChild(person);
+  // small tree next to person
+  const tree=document.createElement('div');
+  tree.style.cssText='position:absolute;bottom:22px;left:62%;animation:sway 4s ease-in-out infinite;--sw:2deg';
+  tree.innerHTML=`<svg width="26" height="50" viewBox="0 0 26 50"><line x1="13" y1="50" x2="13" y2="18" stroke="#2d7a3a" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="13" cy="15" rx="10" ry="7" fill="#2d7a3a" opacity=".9"/><ellipse cx="6" cy="26" rx="7" ry="4.5" fill="#2d7a3a" opacity=".7" transform="rotate(-28 6 26)"/><ellipse cx="20" cy="23" rx="7" ry="4.5" fill="#2d7a3a" opacity=".7" transform="rotate(28 20 23)"/></svg>`;
+  el.appendChild(tree);
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.5);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  lbl.textContent='جَعَلَكُمْ خَلَائِفَ الْأَرْضِ — Al-An\'am : 165';
+  el.appendChild(lbl);
+}
+
+const sceneFns=[buildSc0,buildSc1,buildSc2,buildSc3,buildSc4,buildSc5];
+sceneFns.forEach((fn,i)=>fn(document.getElementById('sc'+i)));
+
+/* ══ SLIDE DOTS ══ */
+const NSLIDES=6;
+const dotsEl=document.getElementById('slide-dots');
+for(let i=0;i<NSLIDES;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=(()=>{const n=i;return()=>goSlide(n);})();
+  dotsEl.appendChild(d);
+}
+let curSlide=0;
+function goSlide(n){
+  document.getElementById('sl-'+curSlide).classList.remove('active');
+  curSlide=n;
+  document.getElementById('sl-'+n).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>{ d.className='dot'+(i===n?' active':i<n?' done':''); });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══ QUIZ ══ */
+const Q=[
+  {
+    icon:'🌍',
+    q:"Quel mot coranique désigne la Terre comme lieu préparé pour la vie ?",
+    opts:["سَكَن (demeure)","مِهَاد (berceau)","فِرَاش (tapis)","وَطَن (patrie)"],
+    ans:1,
+    fb:"Allah utilise 'مِهَاد' (mihâd — berceau), un mot qui évoque un lieu soigneusement préparé pour protéger et nourrir. La Terre n'est pas une planète au hasard : elle a été conçue par Allah avec toutes les conditions nécessaires à la vie.",
+    ayah:"« N'avons-Nous pas fait de la terre un berceau ? » — An-Naba : 6"
+  },
+  {
+    icon:'📐',
+    q:"À quel angle la Terre est-elle inclinée sur son axe, créant les saisons ?",
+    opts:["12,5°","23,5°","45°","90°"],
+    ans:1,
+    fb:"La Terre est inclinée à exactement 23,5° sur son axe. Sans cette inclinaison précise, il n'y aurait pas de saisons — les zones polaires seraient invivables et les tropiques uniformément brûlants. Allah a incliné la Terre exactement comme il fallait.",
+    ayah:"« N'avons-Nous pas fait de la terre un berceau ? » — An-Naba : 6"
+  },
+  {
+    icon:'🏔️',
+    q:"Comment le Coran décrit-il les montagnes et quel est leur rôle scientifique ?",
+    opts:["Des décorations de la terre","Des pieux (awtâd) qui stabilisent la croûte terrestre","Des réservoirs d'eau","Des barrières contre le vent"],
+    ans:1,
+    fb:"Le Coran décrit les montagnes comme 'أَوْتَاد' (awtâd — pieux). La science a confirmé que les montagnes ont des racines profondes — l'Himalaya s'enfonce à 250 km dans le manteau terrestre — qui stabilisent les plaques tectoniques. Décrit au VIIe siècle, confirmé au XXe.",
+    ayah:"« Et les montagnes comme des pieux. » — An-Naba : 7"
+  },
+  {
+    icon:'💧',
+    q:"Que dit le Coran sur le lien entre l'eau et la vie ?",
+    opts:["L'eau est créée pour se désaltérer","Nous avons fait de l'eau toute chose vivante","L'eau est réservée aux hommes","L'eau vient uniquement de la pluie"],
+    ans:1,
+    fb:"'وَجَعَلْنَا مِنَ الْمَاءِ كُلَّ شَيْءٍ حَيٍّ' — Nous avons fait de l'eau toute chose vivante. La science confirme : toute cellule vivante contient 70 à 90% d'eau. Sans eau, pas de vie possible. Le Coran l'a affirmé 14 siècles avant la biologie cellulaire.",
+    ayah:"« Nous avons fait de l'eau toute chose vivante. Ne croient-ils donc pas ? » — Al-Anbiya : 30"
+  },
+  {
+    icon:'🛡️',
+    q:"Combien de tonnes de roches spatiales l'atmosphère terrestre brûle-t-elle chaque jour ?",
+    opts:["1 tonne","10 tonnes","100 tonnes","1 000 tonnes"],
+    ans:2,
+    fb:"L'atmosphère terrestre brûle environ 100 tonnes de roches spatiales chaque jour. Sans elle, la surface de la Terre ressemblerait à la lune — criblée de cratères. Allah a fait du ciel un toit bien gardé (سَقْفًا مَّحْفُوظًا) qui nous protège en permanence.",
+    ayah:"« Nous avons fait du ciel un toit bien gardé. » — Al-Anbiya : 32"
+  },
+  {
+    icon:'🌿',
+    q:"Combien d'espèces vivantes estime-t-on sur Terre ?",
+    opts:["870 000","8,7 millions","87 millions","870 millions"],
+    ans:1,
+    fb:"On estime à 8,7 millions le nombre d'espèces vivantes sur Terre, dont seulement 1,2 million ont été répertoriées. Des millions d'espèces créées par Allah attendent encore d'être découvertes — chacune une preuve supplémentaire de Sa sagesse et de Sa puissance.",
+    ayah:"« De toute chose Nous avons créé une paire, afin que vous vous souveniez. » — Adh-Dhariyat : 49"
+  },
+  {
+    icon:'🧲',
+    q:"Que se passerait-il sans le champ magnétique terrestre ?",
+    opts:["Les boussoles ne fonctionneraient plus","L'atmosphère serait soufflée dans l'espace par les vents solaires","La Terre tournerait plus vite","Les océans gèleraient"],
+    ans:1,
+    fb:"Le champ magnétique terrestre dévie les vents solaires chargés de particules mortelles. Sans lui, l'atmosphère serait progressivement soufflée dans l'espace, comme cela s'est produit sur Mars. Allah a mis ce bouclier invisible autour de notre planète pour nous protéger.",
+    ayah:"« N'avons-Nous pas fait de la terre un berceau ? » — An-Naba : 6"
+  },
+  {
+    icon:'🤲',
+    q:"Que signifie être 'khalifa' (خَلِيفَة) sur la Terre selon le Coran ?",
+    opts:["Exploiter les ressources de la Terre","Être représentant d'Allah avec responsabilité de prendre soin de la Terre","Dominer toutes les créatures","Construire des civilisations"],
+    ans:1,
+    fb:"'Khalîfa' implique une responsabilité et une confiance. Allah a confié la Terre à l'homme — non pour la détruire, mais pour la contempler, en prendre soin et y adorer son Créateur. Le Prophète ﷺ a dit : 'Si l'Heure vient alors que l'un d'entre vous tient un plant, qu'il le plante.' (Ahmad)",
+    ayah:"« C'est Lui qui vous a établis comme vicaires sur la terre. » — Al-An'am : 165"
+  }
+];
+
+let cur=0,score=0,answered=false;
+function startQuiz(){
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-quiz').classList.add('active');
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderQ(){
+  answered=false;
+  const q=Q[cur];
+  document.getElementById('q-icon').textContent=q.icon;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('q-count').textContent=`${cur+1} / ${Q.length}`;
+  document.getElementById('qprog').style.width=`${(cur/Q.length)*100}%`;
+  const opts=document.getElementById('options');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=o;
+    b.onclick=()=>pick(i);opts.appendChild(b);
+  });
+}
+function pick(i){
+  if(answered)return;answered=true;
+  const q=Q[cur];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  if(i!==q.ans)document.querySelectorAll('.opt')[i].classList.add('wrong');
+  else score++;
+  document.getElementById('fb-text').textContent=q.fb;
+  document.getElementById('fb-ayah').textContent=q.ayah;
+  document.getElementById('fb-box').style.display='block';
+  document.getElementById('qnext').style.display='block';
+  document.getElementById('score-pill').textContent=`⭐ ${score}`;
+}
+document.getElementById('qnext').onclick=()=>{ cur++;if(cur>=Q.length)showEnd();else renderQ(); };
+function showEnd(){
+  document.getElementById('q-card').style.display='none';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='none';
+  const pct=score/Q.length;
+  let badge,title,msg;
+  if(pct===1){ badge='🌟';title='Exceptionnel — بارك الله فيك';msg="Tu as répondu correctement à toutes les questions ! Tu es un vrai khalifa conscient : tu connais les merveilles de la Terre qu'Allah t'a confiée. Protège-la et glorifie son Créateur."; }
+  else if(pct>=.625){ badge='🌍';title='Très bien — أحسنت';msg="Tu connais bien les signes d'Allah dans la Terre. Relis les leçons sur les montagnes-pieux et l'eau source de vie — des merveilles coraniques confirmées par la science."; }
+  else { badge='🌱';title='Bon début — استمر في التعلم';msg="La Terre est un berceau préparé par Allah avec une précision absolue. Reprends les leçons, regarde autour de toi et médite : chaque montagne, chaque goutte d'eau, chaque espèce est un signe d'Allah."; }
+  document.getElementById('end-badge').textContent=badge;
+  document.getElementById('end-title').textContent=title;
+  document.getElementById('end-big').textContent=score;
+  document.getElementById('end-msg').textContent=msg;
+  document.getElementById('end-screen').style.display='block';
+  document.getElementById('qprog').style.width='100%';
+}
+function restartQuiz(){
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+}
+function reviewIntro(){
+  document.getElementById('screen-quiz').classList.remove('active');
+  document.getElementById('screen-intro').classList.add('active');
+  goSlide(0);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
