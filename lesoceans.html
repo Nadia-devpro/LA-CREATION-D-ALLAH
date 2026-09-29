@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Océans — Un Signe de la Création d'Allah</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #030d1a;
+  --gold: #d4a843;
+  --gold-light: #f5d57a;
+  --silver-dim: #7a9bbf;
+  --white: #eef3ff;
+  --text: #d8e8ff;
+  --text-dim: #7a9bbf;
+  --ocean-deep: #021428;
+  --ocean-mid: #0a3a6e;
+  --ocean-surf: #1a6bae;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--night); color:var(--text); font-family:'Lato',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ══ HEADER ══ */
+#sky-header {
+  position:relative; width:100%; height:240px; overflow:hidden;
+  background:linear-gradient(180deg,#010a12 0%,#021628 45%,#031e38 75%,#042248 100%);
+}
+.hstar { position:absolute; border-radius:50%; background:#fff; animation:twinkle var(--dur,3s) ease-in-out infinite var(--del,0s); }
+@keyframes twinkle { 0%,100%{ opacity:var(--op,.6); } 50%{ opacity:.04; } }
+
+/* hero ocean waves in header */
+.h-wave {
+  position:absolute; left:-10%; width:120%;
+  border-radius:50%;
+  animation:hWave var(--hw,6s) ease-in-out infinite var(--hd,0s);
+}
+@keyframes hWave {
+  0%,100%{ transform:translateX(0) translateY(0); }
+  50%{ transform:translateX(var(--hx,15px)) translateY(var(--hy,-6px)); }
+}
+/* moon reflection on water */
+#moon-reflect {
+  position:absolute; top:22px; right:80px;
+  width:44px; height:44px; border-radius:50%;
+  background:radial-gradient(circle at 34%,#e8f0ff,#b0c8f0);
+  box-shadow:0 0 28px 8px rgba(180,200,240,.35);
+  animation:moonGlow 6s ease-in-out infinite;
+}
+@keyframes moonGlow { 0%,100%{ box-shadow:0 0 28px 8px rgba(180,200,240,.35); } 50%{ box-shadow:0 0 44px 14px rgba(180,200,240,.55); } }
+/* moon reflection on water surface */
+#moon-reflection {
+  position:absolute;
+  background:linear-gradient(to bottom,rgba(180,200,240,.25),transparent);
+  border-radius:50%;
+  animation:reflectShimmer 4s ease-in-out infinite;
+}
+@keyframes reflectShimmer { 0%,100%{ opacity:.5; transform:scaleX(1); } 50%{ opacity:.9; transform:scaleX(1.2); } }
+
+/* bubbles */
+.bubble {
+  position:absolute; border-radius:50%;
+  border:1px solid rgba(100,180,255,.4);
+  background:rgba(100,180,255,.06);
+  animation:bubbleRise var(--br,4s) ease-in infinite var(--bd,0s);
+}
+@keyframes bubbleRise {
+  0%{ transform:translateY(0) translateX(0); opacity:.8; }
+  50%{ transform:translateY(-40px) translateX(var(--bx,5px)); opacity:.6; }
+  100%{ transform:translateY(-90px) translateX(var(--bx2,10px)); opacity:0; }
+}
+
+#sky-label {
+  position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+  text-align:center; white-space:nowrap; z-index:5;
+}
+#sky-label h1 { font-family:'Scheherazade New',serif; font-size:24px; color:var(--gold-light); text-shadow:0 0 20px rgba(212,168,67,.5); }
+#sky-label p { font-size:11px; color:var(--silver-dim); letter-spacing:2.5px; text-transform:uppercase; margin-top:3px; }
+
+/* ══ SCREENS ══ */
+#app { display:flex; flex-direction:column; min-height:100vh; }
+.screen { display:none; flex:1; }
+.screen.active { display:block; }
+
+/* ══ INTRO ══ */
+#intro-wrap { max-width:700px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#skip-intro { text-align:right; margin-bottom:1rem; }
+#skip-intro button { background:none; border:none; color:var(--text-dim); font-size:12px; cursor:pointer; letter-spacing:.5px; font-family:'Lato',sans-serif; text-decoration:underline; text-underline-offset:3px; }
+#skip-intro button:hover { color:var(--text); }
+#slide-dots { display:flex; justify-content:center; gap:8px; margin-bottom:2rem; }
+.dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.15); transition:background .3s,transform .3s; cursor:pointer; }
+.dot.active { background:var(--gold); transform:scale(1.3); }
+.dot.done { background:rgba(212,168,67,.4); }
+.slide { display:none; animation:slideIn .45s ease; }
+.slide.active { display:block; }
+@keyframes slideIn { from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
+
+.scene-canvas {
+  width:100%; height:200px; border-radius:14px; margin-bottom:1.4rem;
+  overflow:hidden; position:relative; border:1px solid rgba(255,255,255,.07);
+}
+
+/* ══ SCENE ANIMATIONS ══ */
+@keyframes shimmer { 0%,100%{ opacity:.35; } 50%{ opacity:1; } }
+@keyframes waveAnim { 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(12px); } }
+@keyframes floatUp { 0%{ transform:translateY(0) translateX(0); opacity:.8; } 100%{ transform:translateY(-80px) translateX(var(--fx,5px)); opacity:0; } }
+@keyframes fishSwim { 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(var(--fs,20px)); } }
+@keyframes depthGlow { 0%,100%{ opacity:.2; } 50%{ opacity:.6; } }
+@keyframes tidalRise { 0%,100%{ height:25px; } 50%{ height:50px; } }
+@keyframes currentFlow { 0%{ transform:translateX(-20px); opacity:0; } 20%{ opacity:.7; } 80%{ opacity:.7; } 100%{ transform:translateX(80px); opacity:0; } }
+@keyframes saltFall { from{ transform:translateY(-10px); opacity:0; } 15%{ opacity:.8; } to{ transform:translateY(60px); opacity:0; } }
+@keyframes tasbihFloat { 0%,100%{ transform:translateY(0); opacity:.5; } 50%{ transform:translateY(-7px) translateX(var(--tx,4px)); opacity:1; } }
+@keyframes sparklePop { 0%,100%{ transform:scale(0); opacity:0; } 50%{ transform:scale(1); opacity:.9; } }
+
+/* ── TEXT / LAYOUT ── */
+.slide-num { font-size:11px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:.5rem; font-weight:700; }
+.slide h2 { font-family:'Scheherazade New',serif; font-size:22px; color:var(--gold-light); line-height:1.4; margin-bottom:.75rem; text-shadow:0 0 16px rgba(212,168,67,.3); }
+.slide-body { font-size:14.5px; line-height:1.75; color:var(--text); margin-bottom:1.1rem; }
+.ayah-box { background:rgba(212,168,67,.07); border-left:3px solid var(--gold); border-radius:0 10px 10px 0; padding:.85rem 1rem; margin-bottom:1.3rem; }
+.ayah-ar { font-family:'Scheherazade New',serif; font-size:17px; color:var(--gold); line-height:1.8; display:block; margin-bottom:.3rem; }
+.ayah-fr { font-size:13px; color:var(--silver-dim); font-style:italic; line-height:1.5; }
+.key-fact { display:flex; gap:10px; align-items:flex-start; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:.85rem 1rem; margin-bottom:.75rem; }
+.key-fact-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+.key-fact p { font-size:13.5px; line-height:1.6; color:var(--text); }
+.key-fact p strong { color:var(--gold-light); font-weight:700; }
+.slide-nav { display:flex; gap:10px; margin-top:1.5rem; }
+.btn-prev,.btn-next,.btn-quiz { padding:11px 24px; border-radius:10px; font-size:14px; font-family:'Lato',sans-serif; cursor:pointer; font-weight:700; letter-spacing:.3px; transition:background .2s,border-color .2s,transform .1s; }
+.btn-prev { background:transparent; border:1px solid rgba(255,255,255,.15); color:var(--text-dim); }
+.btn-prev:hover { background:rgba(255,255,255,.05); }
+.btn-next { flex:1; background:linear-gradient(135deg,rgba(212,168,67,.22),rgba(212,168,67,.1)); border:1px solid rgba(212,168,67,.5); color:var(--gold-light); }
+.btn-next:hover { background:linear-gradient(135deg,rgba(212,168,67,.35),rgba(212,168,67,.18)); border-color:rgba(212,168,67,.75); }
+.btn-quiz { flex:1; background:linear-gradient(135deg,rgba(58,173,114,.25),rgba(58,173,114,.1)); border:1px solid rgba(58,173,114,.5); color:#7de0b0; }
+.btn-quiz:hover { background:linear-gradient(135deg,rgba(58,173,114,.38),rgba(58,173,114,.2)); border-color:rgba(58,173,114,.75); }
+.btn-prev:active,.btn-next:active,.btn-quiz:active { transform:scale(.97); }
+
+/* ══ QUIZ ══ */
+#quiz-wrap { max-width:680px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
+.score-pill { background:rgba(212,168,67,.13); border:1px solid rgba(212,168,67,.35); border-radius:20px; padding:5px 16px; font-size:13px; color:var(--gold); font-weight:700; }
+.prog-wrap { flex:1; margin:0 14px; height:4px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; }
+#qprog { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:4px; transition:width .5s ease; width:0%; }
+.q-count { font-size:13px; color:var(--text-dim); white-space:nowrap; }
+#q-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:16px; padding:1.75rem; margin-bottom:1.2rem; }
+#q-icon { width:36px;height:36px;border-radius:10px;background:rgba(212,168,67,.14);border:1px solid rgba(212,168,67,.3);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:1rem; }
+#q-text { font-size:15.5px;line-height:1.65;color:var(--white);margin-bottom:1.4rem; }
+#options { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+.opt { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:12px 14px; font-size:13.5px; color:var(--text); font-family:'Lato',sans-serif; cursor:pointer; text-align:left; line-height:1.4; transition:background .17s,border-color .17s,transform .1s; }
+.opt:hover:not(:disabled) { background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.4);transform:translateY(-1px); }
+.opt:active:not(:disabled) { transform:scale(.98); }
+.opt.correct { background:rgba(58,173,114,.18);border-color:rgba(58,173,114,.6);color:#7de0b0; }
+.opt.wrong   { background:rgba(224,82,82,.15); border-color:rgba(224,82,82,.5);color:#f5a0a0; }
+.opt:disabled { cursor:default; }
+#fb-box { background:rgba(212,168,67,.07); border:1px solid rgba(212,168,67,.2); border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.2rem; display:none; animation:fadeUp .35s ease; }
+#fb-text { font-size:14px;line-height:1.7;color:var(--text);margin-bottom:.7rem; }
+#fb-ayah { font-family:'Scheherazade New',serif; font-size:15px; color:var(--gold); border-left:2px solid var(--gold); padding-left:12px; line-height:1.7; }
+#qnext { width:100%; padding:13px; background:linear-gradient(135deg,rgba(212,168,67,.2),rgba(212,168,67,.08)); border:1px solid rgba(212,168,67,.45); border-radius:10px; color:var(--gold-light); font-family:'Lato',sans-serif; font-size:15px; font-weight:700; cursor:pointer; display:none; letter-spacing:.4px; transition:background .2s,border-color .2s; }
+#qnext:hover { background:linear-gradient(135deg,rgba(212,168,67,.32),rgba(212,168,67,.16));border-color:rgba(212,168,67,.7); }
+#end-screen { display:none;text-align:center;padding:2.5rem 1rem;animation:fadeUp .5s ease; }
+#end-badge { width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,67,.2),rgba(212,168,67,.04));border:2px solid rgba(212,168,67,.5);margin:0 auto 1.4rem;display:flex;align-items:center;justify-content:center;font-size:36px; }
+#end-title { font-family:'Scheherazade New',serif;font-size:22px;color:var(--gold-light);margin-bottom:.5rem; }
+#end-big { font-size:52px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:.4rem; }
+#end-sub { font-size:13px;color:var(--text-dim);margin-bottom:.5rem; }
+#end-msg { font-size:14px;color:var(--text);line-height:1.65;max-width:400px;margin:0 auto 2rem; }
+.end-btns { display:flex;gap:10px;justify-content:center;flex-wrap:wrap; }
+#restart-btn,#review-btn { padding:11px 28px; border-radius:10px; font-family:'Lato',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:background .2s,border-color .2s; }
+#restart-btn { background:transparent;border:1px solid rgba(212,168,67,.5);color:var(--gold); }
+#restart-btn:hover { background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.8); }
+#review-btn { background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--text-dim); }
+#review-btn:hover { background:rgba(255,255,255,.06); }
+@keyframes fadeUp { from{ opacity:0;transform:translateY(10px); } to{ opacity:1;transform:translateY(0); } }
+@media(max-width:480px){
+  #options{ grid-template-columns:1fr; }
+  .slide h2{ font-size:19px; }
+  #sky-label h1{ font-size:20px; }
+  #intro-wrap,#quiz-wrap{ padding:1.4rem 1rem 2.5rem; }
+  .slide-nav{ flex-direction:column; }
+  .btn-prev{ order:2; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ HEADER ══ -->
+<div id="sky-header">
+  <div id="hstars"></div>
+  <div id="moon-reflect"></div>
+  <div id="moon-reflection" style="width:18px;height:60px;bottom:0;right:97px"></div>
+  <!-- layered waves -->
+  <div class="h-wave" style="height:55px;bottom:50px;background:linear-gradient(180deg,transparent,rgba(10,50,100,.55));--hw:8s;--hd:0s;--hx:18px;--hy:-7px"></div>
+  <div class="h-wave" style="height:48px;bottom:28px;background:linear-gradient(180deg,transparent,rgba(15,65,120,.65));--hw:6s;--hd:1s;--hx:-14px;--hy:-5px"></div>
+  <div class="h-wave" style="height:40px;bottom:10px;background:linear-gradient(180deg,transparent,rgba(20,80,140,.75));--hw:9s;--hd:2s;--hx:10px;--hy:-4px"></div>
+  <!-- bubbles -->
+  <div id="hbubbles"></div>
+  <div id="sky-label">
+    <h1>الْبِحَارُ — آيَةٌ مِنْ آيَاتِ اللهِ</h1>
+    <p>Les Océans — Un Signe de la Création d'Allah</p>
+  </div>
+</div>
+
+<!-- ══ INTRO ══ -->
+<div id="screen-intro" class="screen active">
+  <div id="intro-wrap">
+    <div id="skip-intro"><button onclick="startQuiz()">Passer directement au quiz →</button></div>
+    <div id="slide-dots"></div>
+
+    <!-- SLIDE 0 : Les deux mers qui ne se mélangent pas -->
+    <div class="slide active" id="sl-0">
+      <div class="scene-canvas" id="sc0"></div>
+      <div class="slide-num">Leçon 1 · 6 leçons</div>
+      <h2>Deux Mers qui Ne Se Mélangent Pas — بَرْزَخٌ</h2>
+      <p class="slide-body">
+        Le Coran décrit un phénomène extraordinaire : deux mers qui se rencontrent
+        mais ne se mélangent pas, séparées par une
+        <strong style="color:var(--gold-light)">barrière invisible (بَرْزَخ)</strong>.
+        La science moderne a confirmé ce phénomène : des masses d'eau de températures,
+        densités et salinités différentes coexistent côte à côte
+        sans se mêler, séparées par une zone de transition.
+        Allah a placé cette barrière sans qu'aucun homme ne l'ait construite.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ مَرَجَ الْبَحْرَيْنِ يَلْتَقِيَانِ ﴝ بَيْنَهُمَا بَرْزَخٌ لَّا يَبْغِيَانِ ﴾</span>
+        <span class="ayah-fr">« Il a mis en communication les deux mers qui se rencontrent. Entre elles existe une barrière qu'elles ne franchissent pas. » — Ar-Rahman : 19-20</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌊</span>
+        <p>Ce phénomène est observable à l'embouchure du fleuve Amazone dans l'Atlantique, ou en mer Méditerranée rencontrant l'Atlantique au détroit de Gibraltar. Les eaux restent distinctes sur des <strong>dizaines de kilomètres</strong> avant de se mélanger progressivement.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🔬</span>
+        <p>Le scientifique français Jacques Cousteau, après avoir étudié ce phénomène, aurait déclaré son admiration face à cette réalité décrite dans le Coran bien avant que la science ne la découvre. Allah a créé cette barrière par <strong>Sa seule volonté</strong>.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-next" onclick="goSlide(1)">Suivant → Les Ténèbres des Abysses</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 1 : Ténèbres des profondeurs -->
+    <div class="slide" id="sl-1">
+      <div class="scene-canvas" id="sc1"></div>
+      <div class="slide-num">Leçon 2 · 6 leçons</div>
+      <h2>Les Ténèbres des Abysses — ظُلُمَاتٌ بَعْضُهَا فَوْقَ بَعْضٍ</h2>
+      <p class="slide-body">
+        Le Coran décrit les profondeurs de la mer comme des
+        <strong style="color:var(--gold-light)">ténèbres superposées</strong> :
+        les vagues de surface, les vagues internes en profondeur,
+        puis l'obscurité totale. La science n'a découvert
+        l'existence des <strong style="color:var(--gold-light)">vagues internes sous-marines</strong>
+        qu'au XXe siècle grâce aux sonars.
+        Au-delà de 200 mètres de profondeur, aucune lumière solaire ne pénètre.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ أَوْ كَظُلُمَاتٍ فِي بَحْرٍ لُّجِّيٍّ يَغْشَاهُ مَوْجٌ مِّن فَوْقِهِ مَوْجٌ مِّن فَوْقِهِ سَحَابٌ ۚ ظُلُمَاتٌ بَعْضُهَا فَوْقَ بَعْضٍ ﴾</span>
+        <span class="ayah-fr">« Ou comme des ténèbres au fond d'une mer profonde : des vagues la recouvrent, au-dessus desquelles d'autres vagues, au-dessus desquelles des nuages. Ténèbres superposées. » — An-Nur : 40</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌊</span>
+        <p>Les <strong>vagues internes</strong> sont des vagues qui se forment à l'intérieur de l'océan, à la frontière entre des couches d'eau de densités différentes. Elles peuvent atteindre <strong>200 mètres de hauteur</strong> — invisibles depuis la surface.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🔦</span>
+        <p>À <strong>1 000 mètres de profondeur</strong>, l'obscurité est totale et permanente. La pression y est <strong>100 fois supérieure</strong> à celle de la surface. Pourtant, Allah y a créé des êtres vivants parfaitement adaptés à ces conditions extrêmes.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(0)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(2)">Suivant → L'Océan Poumon de la Terre</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 : Océan poumon -->
+    <div class="slide" id="sl-2">
+      <div class="scene-canvas" id="sc2"></div>
+      <div class="slide-num">Leçon 3 · 6 leçons</div>
+      <h2>L'Océan — Poumon de la Terre</h2>
+      <p class="slide-body">
+        Les océans produisent <strong style="color:var(--gold-light)">50 à 80% de l'oxygène</strong>
+        que nous respirons — non pas les forêts, mais les micro-algues marines
+        appelées phytoplancton. Ils absorbent également
+        <strong style="color:var(--gold-light)">30% du CO₂</strong> atmosphérique
+        et régulent la température mondiale.
+        Sans les océans, la vie terrestre serait impossible.
+        Allah a fait des eaux salées le premier poumon de Sa création.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَهُوَ الَّذِي سَخَّرَ الْبَحْرَ لِتَأْكُلُوا مِنْهُ لَحْمًا طَرِيًّا وَتَسْتَخْرِجُوا مِنْهُ حِلْيَةً تَلْبَسُونَهَا ﴾</span>
+        <span class="ayah-fr">« C'est Lui qui a assujetti la mer pour que vous en mangiez une chair fraîche et en retiriez des ornements que vous portez. » — An-Nahl : 14</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌿</span>
+        <p>Le phytoplancton — invisible à l'œil nu — produit plus d'oxygène que toutes les forêts de la Terre réunies. Ces minuscules créatures d'Allah sont le <strong>premier maillon</strong> de toute la chaîne alimentaire marine et terrestre.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌡️</span>
+        <p>Les courants océaniques transportent la chaleur des tropiques vers les pôles, régulant le climat de toute la planète. Sans ce système, <strong>l'Europe serait aussi froide que le Canada</strong>. Allah a mis les océans au service de toute la vie terrestre.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(1)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(3)">Suivant → L'Eau Douce et l'Eau Salée</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 : Eau douce / eau salée -->
+    <div class="slide" id="sl-3">
+      <div class="scene-canvas" id="sc3"></div>
+      <div class="slide-num">Leçon 4 · 6 leçons</div>
+      <h2>Eau Douce et Eau Salée — عَذْبٌ وَأُجَاجٌ</h2>
+      <p class="slide-body">
+        Le Coran évoque la coexistence de l'eau douce (<strong style="color:var(--gold-light)">عَذْب</strong> — agréable)
+        et de l'eau salée (<strong style="color:var(--gold-light)">أُجَاج</strong> — amère et salée),
+        séparées malgré leur voisinage.
+        La salinité des océans est maintenue à <strong style="color:var(--gold-light)">3,5%</strong>
+        depuis des milliards d'années — ni trop salée pour tuer la vie marine,
+        ni pas assez salée pour que les bactéries prolifèrent.
+        Un équilibre maintenu par Allah seul.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَمَا يَسْتَوِي الْبَحْرَانِ هَٰذَا عَذْبٌ فُرَاتٌ سَائِغٌ شَرَابُهُ وَهَٰذَا مِلْحٌ أُجَاجٌ ﴾</span>
+        <span class="ayah-fr">« Les deux mers ne sont pas pareilles : l'une est douce, agréable à boire ; l'autre est salée et amère. » — Fatir : 12</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">⚖️</span>
+        <p>La salinité océanique de <strong>3,5%</strong> est une constante remarquable. Si elle était de 4%, la pression osmotique tuerait la plupart des organismes marins. Si elle était de 2%, les bactéries envahiraient les océans. Allah la maintient parfaitement depuis des milliards d'années.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">💧</span>
+        <p>L'évaporation de l'eau salée produit de l'eau douce sous forme de nuages — un processus de <strong>distillation naturelle</strong> mis en place par Allah pour alimenter les fleuves et abreuver toutes les créatures terrestres.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(2)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(4)">Suivant → Les Abysses — Monde Inconnu</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 : Les abysses -->
+    <div class="slide" id="sl-4">
+      <div class="scene-canvas" id="sc4"></div>
+      <div class="slide-num">Leçon 5 · 6 leçons</div>
+      <h2>Les Abysses — عَالَمٌ مَجْهُولٌ</h2>
+      <p class="slide-body">
+        L'océan couvre <strong style="color:var(--gold-light)">71% de la surface terrestre</strong>
+        mais reste largement inexploré.
+        La fosse des Mariannes atteint <strong style="color:var(--gold-light)">11 034 mètres</strong> de profondeur —
+        plus profond que l'Everest n'est haut.
+        Nous en savons plus sur la surface de la lune que sur les fonds marins.
+        Allah a créé dans ces profondeurs des créatures que l'homme
+        ne découvrira peut-être jamais complètement.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَعِندَهُ مَفَاتِحُ الْغَيْبِ لَا يَعْلَمُهَا إِلَّا هُوَ ۚ وَيَعْلَمُ مَا فِي الْبَرِّ وَالْبَحْرِ ﴾</span>
+        <span class="ayah-fr">« Lui seul possède les clés de l'Invisible, nul autre que Lui ne les connaît. Il sait ce qu'il y a sur la terre et dans la mer. » — Al-An'am : 59</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🦑</span>
+        <p>Seuls <strong>5% des fonds marins</strong> ont été cartographiés par l'homme. Chaque expédition dans les abysses découvre de nouvelles espèces. Allah dit qu'Il sait ce qu'il y a dans la mer — cette connaissance totale est réservée à Lui seul.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">💡</span>
+        <p>Dans l'obscurité totale des abysses, Allah a créé des créatures <strong>bioluminescentes</strong> — qui produisent leur propre lumière. Ces êtres vivent sans soleil, sans chaleur, sous des pressions écrasantes : une preuve de la puissance infinie d'Allah.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(3)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(5)">Suivant → Les Océans Glorifient Allah</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 : Tasbih des océans -->
+    <div class="slide" id="sl-5">
+      <div class="scene-canvas" id="sc5"></div>
+      <div class="slide-num">Leçon 6 · 6 leçons</div>
+      <h2>Les Océans Glorifient Allah — يُسَبِّحُ لِلَّهِ</h2>
+      <p class="slide-body">
+        Tout ce qui existe glorifie Allah — y compris les océans.
+        Chaque vague, chaque courant, chaque marée,
+        chaque créature dans les profondeurs accomplit un
+        <strong style="color:var(--gold-light)">tasbih (تَسْبِيح)</strong> permanent.
+        La prochaine fois que tu entends le bruit des vagues ou que tu contemples la mer,
+        souviens-toi : tu assistes à une glorification d'Allah
+        qui dure depuis la création du monde.
+        <strong style="color:var(--gold-light)">Médite sur la puissance et la grandeur d'Allah.</strong>
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ يُسَبِّحُ لِلَّهِ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۖ لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ ﴾</span>
+        <span class="ayah-fr">« Ce qui est dans les cieux et sur la terre glorifie Allah. À Lui la souveraineté et à Lui la louange. » — At-Taghabun : 1</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌊</span>
+        <p>Le son des vagues est l'un des sons les plus apaisants pour l'être humain. Certains savants ont dit que ce sentiment de paix face à la mer est notre âme qui reconnaît instinctivement le <strong>tasbih des eaux</strong> créées par Allah.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🤲</span>
+        <p>Le Prophète ﷺ a dit : <strong>"Toute la terre a été faite pour moi lieu de prière et moyen de purification."</strong> (Bukhari). Le sable de la plage, l'eau de mer — tout ce cadre est un rappel d'Allah pour celui qui contemple.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(4)">← Précédent</button>
+        <button class="btn-quiz" onclick="startQuiz()">🎯 Tester mes connaissances →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="screen-quiz" class="screen">
+  <div id="quiz-wrap">
+    <div id="quiz-header">
+      <div class="score-pill" id="score-pill">⭐ 0</div>
+      <div class="prog-wrap"><div id="qprog"></div></div>
+      <div class="q-count" id="q-count">1 / 8</div>
+    </div>
+    <div id="q-card">
+      <div id="q-icon">🌊</div>
+      <div id="q-text"></div>
+      <div id="options"></div>
+    </div>
+    <div id="fb-box">
+      <div id="fb-text"></div>
+      <div id="fb-ayah"></div>
+    </div>
+    <button id="qnext">Question suivante →</button>
+    <div id="end-screen">
+      <div id="end-badge"></div>
+      <div id="end-title"></div>
+      <div id="end-big"></div>
+      <div id="end-sub">points sur 8</div>
+      <div id="end-msg"></div>
+      <div class="end-btns">
+        <button id="restart-btn" onclick="restartQuiz()">↺ Recommencer le quiz</button>
+        <button id="review-btn" onclick="reviewIntro()">📖 Revoir les leçons</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ══ HEADER ══ */
+(function(){
+  const sb=document.getElementById('hstars');
+  for(let i=0;i<70;i++){
+    const s=document.createElement('div');s.className='hstar';
+    const z=Math.random()*2+.4;
+    s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*55}%;left:${Math.random()*100}%;--op:${(.1+Math.random()*.55).toFixed(2)};--dur:${(2+Math.random()*5).toFixed(1)}s;--del:${(Math.random()*6).toFixed(1)}s;opacity:${(.1+Math.random()*.55).toFixed(2)}`;
+    sb.appendChild(s);
+  }
+  const bw=document.getElementById('hbubbles');
+  for(let i=0;i<12;i++){
+    const b=document.createElement('div');b.className='bubble';
+    const sz=Math.random()*10+5;
+    b.style.cssText=`width:${sz}px;height:${sz}px;bottom:${Math.random()*60}px;left:${Math.random()*100}%;--br:${(3+Math.random()*4).toFixed(1)}s;--bd:${(Math.random()*4).toFixed(1)}s;--bx:${(Math.random()*14-7).toFixed(0)}px;--bx2:${(Math.random()*20-10).toFixed(0)}px`;
+    bw.appendChild(b);
+  }
+})();
+
+/* ══ SCENE HELPERS ══ */
+function addStars(el,count,maxOp){
+  for(let i=0;i<count;i++){
+    const s=document.createElement('div');
+    const z=Math.random()*1.8+.4;
+    s.style.cssText=`position:absolute;border-radius:50%;background:#fff;width:${z}px;height:${z}px;top:${Math.random()*40}%;left:${Math.random()*100}%;opacity:${(.05+Math.random()*(maxOp||.4)).toFixed(2)};animation:shimmer ${(2+Math.random()*4).toFixed(1)}s ease-in-out infinite ${(Math.random()*4).toFixed(1)}s`;
+    el.appendChild(s);
+  }
+}
+function addBubbles(el,count){
+  for(let i=0;i<count;i++){
+    const b=document.createElement('div');
+    const sz=Math.random()*8+3;
+    b.style.cssText=`position:absolute;border-radius:50%;border:1px solid rgba(100,200,255,.35);background:rgba(100,200,255,.05);width:${sz}px;height:${sz}px;bottom:${Math.random()*60+20}px;left:${Math.random()*100}%;animation:floatUp ${(2.5+Math.random()*3).toFixed(1)}s ease-in infinite ${(Math.random()*4).toFixed(1)}s;--fx:${(Math.random()*14-7).toFixed(0)}px`;
+    el.appendChild(b);
+  }
+}
+
+/* Sc0 : Two seas / barzakh */
+function buildSc0(el){
+  el.style.background='linear-gradient(180deg,#010a12,#021428)';
+  addStars(el,20,.35);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="sea1" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="rgba(10,60,140,.85)"/>
+        <stop offset="100%" stop-color="rgba(15,80,160,.7)"/>
+      </linearGradient>
+      <linearGradient id="sea2" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="rgba(0,100,120,.7)"/>
+        <stop offset="100%" stop-color="rgba(0,130,150,.85)"/>
+      </linearGradient>
+      <linearGradient id="barzakh" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="rgba(100,200,255,.0)"/>
+        <stop offset="50%" stop-color="rgba(200,240,255,.35)"/>
+        <stop offset="100%" stop-color="rgba(100,200,255,.0)"/>
+      </linearGradient>
+    </defs>
+    <!-- sea 1 left — blue Atlantic -->
+    <rect x="0" y="60" width="155" height="140" fill="url(#sea1)"/>
+    <!-- wave lines sea 1 -->
+    <path d="M 0 80 Q 30 74 60 80 Q 90 86 120 80 Q 140 76 155 80" stroke="rgba(100,160,255,.3)" stroke-width="2" fill="none"/>
+    <path d="M 0 105 Q 35 99 70 105 Q 105 111 140 105 Q 150 103 155 105" stroke="rgba(100,160,255,.25)" stroke-width="1.5" fill="none"/>
+    <text x="55" y="145" text-anchor="middle" font-size="10" fill="rgba(100,160,255,.7)" font-family="Lato">Mer Méditerranée</text>
+    <text x="55" y="158" text-anchor="middle" font-size="9" fill="rgba(100,160,255,.5)" font-family="Lato">Eau chaude, salée, dense</text>
+    <!-- sea 2 right — green -->
+    <rect x="185" y="60" width="155" height="140" fill="url(#sea2)"/>
+    <!-- wave lines sea 2 -->
+    <path d="M 185 80 Q 210 86 240 80 Q 270 74 300 80 Q 320 84 340 80" stroke="rgba(0,200,180,.3)" stroke-width="2" fill="none"/>
+    <path d="M 185 105 Q 215 111 250 105 Q 285 99 320 105 Q 330 107 340 105" stroke="rgba(0,200,180,.25)" stroke-width="1.5" fill="none"/>
+    <text x="265" y="145" text-anchor="middle" font-size="10" fill="rgba(0,200,180,.7)" font-family="Lato">Océan Atlantique</text>
+    <text x="265" y="158" text-anchor="middle" font-size="9" fill="rgba(0,200,180,.5)" font-family="Lato">Eau froide, moins salée</text>
+    <!-- barzakh barrier -->
+    <rect x="155" y="60" width="30" height="140" fill="url(#barzakh)"/>
+    <text x="170" y="108" text-anchor="middle" font-family="Scheherazade New,serif" font-size="14" fill="rgba(212,168,67,.8)">بَرْزَخ</text>
+    <text x="170" y="122" text-anchor="middle" font-size="8" fill="rgba(212,168,67,.55)" font-family="Lato">Barrière</text>
+    <!-- sky -->
+    <text x="170" y="42" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">بَيْنَهُمَا بَرْزَخٌ لَّا يَبْغِيَانِ — Ar-Rahman : 20</text>
+    <text x="170" y="56" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(212,168,67,.35)">Deux mers qui ne se mélangent pas — par la volonté d'Allah</text>
+  `;
+  el.appendChild(svg);
+  addBubbles(el,6);
+}
+
+/* Sc1 : Depths / darkness layers */
+function buildSc1(el){
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="depthG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#010c1a"/>
+        <stop offset="25%" stop-color="#021428"/>
+        <stop offset="55%" stop-color="#010a14"/>
+        <stop offset="80%" stop-color="#00060e"/>
+        <stop offset="100%" stop-color="#000204"/>
+      </linearGradient>
+    </defs>
+    <rect width="340" height="200" fill="url(#depthG)"/>
+    <!-- surface waves -->
+    <path d="M 0 22 Q 40 14 80 22 Q 120 30 160 22 Q 200 14 240 22 Q 280 30 340 22" stroke="rgba(60,140,200,.5)" stroke-width="3" fill="rgba(10,50,100,.4)"/>
+    <text x="170" y="15" text-anchor="middle" font-size="9" fill="rgba(100,180,255,.6)" font-family="Lato">Surface — vague 1</text>
+    <!-- internal wave layer -->
+    <path d="M 0 75 Q 50 65 100 75 Q 150 85 200 75 Q 260 65 340 75" stroke="rgba(40,100,160,.4)" stroke-width="2.5" fill="none" stroke-dasharray="6,4"/>
+    <text x="170" y="68" text-anchor="middle" font-size="9" fill="rgba(60,140,200,.55)" font-family="Lato">Vague interne (invisible) — découverte au XXe s.</text>
+    <!-- depth layers labeled -->
+    <rect x="0" y="32" width="340" height="38" fill="rgba(10,50,120,.15)"/>
+    <text x="8" y="54" font-size="8" fill="rgba(100,160,220,.5)" font-family="Lato">0 – 200 m : zone euphotique (lumière)</text>
+    <rect x="0" y="80" width="340" height="40" fill="rgba(5,30,80,.2)"/>
+    <text x="8" y="104" font-size="8" fill="rgba(60,120,180,.5)" font-family="Lato">200 – 1 000 m : zone crépusculaire</text>
+    <rect x="0" y="128" width="340" height="40" fill="rgba(2,12,40,.3)"/>
+    <text x="8" y="152" font-size="8" fill="rgba(40,90,140,.5)" font-family="Lato">1 000 m + : ténèbres absolues (0% lumière)</text>
+    <!-- abyss creatures glowing -->
+    <ellipse cx="80" cy="165" rx="18" ry="8" fill="rgba(0,200,150,.08)" stroke="rgba(0,200,150,.25)" stroke-width="1"/>
+    <circle cx="80" cy="165" r="3" fill="rgba(0,220,160,.4)"/>
+    <ellipse cx="220" cy="175" rx="14" ry="6" fill="rgba(0,150,200,.08)" stroke="rgba(0,150,200,.2)" stroke-width="1"/>
+    <circle cx="220" cy="175" r="2.5" fill="rgba(0,180,220,.35)"/>
+    <text x="80" y="183" text-anchor="middle" font-size="8" fill="rgba(0,200,150,.45)" font-family="Lato">Créature bioluminescente</text>
+    <!-- verse -->
+    <text x="170" y="197" text-anchor="middle" font-family="Scheherazade New,serif" font-size="11" fill="rgba(212,168,67,.5)">ظُلُمَاتٌ بَعْضُهَا فَوْقَ بَعْضٍ — An-Nur : 40</text>
+  `;
+  el.appendChild(svg);
+  addBubbles(el,8);
+}
+
+/* Sc2 : Ocean as lung */
+function buildSc2(el){
+  el.style.background='linear-gradient(180deg,#010c18,#021828)';
+  addStars(el,15,.3);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg.innerHTML=`
+    <!-- ocean surface waves -->
+    <path d="M 0 80 Q 40 72 80 80 Q 120 88 160 80 Q 200 72 240 80 Q 280 88 340 80" stroke="rgba(40,120,200,.4)" stroke-width="2.5" fill="rgba(5,40,100,.35)"/>
+    <rect x="0" y="83" width="340" height="117" fill="rgba(5,40,100,.3)"/>
+    <!-- phytoplankton dots -->
+    <circle cx="50" cy="120" r="3" fill="rgba(50,200,100,.5)"/>
+    <circle cx="90" cy="135" r="2.5" fill="rgba(50,200,100,.45)"/>
+    <circle cx="130" cy="115" r="3.5" fill="rgba(50,200,100,.5)"/>
+    <circle cx="180" cy="130" r="2" fill="rgba(50,200,100,.4)"/>
+    <circle cx="220" cy="118" r="3" fill="rgba(50,200,100,.5)"/>
+    <circle cx="265" cy="138" r="2.5" fill="rgba(50,200,100,.45)"/>
+    <circle cx="305" cy="122" r="3" fill="rgba(50,200,100,.5)"/>
+    <!-- O2 arrows rising from ocean -->
+    <line x1="60" y1="80" x2="60" y2="40" stroke="rgba(100,220,150,.4)" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arO2)"/>
+    <line x1="140" y1="80" x2="140" y2="35" stroke="rgba(100,220,150,.4)" stroke-width="1.5" stroke-dasharray="3,3"/>
+    <line x1="220" y1="80" x2="220" y2="38" stroke="rgba(100,220,150,.4)" stroke-width="1.5" stroke-dasharray="3,3"/>
+    <line x1="300" y1="80" x2="300" y2="42" stroke="rgba(100,220,150,.4)" stroke-width="1.5" stroke-dasharray="3,3"/>
+    <text x="60" y="32" text-anchor="middle" font-size="9" fill="rgba(100,220,150,.65)" font-family="Lato">O₂</text>
+    <text x="140" y="27" text-anchor="middle" font-size="9" fill="rgba(100,220,150,.65)" font-family="Lato">O₂</text>
+    <text x="220" y="30" text-anchor="middle" font-size="9" fill="rgba(100,220,150,.65)" font-family="Lato">O₂</text>
+    <text x="300" y="34" text-anchor="middle" font-size="9" fill="rgba(100,220,150,.65)" font-family="Lato">O₂</text>
+    <!-- CO2 arrows going down -->
+    <line x1="100" y1="30" x2="100" y2="78" stroke="rgba(255,120,80,.3)" stroke-width="1.5" stroke-dasharray="3,3"/>
+    <line x1="260" y1="25" x2="260" y2="78" stroke="rgba(255,120,80,.3)" stroke-width="1.5" stroke-dasharray="3,3"/>
+    <text x="100" y="24" text-anchor="middle" font-size="9" fill="rgba(255,120,80,.55)" font-family="Lato">CO₂ ↓</text>
+    <text x="260" y="19" text-anchor="middle" font-size="9" fill="rgba(255,120,80,.55)" font-family="Lato">CO₂ ↓</text>
+    <!-- labels -->
+    <text x="170" y="162" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">سَخَّرَ الْبَحْرَ — An-Nahl : 14</text>
+    <text x="170" y="176" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(212,168,67,.35)">50 à 80% de l'oxygène produit par les océans</text>
+    <text x="170" y="190" text-anchor="middle" font-family="Lato,sans-serif" font-size="9" fill="rgba(100,220,150,.4)">Phytoplancton — premier producteur d'O₂ sur Terre</text>
+  `;
+  el.appendChild(svg);
+  addBubbles(el,5);
+}
+
+/* Sc3 : Fresh / salty water */
+function buildSc3(el){
+  el.style.background='linear-gradient(180deg,#010a12,#021428)';
+  addStars(el,15,.3);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="freshG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(20,100,180,.6)"/>
+        <stop offset="100%" stop-color="rgba(10,60,130,.8)"/>
+      </linearGradient>
+      <linearGradient id="saltG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(0,80,140,.6)"/>
+        <stop offset="100%" stop-color="rgba(0,50,110,.8)"/>
+      </linearGradient>
+      <linearGradient id="cloudRain" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(160,200,240,.2)"/>
+        <stop offset="100%" stop-color="rgba(160,200,240,.05)"/>
+      </linearGradient>
+    </defs>
+    <!-- fresh water river left -->
+    <rect x="20" y="80" width="120" height="120" fill="url(#freshG)" rx="4"/>
+    <path d="M 20 90 Q 50 84 80 90 Q 110 96 140 90" stroke="rgba(100,180,255,.4)" stroke-width="2" fill="none"/>
+    <text x="80" y="130" text-anchor="middle" font-family="Scheherazade New,serif" font-size="15" fill="rgba(100,180,255,.7)">عَذْب</text>
+    <text x="80" y="145" text-anchor="middle" font-size="10" fill="rgba(100,180,255,.6)" font-family="Lato">Eau douce</text>
+    <text x="80" y="158" text-anchor="middle" font-size="9" fill="rgba(100,180,255,.4)" font-family="Lato">Fleuve, rivière</text>
+    <!-- salt water ocean right -->
+    <rect x="200" y="80" width="120" height="120" fill="url(#saltG)" rx="4"/>
+    <path d="M 200 90 Q 230 96 260 90 Q 290 84 320 90" stroke="rgba(0,150,180,.4)" stroke-width="2" fill="none"/>
+    <text x="260" y="130" text-anchor="middle" font-family="Scheherazade New,serif" font-size="15" fill="rgba(0,180,200,.7)">أُجَاج</text>
+    <text x="260" y="145" text-anchor="middle" font-size="10" fill="rgba(0,180,200,.6)" font-family="Lato">Eau salée</text>
+    <text x="260" y="158" text-anchor="middle" font-size="9" fill="rgba(0,180,200,.4)" font-family="Lato">Océan — 3,5% de sel</text>
+    <!-- evaporation / distillation cycle -->
+    <path d="M 260 80 Q 260 50 170 40 Q 80 30 80 80" stroke="rgba(212,168,67,.25)" stroke-width="1.5" fill="none" stroke-dasharray="5,4"/>
+    <!-- cloud -->
+    <ellipse cx="170" cy="38" rx="35" ry="14" fill="url(#cloudRain)"/>
+    <text x="170" y="42" text-anchor="middle" font-size="8" fill="rgba(200,220,255,.55)" font-family="Lato">Distillation naturelle</text>
+    <!-- rain drops from cloud to river -->
+    <line x1="155" y1="52" x2="148" y2="68" stroke="rgba(100,180,255,.4)" stroke-width="1.5"/>
+    <line x1="165" y1="52" x2="160" y2="70" stroke="rgba(100,180,255,.4)" stroke-width="1.5"/>
+    <line x1="175" y1="52" x2="172" y2="70" stroke="rgba(100,180,255,.4)" stroke-width="1.5"/>
+    <!-- verse -->
+    <text x="170" y="195" text-anchor="middle" font-family="Scheherazade New,serif" font-size="12" fill="rgba(212,168,67,.55)">عَذْبٌ فُرَاتٌ وَمِلْحٌ أُجَاجٌ — Fatir : 12</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc4 : Abyss / Mariana trench */
+function buildSc4(el){
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="abyssG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#010c18"/>
+        <stop offset="20%" stop-color="#010818"/>
+        <stop offset="50%" stop-color="#000510"/>
+        <stop offset="80%" stop-color="#000208"/>
+        <stop offset="100%" stop-color="#000002"/>
+      </linearGradient>
+    </defs>
+    <rect width="340" height="200" fill="url(#abyssG)"/>
+    <!-- depth profile left side -->
+    <line x1="50" y1="10" x2="50" y2="190" stroke="rgba(212,168,67,.2)" stroke-width="1"/>
+    <!-- depth markers -->
+    <line x1="46" y1="25" x2="54" y2="25" stroke="rgba(212,168,67,.3)" stroke-width="1"/>
+    <text x="10" y="29" font-size="8" fill="rgba(100,180,255,.55)" font-family="Lato">0 m</text>
+    <line x1="46" y1="70" x2="54" y2="70" stroke="rgba(212,168,67,.3)" stroke-width="1"/>
+    <text x="-2" y="74" font-size="8" fill="rgba(60,140,200,.5)" font-family="Lato">200 m</text>
+    <line x1="46" y1="115" x2="54" y2="115" stroke="rgba(212,168,67,.25)" stroke-width="1"/>
+    <text x="-8" y="119" font-size="8" fill="rgba(40,100,160,.45)" font-family="Lato">1 000 m</text>
+    <line x1="46" y1="180" x2="54" y2="180" stroke="rgba(212,168,67,.2)" stroke-width="1"/>
+    <text x="-12" y="184" font-size="8" fill="rgba(20,60,120,.45)" font-family="Lato">11 km</text>
+    <!-- Mariana trench profile -->
+    <path d="M 60 25 L 80 25 Q 100 30 120 40 Q 150 60 170 120 Q 180 165 190 185 Q 200 165 210 120 Q 230 60 260 40 Q 280 30 300 25 L 330 25" stroke="rgba(60,120,180,.4)" stroke-width="2" fill="rgba(0,30,80,.3)"/>
+    <!-- everest comparison -->
+    <rect x="280" y="25" width="14" height="80" fill="rgba(80,60,40,.4)" stroke="rgba(100,80,60,.3)" stroke-width="1"/>
+    <polygon points="280,25 287,5 294,25" fill="rgba(80,60,40,.5)"/>
+    <polygon points="280,25 284,12 288,25" fill="rgba(220,230,240,.25)"/>
+    <text x="287" y="115" text-anchor="middle" font-size="7" fill="rgba(180,160,120,.55)" font-family="Lato">Everest</text>
+    <text x="287" y="124" text-anchor="middle" font-size="7" fill="rgba(180,160,120,.45)" font-family="Lato">8 849 m</text>
+    <!-- Mariana label -->
+    <text x="190" y="193" text-anchor="middle" font-size="8" fill="rgba(60,120,200,.55)" font-family="Lato">Fosse des Mariannes : 11 034 m</text>
+    <!-- glowing creatures in abyss -->
+    <ellipse cx="150" cy="158" rx="12" ry="5" fill="rgba(0,180,120,.07)" stroke="rgba(0,200,140,.3)" stroke-width="1"/>
+    <circle cx="148" cy="158" r="2" fill="rgba(0,220,150,.5)"/>
+    <ellipse cx="220" cy="168" rx="10" ry="4" fill="rgba(0,100,200,.07)" stroke="rgba(0,140,220,.25)" stroke-width="1"/>
+    <circle cx="222" cy="168" r="1.8" fill="rgba(0,160,240,.45)"/>
+    <text x="170" y="145" text-anchor="middle" font-size="8" fill="rgba(0,200,150,.4)" font-family="Lato">Créatures bioluminescentes — 5% des fonds explorés</text>
+    <!-- verse -->
+    <text x="170" y="14" text-anchor="middle" font-family="Scheherazade New,serif" font-size="12" fill="rgba(212,168,67,.5)">يَعْلَمُ مَا فِي الْبَرِّ وَالْبَحْرِ — Al-An'am : 59</text>
+  `;
+  el.appendChild(svg);
+  addBubbles(el,10);
+}
+
+/* Sc5 : Tasbih / contemplation */
+function buildSc5(el){
+  el.style.background='linear-gradient(180deg,#010814,#021628)';
+  addStars(el,30,.5);
+  // moon reflection
+  const moon=document.createElement('div');
+  moon.style.cssText='position:absolute;top:16px;right:60px;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 34%,#e8f0ff,#b0c8f0);box-shadow:0 0 20px 6px rgba(180,200,240,.35);animation:shimmer 5s ease-in-out infinite';
+  el.appendChild(moon);
+  // waves
+  for(let i=0;i<5;i++){
+    const w=document.createElement('div');
+    w.style.cssText=`position:absolute;bottom:${25+i*14}px;left:-5%;width:110%;height:${8+i*2}px;background:linear-gradient(180deg,transparent,rgba(10,${50+i*15},${120+i*15},.${3+i}));border-radius:50%;animation:waveAnim ${(4+i*.8).toFixed(1)}s ease-in-out infinite ${(i*.4).toFixed(1)}s`;
+    el.appendChild(w);
+  }
+  // tasbih words floating
+  const words=[
+    {t:'يُسَبِّحُ',x:'4%',y:'10%',sz:15,tx:'5px'},{t:'الْبِحَار',x:'68%',y:'8%',sz:14,tx:'-5px'},
+    {t:'سُبْحَانَ اللهِ',x:'5%',y:'52%',sz:13,tx:'4px'},{t:'بَرْزَخ',x:'72%',y:'50%',sz:14,tx:'-4px'},
+    {t:'آيَة',x:'40%',y:'7%',sz:16,tx:'3px'},{t:'رَحْمَة',x:'20%',y:'68%',sz:13,tx:'5px'},
+  ];
+  words.forEach((w,i)=>{
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;left:${w.x};top:${w.y};font-family:Scheherazade New,serif;font-size:${w.sz}px;color:rgba(212,168,67,.42);animation:tasbihFloat ${(4+Math.random()*3).toFixed(1)}s ease-in-out infinite ${(i*.6).toFixed(1)}s;--tx:${w.tx}`;
+    d.textContent=w.t;
+    el.appendChild(d);
+  });
+  // person on shore
+  const person=document.createElement('div');
+  person.style.cssText='position:absolute;bottom:30px;left:50%;transform:translateX(-50%)';
+  person.innerHTML=`<svg width="38" height="65" viewBox="0 0 38 65">
+    <circle cx="19" cy="10" r="8" fill="rgba(212,168,67,.6)"/>
+    <line x1="19" y1="18" x2="19" y2="48" stroke="rgba(212,168,67,.55)" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="19" y1="28" x2="8" y2="36" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="19" y1="28" x2="30" y2="36" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="19" y1="48" x2="11" y2="63" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="19" y1="48" x2="27" y2="63" stroke="rgba(212,168,67,.55)" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
+  el.appendChild(person);
+  addBubbles(el,6);
+  const lbl=document.createElement('div');
+  lbl.style.cssText='position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(212,168,67,.5);font-family:Lato,sans-serif;white-space:nowrap;letter-spacing:.5px';
+  lbl.textContent='يُسَبِّحُ لِلَّهِ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ — At-Taghabun : 1';
+  el.appendChild(lbl);
+}
+
+const sceneFns=[buildSc0,buildSc1,buildSc2,buildSc3,buildSc4,buildSc5];
+sceneFns.forEach((fn,i)=>fn(document.getElementById('sc'+i)));
+
+/* ══ SLIDE DOTS ══ */
+const NSLIDES=6;
+const dotsEl=document.getElementById('slide-dots');
+for(let i=0;i<NSLIDES;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=(()=>{const n=i;return()=>goSlide(n);})();
+  dotsEl.appendChild(d);
+}
+let curSlide=0;
+function goSlide(n){
+  document.getElementById('sl-'+curSlide).classList.remove('active');
+  curSlide=n;
+  document.getElementById('sl-'+n).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>{ d.className='dot'+(i===n?' active':i<n?' done':''); });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══ QUIZ ══ */
+const Q=[
+  {
+    icon:'🌊',
+    q:"Quel mot coranique désigne la barrière invisible entre deux mers qui se rencontrent ?",
+    opts:["حِجَاب (voile)","بَرْزَخ (barrière)","سِتْر (rideau)","جِدَار (mur)"],
+    ans:1,
+    fb:"بَرْزَخ (barzakh) désigne une barrière, un isthme ou une zone de transition. Le Coran dit que deux mers se rencontrent mais ne se mélangent pas grâce à ce barzakh. La science a confirmé ce phénomène : des masses d'eau de températures et salinités différentes coexistent sans se mêler.",
+    ayah:"« Entre elles existe une barrière (بَرْزَخ) qu'elles ne franchissent pas. » — Ar-Rahman : 20"
+  },
+  {
+    icon:'🌊',
+    q:"Quelle découverte scientifique du XXe siècle le verset An-Nur : 40 décrit-il ?",
+    opts:["Les tsunamis","Les vagues internes sous-marines invisibles","Les courants chauds","Les marées hautes"],
+    ans:1,
+    fb:"An-Nur : 40 décrit 'des vagues au-dessus desquelles d'autres vagues' — les vagues internes sous-marines, découvertes grâce aux sonars au XXe siècle. Elles se forment à la frontière entre des couches d'eau de densités différentes et peuvent atteindre 200 mètres de hauteur.",
+    ayah:"« Des vagues la recouvrent, au-dessus desquelles d'autres vagues. Ténèbres superposées. » — An-Nur : 40"
+  },
+  {
+    icon:'🌿',
+    q:"Quelle proportion de l'oxygène terrestre les océans produisent-ils ?",
+    opts:["10 à 20%","30 à 40%","50 à 80%","Moins de 10%"],
+    ans:2,
+    fb:"Les océans produisent 50 à 80% de l'oxygène que nous respirons — non pas les forêts, mais le phytoplancton (micro-algues marines). Sans les océans, la vie terrestre serait impossible. Allah a mis au service de toute vie ces eaux qu'Il a créées.",
+    ayah:"« C'est Lui qui a assujetti la mer. » — An-Nahl : 14"
+  },
+  {
+    icon:'⚖️',
+    q:"Quelle est la salinité constante des océans depuis des milliards d'années ?",
+    opts:["1%","3,5%","7%","10%"],
+    ans:1,
+    fb:"La salinité des océans est maintenue à 3,5% depuis des milliards d'années. Si elle était de 4%, la pression osmotique tuerait la plupart des organismes marins. Si elle était de 2%, les bactéries envahiraient les océans. Allah maintient cet équilibre parfait en permanence.",
+    ayah:"« Les deux mers ne sont pas pareilles : l'une est douce, l'autre est salée et amère. » — Fatir : 12"
+  },
+  {
+    icon:'💧',
+    q:"Comment l'évaporation de l'eau salée produit-elle de l'eau douce ?",
+    opts:["Les sels remontent en surface","L'évaporation ne retient pas le sel — elle distille naturellement l'eau","La pluie filtre le sel en tombant","Le soleil désalinise l'eau"],
+    ans:1,
+    fb:"Quand l'eau salée s'évapore, seule l'eau pure monte sous forme de vapeur — le sel reste dans l'océan. Cette distillation naturelle mise en place par Allah alimente les nuages, la pluie, les rivières et abreuve toutes les créatures terrestres depuis la création.",
+    ayah:"« Les deux mers ne sont pas pareilles : l'une est douce, l'autre est salée et amère. » — Fatir : 12"
+  },
+  {
+    icon:'🦑',
+    q:"Quelle proportion des fonds marins a été cartographiée par l'homme à ce jour ?",
+    opts:["50%","25%","5%","80%"],
+    ans:2,
+    fb:"Seulement 5% des fonds marins ont été cartographiés. Nous connaissons mieux la surface de la lune que nos propres océans. Allah dit : 'Il sait ce qu'il y a dans la mer' — cette connaissance totale est réservée à Lui seul, pendant que l'homme en est encore à 5%.",
+    ayah:"« Lui seul possède les clés de l'Invisible. Il sait ce qu'il y a sur la terre et dans la mer. » — Al-An'am : 59"
+  },
+  {
+    icon:'💡',
+    q:"Qu'est-ce qu'une créature bioluminescente dans les abysses ?",
+    opts:["Une créature qui reflète la lumière du soleil","Une créature qui produit sa propre lumière dans l'obscurité totale","Une créature transparente","Une créature qui capte les rayons UV"],
+    ans:1,
+    fb:"Dans l'obscurité totale des abysses (plus de 1 000 m), Allah a créé des créatures qui produisent leur propre lumière par réaction chimique. Ces êtres vivent sans soleil, sous des pressions écrasantes — une preuve de la puissance infinie d'Allah dans Sa création.",
+    ayah:"« Lui seul possède les clés de l'Invisible. Il sait ce qu'il y a sur la terre et dans la mer. » — Al-An'am : 59"
+  },
+  {
+    icon:'🤲',
+    q:"Quelle est la profondeur maximale de la Fosse des Mariannes, l'endroit le plus profond des océans ?",
+    opts:["5 000 mètres","8 849 mètres","11 034 mètres","15 000 mètres"],
+    ans:2,
+    fb:"La Fosse des Mariannes atteint 11 034 mètres de profondeur — soit plus profond que l'Everest n'est haut (8 849 m). À cette profondeur, la pression est 1 100 fois supérieure à la surface. Pourtant Allah y a créé des êtres vivants parfaitement adaptés.",
+    ayah:"« Il sait ce qu'il y a sur la terre et dans la mer. » — Al-An'am : 59"
+  }
+];
+
+let cur=0,score=0,answered=false;
+function startQuiz(){
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-quiz').classList.add('active');
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderQ(){
+  answered=false;
+  const q=Q[cur];
+  document.getElementById('q-icon').textContent=q.icon;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('q-count').textContent=`${cur+1} / ${Q.length}`;
+  document.getElementById('qprog').style.width=`${(cur/Q.length)*100}%`;
+  const opts=document.getElementById('options');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=o;
+    b.onclick=()=>pick(i);opts.appendChild(b);
+  });
+}
+function pick(i){
+  if(answered)return;answered=true;
+  const q=Q[cur];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  if(i!==q.ans)document.querySelectorAll('.opt')[i].classList.add('wrong');
+  else score++;
+  document.getElementById('fb-text').textContent=q.fb;
+  document.getElementById('fb-ayah').textContent=q.ayah;
+  document.getElementById('fb-box').style.display='block';
+  document.getElementById('qnext').style.display='block';
+  document.getElementById('score-pill').textContent=`⭐ ${score}`;
+}
+document.getElementById('qnext').onclick=()=>{ cur++;if(cur>=Q.length)showEnd();else renderQ(); };
+function showEnd(){
+  document.getElementById('q-card').style.display='none';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='none';
+  const pct=score/Q.length;
+  let badge,title,msg;
+  if(pct===1){ badge='🌟';title='Exceptionnel — بارك الله فيك';msg="Tu as répondu correctement à toutes les questions ! La prochaine fois que tu entends les vagues ou que tu contemples la mer, souviens-toi : tu assistes au tasbih d'Allah depuis la création du monde."; }
+  else if(pct>=.625){ badge='🌊';title='Très bien — أحسنت';msg="Tu connais bien les signes d'Allah dans les océans. Relis les leçons sur le barzakh et les ténèbres des abysses — des miracles coraniques confirmés par la science moderne."; }
+  else { badge='💧';title='Bon début — استمر في التعلم';msg="Les océans couvrent 71% de la Terre et restent à 95% inexplorés. Allah les connaît entièrement. Reprends les leçons et médite sur cette immensité créée et maîtrisée par Allah."; }
+  document.getElementById('end-badge').textContent=badge;
+  document.getElementById('end-title').textContent=title;
+  document.getElementById('end-big').textContent=score;
+  document.getElementById('end-msg').textContent=msg;
+  document.getElementById('end-screen').style.display='block';
+  document.getElementById('qprog').style.width='100%';
+}
+function restartQuiz(){
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+}
+function reviewIntro(){
+  document.getElementById('screen-quiz').classList.remove('active');
+  document.getElementById('screen-intro').classList.add('active');
+  goSlide(0);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
