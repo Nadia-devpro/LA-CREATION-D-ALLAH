@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Montagnes — Un Signe de la Création d'Allah</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #030d1a;
+  --gold: #d4a843;
+  --gold-light: #f5d57a;
+  --silver-dim: #7a9bbf;
+  --white: #eef3ff;
+  --text: #d8e8ff;
+  --text-dim: #7a9bbf;
+  --rock: #4a3e32;
+  --snow: #dce8ff;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--night); color:var(--text); font-family:'Lato',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ══ HEADER ══ */
+#sky-header {
+  position:relative; width:100%; height:240px; overflow:hidden;
+  background:linear-gradient(180deg,#010610 0%,#020c1c 35%,#051428 65%,#081c30 100%);
+}
+.hstar { position:absolute; border-radius:50%; background:#fff; animation:twinkle var(--dur,3s) ease-in-out infinite var(--del,0s); }
+@keyframes twinkle { 0%,100%{ opacity:var(--op,.6); } 50%{ opacity:.04; } }
+
+/* mountain silhouettes in header */
+.h-mountain { position:absolute; bottom:0; }
+/* mist / cloud around peaks */
+.h-mist {
+  position:absolute; border-radius:50px;
+  background:rgba(200,215,240,.08);
+  animation:mistDrift var(--md,15s) ease-in-out infinite var(--mdd,0s);
+}
+@keyframes mistDrift {
+  0%,100%{ transform:translateX(0) translateY(0); opacity:.4; }
+  50%{ transform:translateX(var(--mx,12px)) translateY(var(--my,-4px)); opacity:.8; }
+}
+/* aurora-like shimmer on peaks */
+.h-aurora {
+  position:absolute;
+  border-radius:50%;
+  animation:auroraPulse 6s ease-in-out infinite var(--ad,0s);
+}
+@keyframes auroraPulse {
+  0%,100%{ opacity:.06; transform:scaleX(1); }
+  50%{ opacity:.18; transform:scaleX(1.15); }
+}
+/* falling snow particles */
+.snow-p {
+  position:absolute; border-radius:50%; background:rgba(255,255,255,.7);
+  animation:snowFall var(--sf,6s) linear infinite var(--sfd,0s);
+}
+@keyframes snowFall {
+  0%{ transform:translateY(-10px) translateX(0); opacity:0; }
+  10%{ opacity:.8; }
+  90%{ opacity:.6; }
+  100%{ transform:translateY(250px) translateX(var(--sx,8px)); opacity:0; }
+}
+
+#sky-label {
+  position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+  text-align:center; white-space:nowrap; z-index:5;
+}
+#sky-label h1 { font-family:'Scheherazade New',serif; font-size:24px; color:var(--gold-light); text-shadow:0 0 20px rgba(212,168,67,.5); }
+#sky-label p { font-size:11px; color:var(--silver-dim); letter-spacing:2.5px; text-transform:uppercase; margin-top:3px; }
+
+/* ══ SCREENS ══ */
+#app { display:flex; flex-direction:column; min-height:100vh; }
+.screen { display:none; flex:1; }
+.screen.active { display:block; }
+
+/* ══ INTRO ══ */
+#intro-wrap { max-width:700px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#skip-intro { text-align:right; margin-bottom:1rem; }
+#skip-intro button { background:none; border:none; color:var(--text-dim); font-size:12px; cursor:pointer; letter-spacing:.5px; font-family:'Lato',sans-serif; text-decoration:underline; text-underline-offset:3px; }
+#skip-intro button:hover { color:var(--text); }
+#slide-dots { display:flex; justify-content:center; gap:8px; margin-bottom:2rem; }
+.dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.15); transition:background .3s,transform .3s; cursor:pointer; }
+.dot.active { background:var(--gold); transform:scale(1.3); }
+.dot.done { background:rgba(212,168,67,.4); }
+.slide { display:none; animation:slideIn .45s ease; }
+.slide.active { display:block; }
+@keyframes slideIn { from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
+
+.scene-canvas {
+  width:100%; height:200px; border-radius:14px; margin-bottom:1.4rem;
+  overflow:hidden; position:relative; border:1px solid rgba(255,255,255,.07);
+  background:linear-gradient(180deg,#010610,#030e1c);
+}
+
+/* ══ SCENE ANIMATIONS ══ */
+@keyframes shimmer { 0%,100%{ opacity:.35; } 50%{ opacity:1; } }
+@keyframes sway { 0%,100%{ transform:rotate(var(--sw,0deg)); transform-origin:bottom center; } 50%{ transform:rotate(calc(var(--sw,0deg)+4deg)); transform-origin:bottom center; } }
+@keyframes quake { 0%,100%{ transform:translateX(0); } 20%{ transform:translateX(-4px); } 40%{ transform:translateX(4px); } 60%{ transform:translateX(-3px); } 80%{ transform:translateX(3px); } }
+@keyframes rootGlow { 0%,100%{ opacity:.2; } 50%{ opacity:.6; } }
+@keyframes mistFloat { 0%,100%{ transform:translateX(0) scaleX(1); opacity:.3; } 50%{ transform:translateX(15px) scaleX(1.1); opacity:.7; } }
+@keyframes snowDrop { 0%{ transform:translateY(-5px) translateX(0); opacity:0; } 10%{ opacity:.8; } 90%{ opacity:.6; } 100%{ transform:translateY(200px) translateX(var(--sx,6px)); opacity:0; } }
+@keyframes riverFlow { 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(8px); } }
+@keyframes cloudDrift { 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(var(--cx,12px)); } }
+@keyframes tectonicPush { 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(var(--tp,4px)); } }
+@keyframes tasbihFloat { 0%,100%{ transform:translateY(0); opacity:.5; } 50%{ transform:translateY(-8px) translateX(var(--tx,4px)); opacity:1; } }
+@keyframes sparklePop { 0%,100%{ transform:scale(0); opacity:0; } 50%{ transform:scale(1); opacity:.9; } }
+
+/* ── TEXT / LAYOUT ── */
+.slide-num { font-size:11px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:.5rem; font-weight:700; }
+.slide h2 { font-family:'Scheherazade New',serif; font-size:22px; color:var(--gold-light); line-height:1.4; margin-bottom:.75rem; text-shadow:0 0 16px rgba(212,168,67,.3); }
+.slide-body { font-size:14.5px; line-height:1.75; color:var(--text); margin-bottom:1.1rem; }
+.ayah-box { background:rgba(212,168,67,.07); border-left:3px solid var(--gold); border-radius:0 10px 10px 0; padding:.85rem 1rem; margin-bottom:1.3rem; }
+.ayah-ar { font-family:'Scheherazade New',serif; font-size:17px; color:var(--gold); line-height:1.8; display:block; margin-bottom:.3rem; }
+.ayah-fr { font-size:13px; color:var(--silver-dim); font-style:italic; line-height:1.5; }
+.key-fact { display:flex; gap:10px; align-items:flex-start; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:.85rem 1rem; margin-bottom:.75rem; }
+.key-fact-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+.key-fact p { font-size:13.5px; line-height:1.6; color:var(--text); }
+.key-fact p strong { color:var(--gold-light); font-weight:700; }
+.slide-nav { display:flex; gap:10px; margin-top:1.5rem; }
+.btn-prev,.btn-next,.btn-quiz { padding:11px 24px; border-radius:10px; font-size:14px; font-family:'Lato',sans-serif; cursor:pointer; font-weight:700; letter-spacing:.3px; transition:background .2s,border-color .2s,transform .1s; }
+.btn-prev { background:transparent; border:1px solid rgba(255,255,255,.15); color:var(--text-dim); }
+.btn-prev:hover { background:rgba(255,255,255,.05); }
+.btn-next { flex:1; background:linear-gradient(135deg,rgba(212,168,67,.22),rgba(212,168,67,.1)); border:1px solid rgba(212,168,67,.5); color:var(--gold-light); }
+.btn-next:hover { background:linear-gradient(135deg,rgba(212,168,67,.35),rgba(212,168,67,.18)); border-color:rgba(212,168,67,.75); }
+.btn-quiz { flex:1; background:linear-gradient(135deg,rgba(58,173,114,.25),rgba(58,173,114,.1)); border:1px solid rgba(58,173,114,.5); color:#7de0b0; }
+.btn-quiz:hover { background:linear-gradient(135deg,rgba(58,173,114,.38),rgba(58,173,114,.2)); border-color:rgba(58,173,114,.75); }
+.btn-prev:active,.btn-next:active,.btn-quiz:active { transform:scale(.97); }
+
+/* ══ QUIZ ══ */
+#quiz-wrap { max-width:680px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
+.score-pill { background:rgba(212,168,67,.13); border:1px solid rgba(212,168,67,.35); border-radius:20px; padding:5px 16px; font-size:13px; color:var(--gold); font-weight:700; }
+.prog-wrap { flex:1; margin:0 14px; height:4px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; }
+#qprog { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:4px; transition:width .5s ease; width:0%; }
+.q-count { font-size:13px; color:var(--text-dim); white-space:nowrap; }
+#q-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:16px; padding:1.75rem; margin-bottom:1.2rem; }
+#q-icon { width:36px;height:36px;border-radius:10px;background:rgba(212,168,67,.14);border:1px solid rgba(212,168,67,.3);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:1rem; }
+#q-text { font-size:15.5px;line-height:1.65;color:var(--white);margin-bottom:1.4rem; }
+#options { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+.opt { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:12px 14px; font-size:13.5px; color:var(--text); font-family:'Lato',sans-serif; cursor:pointer; text-align:left; line-height:1.4; transition:background .17s,border-color .17s,transform .1s; }
+.opt:hover:not(:disabled) { background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.4);transform:translateY(-1px); }
+.opt:active:not(:disabled) { transform:scale(.98); }
+.opt.correct { background:rgba(58,173,114,.18);border-color:rgba(58,173,114,.6);color:#7de0b0; }
+.opt.wrong   { background:rgba(224,82,82,.15); border-color:rgba(224,82,82,.5);color:#f5a0a0; }
+.opt:disabled { cursor:default; }
+#fb-box { background:rgba(212,168,67,.07); border:1px solid rgba(212,168,67,.2); border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.2rem; display:none; animation:fadeUp .35s ease; }
+#fb-text { font-size:14px;line-height:1.7;color:var(--text);margin-bottom:.7rem; }
+#fb-ayah { font-family:'Scheherazade New',serif; font-size:15px; color:var(--gold); border-left:2px solid var(--gold); padding-left:12px; line-height:1.7; }
+#qnext { width:100%; padding:13px; background:linear-gradient(135deg,rgba(212,168,67,.2),rgba(212,168,67,.08)); border:1px solid rgba(212,168,67,.45); border-radius:10px; color:var(--gold-light); font-family:'Lato',sans-serif; font-size:15px; font-weight:700; cursor:pointer; display:none; letter-spacing:.4px; transition:background .2s,border-color .2s; }
+#qnext:hover { background:linear-gradient(135deg,rgba(212,168,67,.32),rgba(212,168,67,.16));border-color:rgba(212,168,67,.7); }
+#end-screen { display:none;text-align:center;padding:2.5rem 1rem;animation:fadeUp .5s ease; }
+#end-badge { width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,67,.2),rgba(212,168,67,.04));border:2px solid rgba(212,168,67,.5);margin:0 auto 1.4rem;display:flex;align-items:center;justify-content:center;font-size:36px; }
+#end-title { font-family:'Scheherazade New',serif;font-size:22px;color:var(--gold-light);margin-bottom:.5rem; }
+#end-big { font-size:52px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:.4rem; }
+#end-sub { font-size:13px;color:var(--text-dim);margin-bottom:.5rem; }
+#end-msg { font-size:14px;color:var(--text);line-height:1.65;max-width:400px;margin:0 auto 2rem; }
+.end-btns { display:flex;gap:10px;justify-content:center;flex-wrap:wrap; }
+#restart-btn,#review-btn { padding:11px 28px; border-radius:10px; font-family:'Lato',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:background .2s,border-color .2s; }
+#restart-btn { background:transparent;border:1px solid rgba(212,168,67,.5);color:var(--gold); }
+#restart-btn:hover { background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.8); }
+#review-btn { background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--text-dim); }
+#review-btn:hover { background:rgba(255,255,255,.06); }
+@keyframes fadeUp { from{ opacity:0;transform:translateY(10px); } to{ opacity:1;transform:translateY(0); } }
+@media(max-width:480px){
+  #options{ grid-template-columns:1fr; }
+  .slide h2{ font-size:19px; }
+  #sky-label h1{ font-size:20px; }
+  #intro-wrap,#quiz-wrap{ padding:1.4rem 1rem 2.5rem; }
+  .slide-nav{ flex-direction:column; }
+  .btn-prev{ order:2; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ HEADER ══ -->
+<div id="sky-header">
+  <div id="hstars"></div>
+  <!-- aurora glow behind peaks -->
+  <div class="h-aurora" style="width:200px;height:80px;top:20px;left:25%;background:radial-gradient(ellipse,rgba(100,160,255,.2),transparent);--ad:0s"></div>
+  <div class="h-aurora" style="width:160px;height:60px;top:30px;left:55%;background:radial-gradient(ellipse,rgba(150,200,255,.15),transparent);--ad:2s"></div>
+  <!-- mountain silhouettes -->
+  <svg style="position:absolute;bottom:0;left:0;width:100%;height:180px" viewBox="0 0 700 180" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="hmt1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(70,55,40,.9)"/><stop offset="100%" stop-color="rgba(40,30,20,.95)"/></linearGradient>
+      <linearGradient id="hmt2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(55,45,35,.85)"/><stop offset="100%" stop-color="rgba(30,22,14,.95)"/></linearGradient>
+      <linearGradient id="snowH" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(220,232,255,.9)"/><stop offset="100%" stop-color="rgba(180,200,240,.3)"/></linearGradient>
+    </defs>
+    <!-- back mountains -->
+    <polygon points="0,180 80,60 160,180" fill="url(#hmt2)" opacity=".6"/>
+    <polygon points="100,180 200,30 300,180" fill="url(#hmt2)" opacity=".65"/>
+    <polygon points="400,180 500,20 600,180" fill="url(#hmt2)" opacity=".6"/>
+    <polygon points="530,180 620,55 700,180" fill="url(#hmt2)" opacity=".65"/>
+    <!-- front mountains -->
+    <polygon points="0,180 120,75 240,180" fill="url(#hmt1)"/>
+    <polygon points="150,180 280,15 410,180" fill="url(#hmt1)"/>
+    <polygon points="350,180 470,40 590,180" fill="url(#hmt1)"/>
+    <polygon points="540,180 650,70 700,180" fill="url(#hmt1)"/>
+    <!-- snow caps -->
+    <polygon points="280,15 300,38 260,38" fill="url(#snowH)"/>
+    <polygon points="120,75 138,95 102,95" fill="url(#snowH)" opacity=".8"/>
+    <polygon points="470,40 488,62 452,62" fill="url(#snowH)"/>
+    <polygon points="650,70 664,88 636,88" fill="url(#snowH)" opacity=".8"/>
+    <!-- mist bands -->
+    <rect x="0" y="100" width="700" height="18" fill="rgba(200,215,240,.04)" rx="9"/>
+    <rect x="0" y="125" width="700" height="14" fill="rgba(200,215,240,.05)" rx="7"/>
+  </svg>
+  <!-- snow particles -->
+  <div id="hsnow"></div>
+  <!-- mist -->
+  <div class="h-mist" style="width:180px;height:22px;bottom:75px;left:15%;--md:14s;--mdd:0s;--mx:16px;--my:-3px"></div>
+  <div class="h-mist" style="width:140px;height:18px;bottom:65px;left:45%;--md:18s;--mdd:3s;--mx:-12px;--my:-4px"></div>
+  <div class="h-mist" style="width:160px;height:20px;bottom:80px;right:10%;--md:16s;--mdd:6s;--mx:10px;--my:-3px"></div>
+  <div id="sky-label">
+    <h1>الْجِبَالُ — آيَةٌ مِنْ آيَاتِ اللهِ</h1>
+    <p>Les Montagnes — Un Signe de la Création d'Allah</p>
+  </div>
+</div>
+
+<!-- ══ INTRO ══ -->
+<div id="screen-intro" class="screen active">
+  <div id="intro-wrap">
+    <div id="skip-intro"><button onclick="startQuiz()">Passer directement au quiz →</button></div>
+    <div id="slide-dots"></div>
+
+    <!-- SLIDE 0 : Les pieux -->
+    <div class="slide active" id="sl-0">
+      <div class="scene-canvas" id="sc0"></div>
+      <div class="slide-num">Leçon 1 · 6 leçons</div>
+      <h2>Les Montagnes — Des Pieux fichés dans la Terre</h2>
+      <p class="slide-body">
+        Le Coran décrit les montagnes comme des <strong style="color:var(--gold-light)">أَوْتَاد (awtâd — pieux)</strong>
+        fichés dans la terre. Ce terme implique que chaque montagne visible
+        possède une <strong style="color:var(--gold-light)">racine profonde</strong>
+        qui s'enfonce dans le manteau terrestre — exactement comme un pieu s'enfonce dans le sol.
+        La géologie moderne a confirmé ce phénomène au XXe siècle seulement,
+        grâce aux techniques de sismologie.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ أَلَمْ نَجْعَلِ الْأَرْضَ مِهَادًا ﴝ وَالْجِبَالَ أَوْتَادًا ﴾</span>
+        <span class="ayah-fr">« N’avons-Nous pas fait de la terre une couche ? et (placé) les montagnes comme des piquets ? » — An-Naba : 6-7</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🏔️</span>
+        <p>L'Himalaya, qui culmine à 8 849 m, possède une racine qui s'enfonce à environ <strong>250 km</strong> dans le manteau terrestre — soit 28 fois sa hauteur visible. Ce ratio correspond exactement à la métaphore du "piquet" utilisée par le Coran.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">⚖️</span>
+        <p>Ces racines profondes <strong>équilibrent la pression</strong> des plaques tectoniques — un phénomène appelé "isostasie" par les géologues. Sans elles, la croûte terrestre serait instable et la vie à la surface impossible.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-next" onclick="goSlide(1)">Suivant → Stabilisateurs de la Terre</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 1 : Stabilisation -->
+    <div class="slide" id="sl-1">
+      <div class="scene-canvas" id="sc1"></div>
+      <div class="slide-num">Leçon 2 · 6 leçons</div>
+      <h2>Les Montagnes Stabilisent la Terre — أَن تَمِيدَ بِكُمْ</h2>
+      <p class="slide-body">
+        Allah a explicitement mentionné que les montagnes ont été créées
+        pour que la Terre <strong style="color:var(--gold-light)">ne tremble pas (لَا تَمِيدَ)</strong> sous les hommes.
+        Sans les chaînes de montagnes pour absorber et répartir les tensions
+        des plaques tectoniques, les tremblements de terre seraient
+        <strong style="color:var(--gold-light)">catastrophiques et permanents</strong>
+        sur toute la surface terrestre.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَأَلْقَىٰ فِي الْأَرْضِ رَوَاسِيَ أَن تَمِيدَ بِكُمْ ﴾</span>
+        <span class="ayah-fr">« Et Il a implanté des montagnes immobiles dans la terre afin qu’elle ne branle pas en vous emportant avec elle » — An-Nahl : 15</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌍</span>
+        <p>Le mot <strong>رَوَاسِي</strong> (<em>rawâsi</em>) signifie "solidement ancrées, immobiles". Ce terme décrit parfaitement la fonction géologique des montagnes : ancrer la croûte et empêcher les mouvements brutaux de plaques.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">📐</span>
+        <p>Les chaînes de montagnes se forment aux points de collision des plaques tectoniques et <strong>absorbent progressivement</strong> l'énergie de ces collisions. Sans elles, cette énergie se libèrerait brusquement en tremblements de terre dévastateurs.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(0)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(2)">Suivant → Châteaux d'Eau</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 : Château d'eau -->
+    <div class="slide" id="sl-2">
+      <div class="scene-canvas" id="sc2"></div>
+      <div class="slide-num">Leçon 3 · 6 leçons</div>
+      <h2>Les Montagnes — Châteaux d'Eau du Monde</h2>
+      <p class="slide-body">
+        Les montagnes sont les <strong style="color:var(--gold-light)">grands réservoirs d'eau douce</strong> de la planète.
+        La neige et les glaciers qui s'y accumulent en hiver fondent lentement en été,
+        alimentant les fleuves, les rivières et les nappes phréatiques
+        qui nourrissent des milliards d'êtres humains.
+        Allah a placé ces châteaux d'eau en hauteur pour que l'eau coule
+        naturellement vers toute la Terre.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَأَنزَلْنَا مِنَ السَّمَاءِ مَاءً بِقَدَرٍ فَأَسْكَنَّاهُ فِي الْأَرْضِ ﴾</span>
+        <span class="ayah-fr">« Et Nous avons fait descendre l’eau du ciel avec mesure. Puis Nous l’avons maintenue dans la terre » — Al-Mu'minun : 18</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">💧</span>
+        <p>Les glaciers de montagne stockent <strong>75% de l'eau douce</strong> mondiale. Les grands fleuves — Nil, Amazone, Gange, Mississippi — sont tous alimentés par les neiges éternelles des montagnes qu'Allah a dressées comme des réservoirs naturels.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🏔️</span>
+        <p>Plus de <strong>2 milliards de personnes</strong> dépendent directement des eaux de montagne pour boire, irriguer et vivre. Allah a placé ces réservoirs en altitude pour que la gravité distribue l'eau naturellement vers toutes les régions.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(1)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(3)">Suivant → Diversité des Couleurs</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 : Couleurs des montagnes -->
+    <div class="slide" id="sl-3">
+      <div class="scene-canvas" id="sc3"></div>
+      <div class="slide-num">Leçon 4 · 6 leçons</div>
+      <h2>Les Montagnes aux Couleurs Variées — أَلْوَانُهَا</h2>
+      <p class="slide-body">
+        Le Coran mentionne spécifiquement que les montagnes ont des
+        <strong style="color:var(--gold-light)">couleurs variées</strong> :
+        blanches, rouges, noires. Ces couleurs reflètent
+        la composition minérale de chaque massif — un témoignage
+        de la créativité d'Allah dans Sa création.
+        Des montagnes rouges de Petra en Jordanie aux montagnes blanches
+        des Alpes enneigées — chacune porte la signature de son Créateur.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَمِنَ الْجِبَالِ جُدَدٌ بِيضٌ وَحُمْرٌ مُّخْتَلِفٌ أَلْوَانُهَا وَغَرَابِيبُ سُودٌ ﴾</span>
+        <span class="ayah-fr">« Et dans les montagnes, il y a des sillons blancs et rouges, de couleurs différentes, et des roches excessivement noires. » — Fatir : 27</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🔴</span>
+        <p>La couleur d'une montagne révèle sa composition : <strong>rouge</strong> = oxyde de fer (grès rouge de Petra) — <strong>blanc</strong> = calcaire ou neige — <strong>noir</strong> = basalte volcanique. Chaque couleur est une signature minérale posée par Allah.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🎨</span>
+        <p>Le Coran cite les couleurs des montagnes juste après avoir parlé de la <strong>diversité des hommes et des plantes</strong> — tout est connecté dans la création d'Allah. La même eau de pluie produit des fruits de couleurs différentes ET des montagnes aux teintes variées.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(2)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(4)">Suivant → La Formation des Montagnes</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 : Formation / tectonique -->
+    <div class="slide" id="sl-4">
+      <div class="scene-canvas" id="sc4"></div>
+      <div class="slide-num">Leçon 5 · 6 leçons</div>
+      <h2>La Formation des Montagnes — قُوَّةُ الْخَلْقِ</h2>
+      <p class="slide-body">
+        Les montagnes ne sont pas apparues par hasard — elles sont le résultat
+        de la collision de <strong style="color:var(--gold-light)">plaques tectoniques</strong>
+        poussées les unes contre les autres par des forces colossales.
+        L'Himalaya se forme encore aujourd'hui — il s'élève de
+        <strong style="color:var(--gold-light)">5 mm par an</strong>
+        sous la poussée de la plaque indienne contre la plaque eurasiatique.
+        Allah a mis ces forces en mouvement dès la création.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَتَرَى الْجِبَالَ تَحْسَبُهَا جَامِدَةً وَهِيَ تَمُرُّ مَرَّ السَّحَابِ ﴾</span>
+        <span class="ayah-fr">« Et tu verras les montagnes - tu les crois figées - alors qu’elles passent comme des nuages. » — An-Naml : 88</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">⚡</span>
+        <p>Ce verset est un miracle : il décrit le <strong>mouvement des montagnes</strong> que nous ne percevons pas — exactement comme la tectonique des plaques, découverte au XXe siècle. Les plaques se déplacent de 2 à 15 cm par an — les montagnes "passent comme les nuages" à l'échelle géologique.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌋</span>
+        <p>La collision de la plaque indienne contre l'Eurasie — débutée il y a 50 millions d'années — a créé l'Himalaya. Cette même collision se poursuit aujourd'hui à <strong>5 mm/an</strong>. Un processus lancé par Allah et toujours en cours.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(3)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(5)">Suivant → Les Montagnes Glorifient Allah</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 : Tasbih des montagnes -->
+    <div class="slide" id="sl-5">
+      <div class="scene-canvas" id="sc5"></div>
+      <div class="slide-num">Leçon 6 · 6 leçons</div>
+      <h2>Les Montagnes Glorifient Allah — وَسَبَّحَ الْجِبَالُ</h2>
+      <p class="slide-body">
+        Allah a ordonné aux montagnes de glorifier avec Dawud (David) عليه السلام —
+        et elles ont obéi. Cette réalité n'est pas métaphorique :
+        les montagnes <strong style="color:var(--gold-light)">glorifient réellement Allah</strong>
+        par leur existence, leur stabilité, leur beauté et leur rôle de service.
+        La prochaine fois que tu contemples une montagne,
+        souviens-toi que cette masse de roche et de glace accomplit un
+        <strong style="color:var(--gold-light)">tasbih permanent</strong> depuis des millions d'années.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ إِنَّا سَخَّرْنَا الْجِبَالَ مَعَهُ يُسَبِّحْنَ بِالْعَشِيِّ وَالْإِشْرَاقِ ﴾</span>
+        <span class="ayah-fr">« Nous soumîmes les montagnes à glorifier Allah, soir et matin, en sa compagnie » — Sad : 18</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌄</span>
+        <p>Le Coran précise <strong>"au soir et au matin"</strong> — les deux moments où les montagnes sont les plus belles, baignées d'une lumière dorée. Allah a lié la beauté visuelle des montagnes à leur glorification : voir leur beauté, c'est assister à leur tasbih.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🤲</span>
+        <p>De nombreux prophètes et hommes pieux se retiraient dans les montagnes pour se rapprocher d'Allah — Moussa عليه السلام au Mont Sinaï, Ibrahim عليه السلام au Mont Arafat et le Prophète ﷺ à la grotte de Hira. Les montagnes sont des lieux de <strong>proximité avec Allah</strong>.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(4)">← Précédent</button>
+        <button class="btn-quiz" onclick="startQuiz()">🎯 Tester mes connaissances →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="screen-quiz" class="screen">
+  <div id="quiz-wrap">
+    <div id="quiz-header">
+      <div class="score-pill" id="score-pill">⭐ 0</div>
+      <div class="prog-wrap"><div id="qprog"></div></div>
+      <div class="q-count" id="q-count">1 / 8</div>
+    </div>
+    <div id="q-card">
+      <div id="q-icon">🏔️</div>
+      <div id="q-text"></div>
+      <div id="options"></div>
+    </div>
+    <div id="fb-box">
+      <div id="fb-text"></div>
+      <div id="fb-ayah"></div>
+    </div>
+    <button id="qnext">Question suivante →</button>
+    <div id="end-screen">
+      <div id="end-badge"></div>
+      <div id="end-title"></div>
+      <div id="end-big"></div>
+      <div id="end-sub">points sur 8</div>
+      <div id="end-msg"></div>
+      <div class="end-btns">
+        <button id="restart-btn" onclick="restartQuiz()">↺ Recommencer le quiz</button>
+        <button id="review-btn" onclick="reviewIntro()">📖 Revoir les leçons</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ══ HEADER ══ */
+(function(){
+  const sb=document.getElementById('hstars');
+  for(let i=0;i<80;i++){
+    const s=document.createElement('div');s.className='hstar';
+    const z=Math.random()*2.5+.4;
+    s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*60}%;left:${Math.random()*100}%;--op:${(.1+Math.random()*.65).toFixed(2)};--dur:${(2+Math.random()*5).toFixed(1)}s;--del:${(Math.random()*6).toFixed(1)}s;opacity:${(.1+Math.random()*.65).toFixed(2)}`;
+    sb.appendChild(s);
+  }
+  const sw=document.getElementById('hsnow');
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');p.className='snow-p';
+    const sz=Math.random()*3+1;
+    p.style.cssText=`width:${sz}px;height:${sz}px;top:0;left:${Math.random()*100}%;--sf:${(5+Math.random()*5).toFixed(1)}s;--sfd:${(Math.random()*6).toFixed(1)}s;--sx:${(Math.random()*20-10).toFixed(0)}px`;
+    sw.appendChild(p);
+  }
+})();
+
+/* ══ SCENE HELPERS ══ */
+function addStars(el,count,maxOp){
+  for(let i=0;i<count;i++){
+    const s=document.createElement('div');
+    const z=Math.random()*2+.4;
+    s.style.cssText=`position:absolute;border-radius:50%;background:#fff;width:${z}px;height:${z}px;top:${Math.random()*45}%;left:${Math.random()*100}%;opacity:${(.05+Math.random()*(maxOp||.4)).toFixed(2)};animation:shimmer ${(2+Math.random()*4).toFixed(1)}s ease-in-out infinite ${(Math.random()*4).toFixed(1)}s`;
+    el.appendChild(s);
+  }
+}
+function addSnow(el,count){
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    const sz=Math.random()*2.5+1;
+    p.style.cssText=`position:absolute;border-radius:50%;background:rgba(255,255,255,.7);width:${sz}px;height:${sz}px;top:0;left:${Math.random()*100}%;animation:snowDrop ${(4+Math.random()*4).toFixed(1)}s linear infinite ${(Math.random()*5).toFixed(1)}s;--sx:${(Math.random()*16-8).toFixed(0)}px`;
+    el.appendChild(p);
+  }
+}
+
+/* Sc0 : Mountain with deep root (peg) */
+function buildSc0(el){
+  addStars(el,30,.5);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="mt0" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(70,55,40,.9)"/><stop offset="100%" stop-color="rgba(40,28,18,.95)"/></linearGradient>
+      <linearGradient id="root0" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(60,45,30,.7)"/><stop offset="100%" stop-color="rgba(25,15,8,.4)"/></linearGradient>
+      <linearGradient id="crust0" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(80,55,30,.6)"/><stop offset="100%" stop-color="rgba(50,30,15,.8)"/></linearGradient>
+      <linearGradient id="mantle0" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(160,55,20,.4)"/><stop offset="100%" stop-color="rgba(100,30,10,.6)"/></linearGradient>
+      <linearGradient id="snow0" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(235,242,255,.95)"/><stop offset="100%" stop-color="rgba(190,210,240,.4)"/></linearGradient>
+    </defs>
+    <!-- sky -->
+    <rect x="0" y="0" width="340" height="90" fill="rgba(2,8,20,.0)"/>
+    <!-- crust layer -->
+    <rect x="0" y="90" width="340" height="40" fill="url(#crust0)"/>
+    <text x="8" y="115" font-size="9" fill="rgba(200,180,140,.55)" font-family="Lato">Croûte terrestre</text>
+    <!-- mantle layer -->
+    <rect x="0" y="130" width="340" height="70" fill="url(#mantle0)"/>
+    <text x="8" y="160" font-size="9" fill="rgba(200,100,60,.55)" font-family="Lato">Manteau</text>
+    <!-- surface line -->
+    <line x1="0" y1="90" x2="340" y2="90" stroke="rgba(212,168,67,.2)" stroke-width="1"/>
+    <!-- mountain visible part -->
+    <polygon points="110,90 170,15 230,90" fill="url(#mt0)"/>
+    <!-- snow cap -->
+    <polygon points="155,20 170,15 185,20 178,32 162,32" fill="url(#snow0)"/>
+    <!-- mountain ROOT (peg going deep) -->
+    <polygon points="130,90 115,190 225,190 210,90" fill="url(#root0)" opacity=".7"/>
+    <!-- peg center line -->
+    <line x1="170" y1="90" x2="170" y2="190" stroke="rgba(212,168,67,.4)" stroke-width="2" stroke-dasharray="5,4"/>
+    <!-- root glow -->
+    <ellipse cx="170" cy="185" rx="42" ry="8" fill="rgba(212,168,67,.06)" stroke="rgba(212,168,67,.15)" stroke-width="1"/>
+    <!-- dimension labels -->
+    <line x1="240" y1="15" x2="240" y2="90" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+    <text x="248" y="55" font-size="8" fill="rgba(255,255,255,.45)" font-family="Lato">8 849 m</text>
+    <text x="245" y="65" font-size="7" fill="rgba(255,255,255,.3)" font-family="Lato">visible</text>
+    <line x1="240" y1="90" x2="240" y2="190" stroke="rgba(212,168,67,.25)" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="248" y="145" font-size="8" fill="rgba(212,168,67,.55)" font-family="Lato">~250 km</text>
+    <text x="248" y="155" font-size="7" fill="rgba(212,168,67,.4)" font-family="Lato">racine (pieu)</text>
+    <!-- verse label -->
+    <text x="50" y="78" font-family="Scheherazade New,serif" font-size="14" fill="rgba(212,168,67,.6)">أَوْتَادًا</text>
+    <text x="50" y="90" font-size="8" fill="rgba(212,168,67,.4)" font-family="Lato">des pieux</text>
+    <text x="170" y="198" text-anchor="middle" font-family="Scheherazade New,serif" font-size="11" fill="rgba(212,168,67,.5)">An-Naba : 7 — وَالْجِبَالَ أَوْتَادًا</text>
+  `;
+  el.appendChild(svg);
+  addSnow(el,5);
+}
+
+/* Sc1 : Tectonic plates / stabilization */
+function buildSc1(el){
+  el.style.background='linear-gradient(180deg,#010610,#030e1a)';
+  addStars(el,20,.4);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="plate1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(60,45,30,.7)"/><stop offset="100%" stop-color="rgba(80,60,40,.8)"/></linearGradient>
+      <linearGradient id="plate2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(55,42,28,.8)"/><stop offset="100%" stop-color="rgba(65,48,32,.7)"/></linearGradient>
+      <linearGradient id="mtn1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(80,62,45,.9)"/><stop offset="100%" stop-color="rgba(50,38,25,.95)"/></linearGradient>
+    </defs>
+    <!-- mantle hot below -->
+    <rect x="0" y="145" width="340" height="55" fill="rgba(150,45,15,.3)"/>
+    <text x="170" y="172" text-anchor="middle" font-size="8" fill="rgba(200,80,40,.45)" font-family="Lato">Manteau en mouvement</text>
+    <!-- plate 1 moving right -->
+    <rect x="0" y="105" width="150" height="42" fill="url(#plate1)" rx="2"/>
+    <text x="75" y="130" text-anchor="middle" font-size="9" fill="rgba(200,180,140,.6)" font-family="Lato">Plaque A →</text>
+    <!-- plate 2 moving left -->
+    <rect x="190" y="105" width="150" height="42" fill="url(#plate2)" rx="2"/>
+    <text x="265" y="130" text-anchor="middle" font-size="9" fill="rgba(200,180,140,.6)" font-family="Lato">← Plaque B</text>
+    <!-- collision zone with mountains rising -->
+    <polygon points="130,105 170,40 210,105" fill="url(#mtn1)"/>
+    <polygon points="140,105 152,72 164,105" fill="rgba(60,48,35,.8)"/>
+    <polygon points="176,105 190,65 204,105" fill="rgba(55,44,32,.8)"/>
+    <!-- snow caps -->
+    <polygon points="162,44 170,40 178,44 174,52 166,52" fill="rgba(220,232,255,.8)"/>
+    <!-- arrows showing push -->
+    <line x1="10" y1="126" x2="125" y2="126" stroke="rgba(212,168,67,.4)" stroke-width="2" marker-end="url(#arrowG)"/>
+    <line x1="330" y1="126" x2="215" y2="126" stroke="rgba(212,168,67,.4)" stroke-width="2"/>
+    <!-- quake absorbed label -->
+    <text x="170" y="10" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">رَوَاسِيَ — Ancrées, immobiles</text>
+    <text x="170" y="24" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.35)" font-family="Lato">An-Nahl : 15 — Les montagnes absorbent les tensions tectoniques</text>
+    <!-- energy absorption -->
+    <text x="170" y="92" text-anchor="middle" font-size="9" fill="rgba(100,200,150,.5)" font-family="Lato">✓ Énergie absorbée par les racines</text>
+    <!-- quake waves blocked -->
+    <path d="M 25 95 Q 40 85 55 95 Q 70 105 85 95" stroke="rgba(220,80,40,.35)" stroke-width="1.5" fill="none"/>
+    <path d="M 255 95 Q 270 85 285 95 Q 300 105 315 95" stroke="rgba(220,80,40,.35)" stroke-width="1.5" fill="none"/>
+    <text x="55" y="80" font-size="8" fill="rgba(220,80,40,.4)" font-family="Lato">Séisme réduit</text>
+    <text x="265" y="80" text-anchor="middle" font-size="8" fill="rgba(220,80,40,.4)" font-family="Lato">Séisme réduit</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc2 : Mountain water tower */
+function buildSc2(el){
+  el.style.background='linear-gradient(180deg,#010810,#020e18)';
+  addStars(el,20,.4);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="mt2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(70,55,38,.9)"/><stop offset="100%" stop-color="rgba(45,32,20,.95)"/></linearGradient>
+      <linearGradient id="snow2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(235,242,255,.95)"/><stop offset="100%" stop-color="rgba(190,210,240,.4)"/></linearGradient>
+      <linearGradient id="glacier2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(180,210,240,.6)"/><stop offset="100%" stop-color="rgba(100,160,220,.3)"/></linearGradient>
+      <linearGradient id="riverL" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(40,120,200,.6)"/><stop offset="100%" stop-color="rgba(20,80,160,.4)"/></linearGradient>
+      <linearGradient id="riverR" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(20,80,160,.4)"/><stop offset="100%" stop-color="rgba(40,120,200,.6)"/></linearGradient>
+    </defs>
+    <!-- mountain -->
+    <polygon points="80,155 170,25 260,155" fill="url(#mt2)"/>
+    <!-- glacier layer -->
+    <polygon points="130,100 170,40 210,100 190,110 150,110" fill="url(#glacier2)" opacity=".7"/>
+    <!-- snow cap -->
+    <polygon points="158,32 170,25 182,32 176,48 164,48" fill="url(#snow2)"/>
+    <!-- cloud over peak -->
+    <ellipse cx="170" cy="20" rx="30" ry="10" fill="rgba(200,220,240,.12)"/>
+    <!-- rivers flowing down both sides -->
+    <path d="M 135 108 Q 110 130 80 155 Q 50 170 20 185" stroke-width="5" stroke="url(#riverL)" fill="none" stroke-linecap="round"/>
+    <path d="M 205 108 Q 230 130 260 155 Q 290 170 320 185" stroke-width="5" stroke="url(#riverR)" fill="none" stroke-linecap="round"/>
+    <!-- people / city icons at bottom -->
+    <text x="25" y="196" font-size="11" text-anchor="middle">🏘️</text>
+    <text x="315" y="196" font-size="11" text-anchor="middle">🏘️</text>
+    <!-- stats -->
+    <text x="170" y="8" text-anchor="middle" font-family="Scheherazade New,serif" font-size="12" fill="rgba(212,168,67,.55)">جِبَالٌ كَخَزَّانَاتِ الْمَاءِ — Châteaux d'eau</text>
+    <text x="65" y="145" text-anchor="middle" font-size="8" fill="rgba(100,180,255,.55)" font-family="Lato">Fleuve</text>
+    <text x="275" y="145" text-anchor="middle" font-size="8" fill="rgba(100,180,255,.55)" font-family="Lato">Fleuve</text>
+    <text x="170" y="168" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.4)" font-family="Lato">75% de l'eau douce mondiale stockée dans les glaciers de montagne</text>
+    <text x="170" y="180" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.35)" font-family="Lato">2 milliards de personnes dépendent de ces eaux</text>
+    <text x="170" y="194" text-anchor="middle" font-family="Scheherazade New,serif" font-size="11" fill="rgba(212,168,67,.45)">Al-Mu'minun : 18 — مَاءً بِقَدَرٍ فَأَسْكَنَّاهُ فِي الْأَرْضِ</text>
+  `;
+  el.appendChild(svg);
+  addSnow(el,8);
+}
+
+/* Sc3 : Colored mountains */
+function buildSc3(el){
+  el.style.background='linear-gradient(180deg,#010610,#030e1c)';
+  addStars(el,25,.45);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <!-- ground -->
+    <rect x="0" y="160" width="340" height="40" fill="rgba(20,15,10,.6)"/>
+    <!-- WHITE mountain (limestone / snow) -->
+    <polygon points="10,160 65,60 120,160" fill="rgba(210,222,240,.55)" stroke="rgba(220,232,255,.2)" stroke-width="1"/>
+    <polygon points="48,75 65,60 82,75 74,95 56,95" fill="rgba(240,246,255,.9)"/>
+    <text x="65" y="176" text-anchor="middle" font-family="Scheherazade New,serif" font-size="12" fill="rgba(220,232,255,.7)">أَبْيَض</text>
+    <text x="65" y="188" text-anchor="middle" font-size="8" fill="rgba(200,215,240,.5)" font-family="Lato">Calcaire / Neige</text>
+    <!-- RED mountain (sandstone) -->
+    <polygon points="120,160 170,45 220,160" fill="rgba(180,70,35,.65)" stroke="rgba(200,90,45,.2)" stroke-width="1"/>
+    <polygon points="153,60 170,45 187,60 179,80 161,80" fill="rgba(200,90,50,.8)"/>
+    <!-- red striations -->
+    <path d="M 130 140 Q 170 135 210 140" stroke="rgba(220,110,60,.3)" stroke-width="3" fill="none"/>
+    <path d="M 133 125 Q 170 120 207 125" stroke="rgba(210,100,55,.25)" stroke-width="2.5" fill="none"/>
+    <path d="M 137 110 Q 170 106 203 110" stroke="rgba(200,90,50,.2)" stroke-width="2" fill="none"/>
+    <text x="170" y="176" text-anchor="middle" font-family="Scheherazade New,serif" font-size="12" fill="rgba(220,100,60,.7)">أَحْمَر</text>
+    <text x="170" y="188" text-anchor="middle" font-size="8" fill="rgba(200,90,55,.5)" font-family="Lato">Grès (Petra)</text>
+    <!-- BLACK mountain (basalt / volcanic) -->
+    <polygon points="220,160 275,55 330,160" fill="rgba(35,30,25,.85)" stroke="rgba(60,50,40,.3)" stroke-width="1"/>
+    <polygon points="258,70 275,55 292,70 284,90 266,90" fill="rgba(45,40,32,.9)"/>
+    <!-- lava glow at base -->
+    <ellipse cx="275" cy="158" rx="35" ry="6" fill="rgba(180,50,10,.12)"/>
+    <text x="275" y="176" text-anchor="middle" font-family="Scheherazade New,serif" font-size="12" fill="rgba(120,110,100,.7)">غَرَابِيب سُود</text>
+    <text x="275" y="188" text-anchor="middle" font-size="8" fill="rgba(100,90,80,.5)" font-family="Lato">Basalte volcanique</text>
+    <!-- verse -->
+    <text x="170" y="12" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">جُدَدٌ بِيضٌ وَحُمْرٌ وَغَرَابِيبُ سُودٌ</text>
+    <text x="170" y="26" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.35)" font-family="Lato">Fatir : 27 — Chaque couleur révèle la composition minérale voulue par Allah</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc4 : Tectonic movement */
+function buildSc4(el){
+  el.style.background='linear-gradient(180deg,#010610,#030e1a)';
+  addStars(el,20,.4);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="indPl" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(80,140,60,.5)"/><stop offset="100%" stop-color="rgba(60,110,45,.6)"/></linearGradient>
+      <linearGradient id="eurPl" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(60,80,140,.5)"/><stop offset="100%" stop-color="rgba(45,60,120,.6)"/></linearGradient>
+      <linearGradient id="himalG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(80,62,45,.95)"/><stop offset="100%" stop-color="rgba(50,38,25,.9)"/></linearGradient>
+    </defs>
+    <!-- earth cross section top view -->
+    <!-- India plate pushing north -->
+    <polygon points="0,130 170,130 170,200 0,200" fill="url(#indPl)"/>
+    <text x="80" y="168" text-anchor="middle" font-size="10" fill="rgba(100,180,80,.6)" font-family="Lato">Plaque Indienne</text>
+    <text x="80" y="182" text-anchor="middle" font-size="9" fill="rgba(100,180,80,.4)" font-family="Lato">→ 5 cm/an</text>
+    <!-- Eurasia plate -->
+    <polygon points="170,30 340,30 340,130 170,130" fill="url(#eurPl)"/>
+    <text x="255" y="85" text-anchor="middle" font-size="10" fill="rgba(100,130,200,.6)" font-family="Lato">Plaque Eurasiatique</text>
+    <!-- collision zone = Himalaya rising -->
+    <polygon points="100,130 170,55 240,130" fill="url(#himalG)"/>
+    <polygon points="152,70 170,55 188,70 180,88 160,88" fill="rgba(220,232,255,.7)"/>
+    <!-- rising arrow -->
+    <line x1="170" y1="45" x2="170" y2="15" stroke="rgba(212,168,67,.55)" stroke-width="2"/>
+    <polygon points="165,15 170,5 175,15" fill="rgba(212,168,67,.55)"/>
+    <text x="185" y="18" font-size="9" fill="rgba(212,168,67,.6)" font-family="Lato">+5 mm/an</text>
+    <!-- push arrows -->
+    <line x1="20" y1="115" x2="88" y2="115" stroke="rgba(100,180,80,.4)" stroke-width="2"/>
+    <polygon points="88,111 98,115 88,119" fill="rgba(100,180,80,.4)"/>
+    <line x1="320" y1="45" x2="252" y2="45" stroke="rgba(100,130,200,.4)" stroke-width="2"/>
+    <polygon points="252,41 242,45 252,49" fill="rgba(100,130,200,.4)"/>
+    <!-- time label -->
+    <text x="170" y="198" text-anchor="middle" font-size="8" fill="rgba(212,168,67,.4)" font-family="Lato">Collision débutée il y a 50 millions d'années — toujours en cours par la volonté d'Allah</text>
+    <!-- verse -->
+    <text x="170" y="14" text-anchor="middle" font-family="Scheherazade New,serif" font-size="11" fill="rgba(212,168,67,.5)">تَحْسَبُهَا جَامِدَةً وَهِيَ تَمُرُّ — An-Naml : 88</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc5 : Tasbih of mountains / sunset */
+function buildSc5(el){
+  el.style.background='linear-gradient(180deg,#030510,#060a18,#100818)';
+  addStars(el,50,.7);
+  // sunset glow
+  const glow=document.createElement('div');
+  glow.style.cssText='position:absolute;bottom:40px;left:50%;transform:translateX(-50%);width:260px;height:60px;background:radial-gradient(ellipse,rgba(212,120,40,.18),transparent);border-radius:50%;animation:shimmer 5s ease-in-out infinite';
+  el.appendChild(glow);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="sunsetMt" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(100,70,45,.9)"/>
+        <stop offset="100%" stop-color="rgba(50,32,18,.95)"/>
+      </linearGradient>
+      <radialGradient id="sunsetG" cx="50%" cy="80%" r="60%">
+        <stop offset="0%" stop-color="rgba(220,120,40,.25)"/>
+        <stop offset="100%" stop-color="rgba(220,120,40,.0)"/>
+      </radialGradient>
+    </defs>
+    <!-- sunset sky glow -->
+    <rect width="340" height="200" fill="url(#sunsetG)"/>
+    <!-- sun setting -->
+    <circle cx="170" cy="148" r="22" fill="rgba(220,130,40,.5)"/>
+    <circle cx="170" cy="148" r="32" fill="rgba(220,100,30,.15)"/>
+    <!-- mountain silhouettes against sunset -->
+    <polygon points="0,200 70,95 140,200" fill="url(#sunsetMt)"/>
+    <polygon points="100,200 170,65 240,200" fill="rgba(55,40,25,.95)"/>
+    <polygon points="200,200 270,100 340,200" fill="rgba(50,38,22,.9)"/>
+    <!-- snow glowing orange at sunset -->
+    <polygon points="158,72 170,65 182,72 175,82 165,82" fill="rgba(255,180,80,.45)"/>
+    <polygon points="60,103 70,95 80,103 75,115 65,115" fill="rgba(255,180,80,.35)"/>
+    <!-- tasbih words -->
+    <text x="42" y="55" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.45)">سُبْحَانَ اللهِ</text>
+    <text x="230" y="50" font-family="Scheherazade New,serif" font-size="12" fill="rgba(212,168,67,.4)">اللهُ أَكْبَر</text>
+    <text x="280" y="85" font-family="Scheherazade New,serif" font-size="11" fill="rgba(212,168,67,.35)">يُسَبِّحْنَ</text>
+    <text x="25" y="88" font-family="Scheherazade New,serif" font-size="11" fill="rgba(212,168,67,.35)">رَوَاسِي</text>
+    <text x="155" y="22" text-anchor="middle" font-family="Scheherazade New,serif" font-size="14" fill="rgba(212,168,67,.55)">بِالْعَشِيِّ وَالْإِشْرَاقِ</text>
+    <text x="170" y="35" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.35)" font-family="Lato">Au soir et au matin du levant — Sad : 18</text>
+    <text x="170" y="193" text-anchor="middle" font-family="Scheherazade New,serif" font-size="11" fill="rgba(212,168,67,.5)">يُسَبِّحْنَ بِالْعَشِيِّ وَالْإِشْرَاقِ — Sad : 18</text>
+  `;
+  el.appendChild(svg);
+  addSnow(el,4);
+}
+
+const sceneFns=[buildSc0,buildSc1,buildSc2,buildSc3,buildSc4,buildSc5];
+sceneFns.forEach((fn,i)=>fn(document.getElementById('sc'+i)));
+
+/* ══ SLIDE DOTS ══ */
+const NSLIDES=6;
+const dotsEl=document.getElementById('slide-dots');
+for(let i=0;i<NSLIDES;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=(()=>{const n=i;return()=>goSlide(n);})();
+  dotsEl.appendChild(d);
+}
+let curSlide=0;
+function goSlide(n){
+  document.getElementById('sl-'+curSlide).classList.remove('active');
+  curSlide=n;
+  document.getElementById('sl-'+n).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>{ d.className='dot'+(i===n?' active':i<n?' done':''); });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══ QUIZ ══ */
+const Q=[
+  {
+    icon:'🏔️',
+    q:"Quel mot coranique décrit les montagnes comme des pieux fichés dans la terre ?",
+    opts:["رَوَاسِي (ancrées)","أَوْتَاد (pieux)","جِبَال (montagnes)","أَعْمِدَة (colonnes)"],
+    ans:1,
+    fb:"أَوْتَاد (awtâd — pieux) décrit des objets fichés profondément dans la terre pour stabiliser. La géologie a confirmé que les montagnes possèdent des racines profondes — l'Himalaya s'enfonce à 250 km dans le manteau. Ce concept d'isostasie n'a été découvert qu'au XXe siècle.",
+    ayah:"« N'avons-Nous pas fait de la terre un berceau et des montagnes des pieux ? » — An-Naba : 6-7"
+  },
+  {
+    icon:'⚖️',
+    q:"À quelle profondeur s'enfonce la racine de l'Himalaya dans le manteau terrestre ?",
+    opts:["25 km","80 km","250 km","1 000 km"],
+    ans:2,
+    fb:"La racine de l'Himalaya s'enfonce à environ 250 km dans le manteau terrestre — soit environ 28 fois sa hauteur visible de 8 849 m. Ce ratio correspond exactement à la métaphore du 'pieu' utilisée par le Coran 14 siècles avant la découverte de ce phénomène.",
+    ayah:"« Des montagnes comme des pieux. » — An-Naba : 7"
+  },
+  {
+    icon:'🌍',
+    q:"Que signifie le mot coranique رَوَاسِي (rawâsi) pour les montagnes ?",
+    opts:["Hautes et visibles","Solidement ancrées et immobiles","Couvertes de neige","Creuses à l'intérieur"],
+    ans:1,
+    fb:"رَوَاسِي (rawâsi) signifie 'solidement ancrées, immobiles'. Le Coran dit qu'Allah a placé des montagnes 'pour que la terre ne tremble pas sous vous'. Les chaînes de montagnes absorbent les tensions des plaques tectoniques, réduisant la fréquence et l'intensité des tremblements de terre.",
+    ayah:"« Il a placé dans la terre des montagnes fermes pour qu'elle ne tremble pas sous vous. » — An-Nahl : 15"
+  },
+  {
+    icon:'💧',
+    q:"Quelle proportion de l'eau douce mondiale est stockée dans les glaciers de montagne ?",
+    opts:["25%","50%","75%","90%"],
+    ans:2,
+    fb:"Les glaciers de montagne stockent environ 75% de l'eau douce mondiale. Les grands fleuves — Nil, Gange, Amazone, Mississippi — sont tous alimentés par les neiges éternelles des montagnes. Plus de 2 milliards de personnes dépendent directement de ces eaux.",
+    ayah:"« Nous avons fait descendre du ciel une eau selon une juste mesure et Nous l'avons fixée dans la terre. » — Al-Mu'minun : 18"
+  },
+  {
+    icon:'🔴',
+    q:"Quelles sont les trois couleurs de montagnes citées dans le Coran (Fatir : 27) ?",
+    opts:["Jaune, verte, bleue","Blanche, rouge, noire intense","Grise, brune, dorée","Orange, violette, transparente"],
+    ans:1,
+    fb:"Fatir : 27 mentionne des montagnes blanches (calcaire/neige), rouges (grès ferrugineux comme à Petra) et noires intenses (basalte volcanique). Chaque couleur reflète la composition minérale — une description géologique précise révélée 14 siècles avant la géologie moderne.",
+    ayah:"« Dans les montagnes, des stries blanches, rouges de diverses nuances, et d'un noir intense. » — Fatir : 27"
+  },
+  {
+    icon:'⚡',
+    q:"Que décrit le verset An-Naml : 88 sur les montagnes que tu crois immobiles ?",
+    opts:["Qu'elles sont éternelles","Qu'elles passent comme les nuages — elles sont en mouvement","Qu'elles sont creuses","Qu'elles s'élèveront au Jour du Jugement"],
+    ans:1,
+    fb:"An-Naml : 88 décrit le mouvement des montagnes que nous ne percevons pas — exactement la tectonique des plaques, découverte au XXe siècle. Les plaques se déplacent de 2 à 15 cm/an. L'Himalaya s'élève encore de 5 mm/an. Les montagnes 'passent comme les nuages' à l'échelle géologique.",
+    ayah:"« Tu vois les montagnes et tu les crois immobiles, alors qu'elles passent comme les nuages. » — An-Naml : 88"
+  },
+  {
+    icon:'🌄',
+    q:"À quels moments du jour le Coran dit-il que les montagnes glorifient Allah avec Dawud عليه السلام ?",
+    opts:["Le midi et à minuit","Au soir et au matin du levant","Uniquement le vendredi","À chaque prière obligatoire"],
+    ans:1,
+    fb:"Le Coran dit 'بِالْعَشِيِّ وَالْإِشْرَاقِ' — au soir et au matin du levant. Ce sont les deux moments où les montagnes sont les plus belles, baignées d'une lumière rasante et dorée. Allah a lié la beauté visuelle des montagnes à leur glorification.",
+    ayah:"« Nous avions assujetti les montagnes à glorifier Allah avec lui, au soir et au matin du levant. » — Sad : 18"
+  },
+  {
+    icon:'🕌',
+    q:"Quel prophète a reçu la Révélation dans une montagne célèbre ?",
+    opts:["Ibrahim عليه السلام au mont Arafat","Moussa عليه السلام au mont Sinaï","Nûh عليه السلام au mont Djoudi","Issa عليه السلام au mont des Oliviers"],
+    ans:1,
+    fb:"Moussa (Moïse) عليه السلام a reçu la Révélation et parlé directement à Allah au mont Sinaï (جبل سيناء). Le Prophète Muhammad ﷺ a également reçu la première révélation dans la grotte de Hira, dans une montagne près de La Mecque. Les montagnes sont des lieux de proximité avec Allah.",
+    ayah:"« Nous avions assujetti les montagnes à glorifier Allah avec lui. » — Sad : 18"
+  }
+];
+
+let cur=0,score=0,answered=false;
+function startQuiz(){
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-quiz').classList.add('active');
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderQ(){
+  answered=false;
+  const q=Q[cur];
+  document.getElementById('q-icon').textContent=q.icon;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('q-count').textContent=`${cur+1} / ${Q.length}`;
+  document.getElementById('qprog').style.width=`${(cur/Q.length)*100}%`;
+  const opts=document.getElementById('options');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=o;
+    b.onclick=()=>pick(i);opts.appendChild(b);
+  });
+}
+function pick(i){
+  if(answered)return;answered=true;
+  const q=Q[cur];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  if(i!==q.ans)document.querySelectorAll('.opt')[i].classList.add('wrong');
+  else score++;
+  document.getElementById('fb-text').textContent=q.fb;
+  document.getElementById('fb-ayah').textContent=q.ayah;
+  document.getElementById('fb-box').style.display='block';
+  document.getElementById('qnext').style.display='block';
+  document.getElementById('score-pill').textContent=`⭐ ${score}`;
+}
+document.getElementById('qnext').onclick=()=>{ cur++;if(cur>=Q.length)showEnd();else renderQ(); };
+function showEnd(){
+  document.getElementById('q-card').style.display='none';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='none';
+  const pct=score/Q.length;
+  let badge,title,msg;
+  if(pct===1){ badge='🌟';title='Exceptionnel — بارك الله فيك';msg="Tu as répondu correctement à toutes les questions ! La prochaine fois que tu vois une montagne — au soir ou au matin — souviens-toi : elle glorifie Allah depuis des millions d'années, et ses racines profondes stabilisent la terre sous tes pieds."; }
+  else if(pct>=.625){ badge='🏔️';title='Très bien — أحسنت';msg="Tu connais bien les signes d'Allah dans les montagnes. Relis les leçons sur les pieux et le mouvement des montagnes — des miracles coraniques confirmés par la géologie moderne."; }
+  else { badge='⛰️';title='Bon début — استمر في التعلم';msg="Les montagnes sont des pieux, des châteaux d'eau, des stabilisateurs de la Terre — et elles glorifient Allah en permanence. Reprends les leçons et médite sur ces masses de roche qui portent tant de signes."; }
+  document.getElementById('end-badge').textContent=badge;
+  document.getElementById('end-title').textContent=title;
+  document.getElementById('end-big').textContent=score;
+  document.getElementById('end-msg').textContent=msg;
+  document.getElementById('end-screen').style.display='block';
+  document.getElementById('qprog').style.width='100%';
+}
+function restartQuiz(){
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+}
+function reviewIntro(){
+  document.getElementById('screen-quiz').classList.remove('active');
+  document.getElementById('screen-intro').classList.add('active');
+  goSlide(0);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
