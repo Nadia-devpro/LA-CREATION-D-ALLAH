@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Arbres — Un Signe de la Création d'Allah</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #030d1a;
+  --gold: #d4a843;
+  --gold-light: #f5d57a;
+  --silver-dim: #7a9bbf;
+  --white: #eef3ff;
+  --text: #d8e8ff;
+  --text-dim: #7a9bbf;
+  --leaf-green: #2d7a3a;
+  --leaf-light: #3aad60;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--night); color:var(--text); font-family:'Lato',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ══ HEADER ══ */
+#sky-header {
+  position:relative; width:100%; height:240px; overflow:hidden;
+  background:linear-gradient(180deg,#010a10 0%,#021510 40%,#041e10 70%,#061c0c 100%);
+}
+.hstar { position:absolute; border-radius:50%; background:#fff; animation:twinkle var(--dur,3s) ease-in-out infinite var(--del,0s); }
+@keyframes twinkle { 0%,100%{ opacity:var(--op,.6); } 50%{ opacity:.04; } }
+
+/* moon in header */
+#h-moon {
+  position:absolute; top:22px; right:60px;
+  width:42px; height:42px; border-radius:50%;
+  background:radial-gradient(circle at 34%,#e8f0ff,#b0c8f0);
+  box-shadow:0 0 28px 8px rgba(180,200,240,.3);
+  animation:moonGlow 6s ease-in-out infinite;
+}
+@keyframes moonGlow { 0%,100%{ box-shadow:0 0 28px 8px rgba(180,200,240,.3); } 50%{ box-shadow:0 0 44px 14px rgba(180,200,240,.5); } }
+
+/* header trees */
+.h-tree { position:absolute; bottom:0; animation:treeSway var(--ts,5s) ease-in-out infinite var(--tsd,0s); transform-origin:bottom center; }
+@keyframes treeSway { 0%,100%{ transform:rotate(0deg); } 25%{ transform:rotate(var(--sw,2deg)); } 75%{ transform:rotate(calc(var(--sw,2deg)*-1)); } }
+
+/* firefly / light particles */
+.firefly {
+  position:absolute; border-radius:50%;
+  background:rgba(180,255,150,.8);
+  box-shadow:0 0 6px 2px rgba(150,255,100,.5);
+  animation:fireflyFloat var(--ff,5s) ease-in-out infinite var(--ffd,0s);
+}
+@keyframes fireflyFloat {
+  0%,100%{ transform:translate(0,0); opacity:.3; }
+  25%{ transform:translate(var(--fx,8px),var(--fy,-10px)); opacity:.9; }
+  75%{ transform:translate(var(--fx2,-6px),var(--fy2,-5px)); opacity:.6; }
+}
+
+/* falling leaves */
+.leaf-fall {
+  position:absolute; border-radius:50% 0 50% 0;
+  animation:leafFall var(--lf,6s) ease-in infinite var(--lfd,0s);
+}
+@keyframes leafFall {
+  0%{ transform:translateY(-10px) rotate(0deg) translateX(0); opacity:0; }
+  10%{ opacity:.9; }
+  100%{ transform:translateY(260px) rotate(var(--lr,360deg)) translateX(var(--lx,20px)); opacity:0; }
+}
+
+#sky-label {
+  position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+  text-align:center; white-space:nowrap; z-index:5;
+}
+#sky-label h1 { font-family:'Scheherazade New',serif; font-size:24px; color:var(--gold-light); text-shadow:0 0 20px rgba(212,168,67,.5); }
+#sky-label p { font-size:11px; color:var(--silver-dim); letter-spacing:2.5px; text-transform:uppercase; margin-top:3px; }
+
+/* ══ SCREENS ══ */
+#app { display:flex; flex-direction:column; min-height:100vh; }
+.screen { display:none; flex:1; }
+.screen.active { display:block; }
+
+/* ══ INTRO ══ */
+#intro-wrap { max-width:700px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#skip-intro { text-align:right; margin-bottom:1rem; }
+#skip-intro button { background:none; border:none; color:var(--text-dim); font-size:12px; cursor:pointer; letter-spacing:.5px; font-family:'Lato',sans-serif; text-decoration:underline; text-underline-offset:3px; }
+#skip-intro button:hover { color:var(--text); }
+#slide-dots { display:flex; justify-content:center; gap:8px; margin-bottom:2rem; }
+.dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.15); transition:background .3s,transform .3s; cursor:pointer; }
+.dot.active { background:var(--gold); transform:scale(1.3); }
+.dot.done { background:rgba(212,168,67,.4); }
+.slide { display:none; animation:slideIn .45s ease; }
+.slide.active { display:block; }
+@keyframes slideIn { from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
+
+.scene-canvas {
+  width:100%; height:200px; border-radius:14px; margin-bottom:1.4rem;
+  overflow:hidden; position:relative; border:1px solid rgba(255,255,255,.07);
+  background:linear-gradient(180deg,#010a10,#021510);
+}
+
+/* ══ SCENE ANIMATIONS ══ */
+@keyframes shimmer { 0%,100%{ opacity:.35; } 50%{ opacity:1; } }
+@keyframes sway { 0%,100%{ transform:rotate(var(--sw,0deg)); transform-origin:bottom center; } 50%{ transform:rotate(calc(var(--sw,0deg)+var(--sa,4deg))); transform-origin:bottom center; } }
+@keyframes grow { 0%{ transform:scaleY(0); transform-origin:bottom; opacity:0; } 100%{ transform:scaleY(1); transform-origin:bottom; opacity:1; } }
+@keyframes leafPop { 0%,100%{ transform:scale(.9); opacity:.8; } 50%{ transform:scale(1.05); opacity:1; } }
+@keyframes rootPulse { 0%,100%{ opacity:.2; } 50%{ opacity:.6; } }
+@keyframes fruitSway { 0%,100%{ transform:rotate(-3deg); } 50%{ transform:rotate(3deg); } }
+@keyframes o2Rise { 0%{ transform:translateY(0); opacity:.8; } 100%{ transform:translateY(-65px); opacity:0; } }
+@keyframes sunRay { 0%,100%{ opacity:.2; transform:rotate(var(--angle)) scaleY(.7); } 50%{ opacity:.7; transform:rotate(var(--angle)) scaleY(1.15); } }
+@keyframes seedFall { 0%{ transform:translateY(-5px) rotate(0deg); opacity:0; } 10%{ opacity:.9; } 100%{ transform:translateY(80px) rotate(var(--sr,180deg)); opacity:0; } }
+@keyframes waterRise { 0%,100%{ height:0; opacity:0; } 50%{ height:40px; opacity:.7; } }
+@keyframes tasbihFloat { 0%,100%{ transform:translateY(0); opacity:.5; } 50%{ transform:translateY(-8px) translateX(var(--tx,4px)); opacity:1; } }
+@keyframes sparklePop { 0%,100%{ transform:scale(0); opacity:0; } 50%{ transform:scale(1); opacity:.9; } }
+
+/* ── TEXT / LAYOUT ── */
+.slide-num { font-size:11px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:.5rem; font-weight:700; }
+.slide h2 { font-family:'Scheherazade New',serif; font-size:22px; color:var(--gold-light); line-height:1.4; margin-bottom:.75rem; text-shadow:0 0 16px rgba(212,168,67,.3); }
+.slide-body { font-size:14.5px; line-height:1.75; color:var(--text); margin-bottom:1.1rem; }
+.ayah-box { background:rgba(212,168,67,.07); border-left:3px solid var(--gold); border-radius:0 10px 10px 0; padding:.85rem 1rem; margin-bottom:1.3rem; }
+.ayah-ar { font-family:'Scheherazade New',serif; font-size:17px; color:var(--gold); line-height:1.8; display:block; margin-bottom:.3rem; }
+.ayah-fr { font-size:13px; color:var(--silver-dim); font-style:italic; line-height:1.5; }
+.key-fact { display:flex; gap:10px; align-items:flex-start; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:.85rem 1rem; margin-bottom:.75rem; }
+.key-fact-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+.key-fact p { font-size:13.5px; line-height:1.6; color:var(--text); }
+.key-fact p strong { color:var(--gold-light); font-weight:700; }
+.slide-nav { display:flex; gap:10px; margin-top:1.5rem; }
+.btn-prev,.btn-next,.btn-quiz { padding:11px 24px; border-radius:10px; font-size:14px; font-family:'Lato',sans-serif; cursor:pointer; font-weight:700; letter-spacing:.3px; transition:background .2s,border-color .2s,transform .1s; }
+.btn-prev { background:transparent; border:1px solid rgba(255,255,255,.15); color:var(--text-dim); }
+.btn-prev:hover { background:rgba(255,255,255,.05); }
+.btn-next { flex:1; background:linear-gradient(135deg,rgba(212,168,67,.22),rgba(212,168,67,.1)); border:1px solid rgba(212,168,67,.5); color:var(--gold-light); }
+.btn-next:hover { background:linear-gradient(135deg,rgba(212,168,67,.35),rgba(212,168,67,.18)); border-color:rgba(212,168,67,.75); }
+.btn-quiz { flex:1; background:linear-gradient(135deg,rgba(58,173,114,.25),rgba(58,173,114,.1)); border:1px solid rgba(58,173,114,.5); color:#7de0b0; }
+.btn-quiz:hover { background:linear-gradient(135deg,rgba(58,173,114,.38),rgba(58,173,114,.2)); border-color:rgba(58,173,114,.75); }
+.btn-prev:active,.btn-next:active,.btn-quiz:active { transform:scale(.97); }
+
+/* ══ QUIZ ══ */
+#quiz-wrap { max-width:680px; margin:0 auto; padding:2rem 1.5rem 3rem; }
+#quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
+.score-pill { background:rgba(212,168,67,.13); border:1px solid rgba(212,168,67,.35); border-radius:20px; padding:5px 16px; font-size:13px; color:var(--gold); font-weight:700; }
+.prog-wrap { flex:1; margin:0 14px; height:4px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; }
+#qprog { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:4px; transition:width .5s ease; width:0%; }
+.q-count { font-size:13px; color:var(--text-dim); white-space:nowrap; }
+#q-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:16px; padding:1.75rem; margin-bottom:1.2rem; }
+#q-icon { width:36px;height:36px;border-radius:10px;background:rgba(212,168,67,.14);border:1px solid rgba(212,168,67,.3);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:1rem; }
+#q-text { font-size:15.5px;line-height:1.65;color:var(--white);margin-bottom:1.4rem; }
+#options { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+.opt { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:12px 14px; font-size:13.5px; color:var(--text); font-family:'Lato',sans-serif; cursor:pointer; text-align:left; line-height:1.4; transition:background .17s,border-color .17s,transform .1s; }
+.opt:hover:not(:disabled) { background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.4);transform:translateY(-1px); }
+.opt:active:not(:disabled) { transform:scale(.98); }
+.opt.correct { background:rgba(58,173,114,.18);border-color:rgba(58,173,114,.6);color:#7de0b0; }
+.opt.wrong   { background:rgba(224,82,82,.15); border-color:rgba(224,82,82,.5);color:#f5a0a0; }
+.opt:disabled { cursor:default; }
+#fb-box { background:rgba(212,168,67,.07); border:1px solid rgba(212,168,67,.2); border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.2rem; display:none; animation:fadeUp .35s ease; }
+#fb-text { font-size:14px;line-height:1.7;color:var(--text);margin-bottom:.7rem; }
+#fb-ayah { font-family:'Scheherazade New',serif; font-size:15px; color:var(--gold); border-left:2px solid var(--gold); padding-left:12px; line-height:1.7; }
+#qnext { width:100%; padding:13px; background:linear-gradient(135deg,rgba(212,168,67,.2),rgba(212,168,67,.08)); border:1px solid rgba(212,168,67,.45); border-radius:10px; color:var(--gold-light); font-family:'Lato',sans-serif; font-size:15px; font-weight:700; cursor:pointer; display:none; letter-spacing:.4px; transition:background .2s,border-color .2s; }
+#qnext:hover { background:linear-gradient(135deg,rgba(212,168,67,.32),rgba(212,168,67,.16));border-color:rgba(212,168,67,.7); }
+#end-screen { display:none;text-align:center;padding:2.5rem 1rem;animation:fadeUp .5s ease; }
+#end-badge { width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,67,.2),rgba(212,168,67,.04));border:2px solid rgba(212,168,67,.5);margin:0 auto 1.4rem;display:flex;align-items:center;justify-content:center;font-size:36px; }
+#end-title { font-family:'Scheherazade New',serif;font-size:22px;color:var(--gold-light);margin-bottom:.5rem; }
+#end-big { font-size:52px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:.4rem; }
+#end-sub { font-size:13px;color:var(--text-dim);margin-bottom:.5rem; }
+#end-msg { font-size:14px;color:var(--text);line-height:1.65;max-width:400px;margin:0 auto 2rem; }
+.end-btns { display:flex;gap:10px;justify-content:center;flex-wrap:wrap; }
+#restart-btn,#review-btn { padding:11px 28px; border-radius:10px; font-family:'Lato',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:background .2s,border-color .2s; }
+#restart-btn { background:transparent;border:1px solid rgba(212,168,67,.5);color:var(--gold); }
+#restart-btn:hover { background:rgba(212,168,67,.12);border-color:rgba(212,168,67,.8); }
+#review-btn { background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--text-dim); }
+#review-btn:hover { background:rgba(255,255,255,.06); }
+@keyframes fadeUp { from{ opacity:0;transform:translateY(10px); } to{ opacity:1;transform:translateY(0); } }
+@media(max-width:480px){
+  #options{ grid-template-columns:1fr; }
+  .slide h2{ font-size:19px; }
+  #sky-label h1{ font-size:20px; }
+  #intro-wrap,#quiz-wrap{ padding:1.4rem 1rem 2.5rem; }
+  .slide-nav{ flex-direction:column; }
+  .btn-prev{ order:2; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ HEADER ══ -->
+<div id="sky-header">
+  <div id="hstars"></div>
+  <div id="h-moon"></div>
+  <div id="h-trees"></div>
+  <div id="h-fireflies"></div>
+  <div id="h-leaves"></div>
+  <div id="sky-label">
+    <h1>الْأَشْجَارُ — آيَةٌ مِنْ آيَاتِ اللهِ</h1>
+    <p>Les Arbres — Un Signe de la Création d'Allah</p>
+  </div>
+</div>
+
+<!-- ══ INTRO ══ -->
+<div id="screen-intro" class="screen active">
+  <div id="intro-wrap">
+    <div id="skip-intro"><button onclick="startQuiz()">Passer directement au quiz →</button></div>
+    <div id="slide-dots"></div>
+
+    <!-- SLIDE 0 : La parole bonne = arbre bon -->
+    <div class="slide active" id="sl-0">
+      <div class="scene-canvas" id="sc0"></div>
+      <div class="slide-num">Leçon 1 · 6 leçons</div>
+      <h2>La Parole Bonne — Comme un Bel Arbre</h2>
+      <p class="slide-body">
+        Allah utilise l'arbre comme métaphore de la foi :
+        la <strong style="color:var(--gold-light)">parole bonne (كَلِمَةٌ طَيِّبَة)</strong>
+        est comparée à un bel arbre dont les racines sont solides dans la terre
+        et les branches s'élèvent vers le ciel.
+        Cet arbre donne ses fruits en toute saison.
+        La foi du croyant doit être ainsi : <strong style="color:var(--gold-light)">enracinée, haute et généreuse</strong>.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ أَلَمْ تَرَ كَيْفَ ضَرَبَ اللَّهُ مَثَلًا كَلِمَةً طَيِّبَةً كَشَجَرَةٍ طَيِّبَةٍ أَصْلُهَا ثَابِتٌ وَفَرْعُهَا فِي السَّمَاءِ ﴾</span>
+        <span class="ayah-fr">« N'as-tu pas vu comment Allah donne en exemple une parole bonne, semblable à un bel arbre dont la racine est ferme et les branches s'élèvent vers le ciel. » — Ibrahim : 24</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌳</span>
+        <p>Le verset suivant (Ibrahim : 25) ajoute que cet arbre <strong>donne ses fruits en toute saison</strong> — exactement comme la foi : elle produit des bonnes œuvres en permanence, pas seulement en Ramadan ou lors des fêtes.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌱</span>
+        <p>Les commentateurs ont identifié cet arbre comme étant le <strong>palmier-dattier (النَّخْلَة)</strong> — l'arbre du Moyen-Orient le plus complet : toutes ses parties sont utiles, il donne des fruits toute l'année, ses racines plongent profond et sa tête touche le ciel.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-next" onclick="goSlide(1)">Suivant → Les Arbres Glorifient Allah</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 1 : Tasbih des arbres -->
+    <div class="slide" id="sl-1">
+      <div class="scene-canvas" id="sc1"></div>
+      <div class="slide-num">Leçon 2 · 6 leçons</div>
+      <h2>Les Arbres Se Prosternent devant Allah</h2>
+      <p class="slide-body">
+        Le Coran affirme que les arbres (<strong style="color:var(--gold-light)">الشَّجَر</strong>)
+        se prosternent devant Allah — aux côtés des étoiles.
+        Cette prosternation n'est pas symbolique :
+        les arbres obéissent réellement aux lois qu'Allah leur a imposées —
+        croissance, photosynthèse, floraison, fructification —
+        dans une soumission totale et constante à leur Créateur.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَالنَّجْمُ وَالشَّجَرُ يَسْجُدَانِ ﴾</span>
+        <span class="ayah-fr">« Et les étoiles et les arbres se prosternent. » — Ar-Rahman : 6</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌿</span>
+        <p> Les plantes et les arbres — dans toute leur diversité — se prosternent devant Allah. Chaque feuille, chaque tige, chaque racine obéit totalement aux lois qu’Il a établies.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🍃</span>
+        <p>Chaque feuille d'un arbre est une <strong>usine de photosynthèse</strong> qui transforme la lumière en nourriture, libère l'oxygène que nous respirons et absorbe le CO₂. Une adoration silencieuse qui se produit des milliards de fois par seconde sur Terre.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(0)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(2)">Suivant → L'Olivier — Arbre Béni</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 : L'olivier -->
+    <div class="slide" id="sl-2">
+      <div class="scene-canvas" id="sc2"></div>
+      <div class="slide-num">Leçon 3 · 6 leçons</div>
+      <h2>L'Olivier — شَجَرَةٌ مُبَارَكَةٌ</h2>
+      <p class="slide-body">
+        Allah jure par l'olivier dans le Coran et le qualifie de
+        <strong style="color:var(--gold-light)">arbre béni (شَجَرَةٌ مُبَارَكَة)</strong>.
+        L'olivier est l'un des arbres les plus anciens, les plus résistants
+        et les plus généreux de la création :
+        il peut vivre <strong style="color:var(--gold-light)">plusieurs millénaires</strong>,
+        donner de l'huile précieuse et nourrir des générations entières.
+        Son huile est mentionnée dans le Coran comme une lumière.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَشَجَرَةً تَخْرُجُ مِن طُورِ سَيْنَاءَ تَنبُتُ بِالدُّهْنِ وَصِبْغٍ لِّلْآكِلِينَ ﴾</span>
+        <span class="ayah-fr">« ainsi qu’un arbre (l’olivier) qui pousse au Mont Sinaï, en produisant l’huile servant à oindre et où les mangeurs trempent leur pain. » — Al-Mu'minun : 20</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🫒</span>
+        <p>Certains oliviers en Méditerranée ont plus de <strong>2 000 ans</strong> — ils étaient déjà adultes à l'époque du Prophète ﷺ. Allah a créé un arbre qui traverse les générations humaines, témoin silencieux de l'histoire des croyants.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">💡</span>
+        <p>Dans le verset de la Lumière (An-Nur : 35), Allah compare Sa lumière à une lampe alimentée par <strong>l'huile d'olivier</strong> — "d'un arbre béni, ni oriental ni occidental, dont l'huile illuminerait presque sans que le feu la touche".</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(1)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(3)">Suivant → Le Palmier-Dattier</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 : Le palmier dattier -->
+    <div class="slide" id="sl-3">
+      <div class="scene-canvas" id="sc3"></div>
+      <div class="slide-num">Leçon 4 · 6 leçons</div>
+      <h2>Le Palmier-Dattier — النَّخْلَةُ</h2>
+      <p class="slide-body">
+        Le palmier-dattier est l'arbre le plus mentionné dans le Coran.
+        Allah a ordonné à Maryam (Marie) عَلَيْهَا السَّلَامُ de secouer le tronc du palmier
+        pour que des dattes fraîches tombent sur elle lors de l'accouchement.
+        La datte est un <strong style="color:var(--gold-light)">aliment complet</strong> :
+        elle contient du sucre, des fibres, des minéraux et des vitamines —
+        Allah la choisit pour nourrir une femme qui vient d'accoucher.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ وَهُزِّي إِلَيْكِ بِجِذْعِ النَّخْلَةِ تُسَاقِطْ عَلَيْكِ رُطَبًا جَنِيًّا ﴾</span>
+        <span class="ayah-fr">« Secoue vers toi le tronc du palmier, il fera tomber sur toi des dattes fraîches et mûres. » — Maryam : 25</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌴</span>
+        <p>Plusieurs études scientifiques démontrent que la consommation de dattes en fin de grossesse facilite grandement l'accouchement.  Les tanins, le calcium et les acides gras présents dans le fruit augmentent la sensibilité des muscles utérins à l'ocytocine naturelle, rendant les contractions plus productives. La science moderne a confirmé ce que le Coran prescrivait il y a 14 siècles.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🍯</span>
+        <p>Le Prophète ﷺ a dit : <strong>"Celui qui mange chaque matin 7 dattes Ajwa ne sera pas touché ce jour-là par le poison ni par la magie."</strong> (Bukhari). Allah a mis dans un fruit si simple des propriétés protectrices que la science commence à peine à comprendre.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(2)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(4)">Suivant → Les Arbres Poumons de la Terre</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 : Arbres poumons -->
+    <div class="slide" id="sl-4">
+      <div class="scene-canvas" id="sc4"></div>
+      <div class="slide-num">Leçon 5 · 6 leçons</div>
+      <h2>Les Arbres — Poumons Verts de la Terre</h2>
+      <p class="slide-body">
+        Les arbres sont les <strong style="color:var(--gold-light)">poumons verts</strong> de la Terre.
+        Ils absorbent le CO₂, produisent l'oxygène, régulent le cycle de l'eau,
+        maintiennent les sols, abritent des millions d'espèces et régulent le climat.
+        Allah a créé les arbres comme des <strong style="color:var(--gold-light)">gardiens de la vie</strong>
+        sur Terre. Le Prophète ﷺ a encouragé à les planter jusqu'à la fin des temps.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ أَفَرَأَيْتُم مَّا تَحْرُثُونَ ﴝ أَأَنتُمْ تَزْرَعُونَهُ أَمْ نَحْنُ الزَّارِعُونَ ﴾</span>
+        <span class="ayah-fr">« Avez-vous considéré ce que vous semez ? Est-ce vous qui le faites pousser, ou est-ce Nous qui le faisons pousser ? » — Al-Waqi'a : 63-64</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌲</span>
+        <p>Un seul arbre produit en moyenne <strong>100 kg d'oxygène par an</strong> — assez pour deux personnes. La forêt amazonienne seule produit 20% de l'oxygène mondial. Allah a créé ce système invisible qui nous maintient en vie à chaque respiration.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌱</span>
+        <p>Le Prophète ﷺ a dit : <strong>"Si l'Heure a lieu alors que l'un d'entre vous a un petit palmier à planter dans sa main, s'il peut le planter avant qu'elle n'ai lieu qu'il le plante"</strong> (Rapporté par Boukhari dans Al Adab Al Moufrad n°479). Planter un arbre est un acte d'adoration — une sadaqa jariya (aumône continue) tant que l'arbre vit et que des créatures en bénéficient.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(3)">← Précédent</button>
+        <button class="btn-next" onclick="goSlide(5)">Suivant → L'Arbre et le Croyant</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 : Arbre et croyant -->
+    <div class="slide" id="sl-5">
+      <div class="scene-canvas" id="sc5"></div>
+      <div class="slide-num">Leçon 6 · 6 leçons</div>
+      <h2>L'Arbre et le Croyant — الْمُؤْمِنُ كَالشَّجَرَةِ</h2>
+      <p class="slide-body">
+        Le Prophète ﷺ a comparé le croyant à un arbre :
+        il est <strong style="color:var(--gold-light)">solide dans les tempêtes</strong>,
+        ses racines sont profondes dans la foi,
+        et il ne perd jamais ses feuilles — il est toujours en état de rappel d'Allah.
+        Contempler un arbre, c'est contempler un miroir de la foi :
+        enraciné, patient, généreux, et en tasbih permanent.
+      </p>
+      <div class="ayah-box">
+        <span class="ayah-ar">﴿ تُؤْتِي أُكُلَهَا كُلَّ حِينٍ بِإِذْنِ رَبِّهَا ﴾</span>
+        <span class="ayah-fr">« Il donne ses fruits en toute saison, avec la permission de son Seigneur. » — Ibrahim : 25</span>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🌴</span>
+        <p>Le Prophète ﷺ a dit : <strong>"Parmi les arbres, il y a un dont les feuilles ne tombent pas, il ressemble au musulman. Lequel? ... C'est le palmier."</strong> (Bukhari-61). Chaque partie du palmier est bénéfique — feuilles, tronc, racines, fruits. Ainsi doit être le croyant.</p>
+      </div>
+      <div class="key-fact">
+        <span class="key-fact-icon">🤲</span>
+        <p>La prochaine fois que tu vois un arbre, souviens-toi : il se prosterne devant Allah à chaque instant. Ses feuilles produisent de l'oxygène pour toi. Ses racines stabilisent le sol sous tes pieds. <strong>Tout cela est un don d'Allah</strong> — gratuit, permanent, silencieux.</p>
+      </div>
+      <div class="slide-nav">
+        <button class="btn-prev" onclick="goSlide(4)">← Précédent</button>
+        <button class="btn-quiz" onclick="startQuiz()">🎯 Tester mes connaissances →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="screen-quiz" class="screen">
+  <div id="quiz-wrap">
+    <div id="quiz-header">
+      <div class="score-pill" id="score-pill">⭐ 0</div>
+      <div class="prog-wrap"><div id="qprog"></div></div>
+      <div class="q-count" id="q-count">1 / 8</div>
+    </div>
+    <div id="q-card">
+      <div id="q-icon">🌳</div>
+      <div id="q-text"></div>
+      <div id="options"></div>
+    </div>
+    <div id="fb-box">
+      <div id="fb-text"></div>
+      <div id="fb-ayah"></div>
+    </div>
+    <button id="qnext">Question suivante →</button>
+    <div id="end-screen">
+      <div id="end-badge"></div>
+      <div id="end-title"></div>
+      <div id="end-big"></div>
+      <div id="end-sub">points sur 8</div>
+      <div id="end-msg"></div>
+      <div class="end-btns">
+        <button id="restart-btn" onclick="restartQuiz()">↺ Recommencer le quiz</button>
+        <button id="review-btn" onclick="reviewIntro()">📖 Revoir les leçons</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ══ HEADER ══ */
+(function(){
+  // stars
+  const sb=document.getElementById('hstars');
+  for(let i=0;i<70;i++){
+    const s=document.createElement('div');s.className='hstar';
+    const z=Math.random()*2+.4;
+    s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*65}%;left:${Math.random()*100}%;--op:${(.1+Math.random()*.55).toFixed(2)};--dur:${(2+Math.random()*5).toFixed(1)}s;--del:${(Math.random()*6).toFixed(1)}s;opacity:${(.1+Math.random()*.55).toFixed(2)}`;
+    sb.appendChild(s);
+  }
+  // header trees SVG
+  const tw=document.getElementById('h-trees');
+  tw.style.cssText='position:absolute;bottom:0;left:0;width:100%;height:200px';
+  const treeDefs=[
+    {x:30,h:140,c:'#1a5228',c2:'#0f3018',sw:'2deg',sp:'6s',sd:'0s'},
+    {x:90,h:110,c:'#2d7a3a',c2:'#1e5228',sw:'-2deg',sp:'7s',sd:'1s'},
+    {x:155,h:160,c:'#1e6b30',c2:'#14502a',sw:'1.5deg',sp:'8s',sd:'2s'},
+    {x:230,h:120,c:'#38a050',c2:'#287040',sw:'-1.5deg',sp:'5.5s',sd:'.5s'},
+    {x:290,h:150,c:'#2d7a3a',c2:'#1e5228',sw:'2deg',sp:'7s',sd:'3s'},
+    {x:355,h:105,c:'#1a5228',c2:'#0f3018',sw:'-2deg',sp:'6.5s',sd:'1.5s'},
+    {x:420,h:145,c:'#38a050',c2:'#287040',sw:'1deg',sp:'9s',sd:'.8s'},
+    {x:485,h:118,c:'#1e6b30',c2:'#14502a',sw:'-1deg',sp:'6s',sd:'2.5s'},
+    {x:545,h:155,c:'#2d7a3a',c2:'#1e5228',sw:'2deg',sp:'7.5s',sd:'0s'},
+    {x:610,h:100,c:'#1a5228',c2:'#0f3018',sw:'-2deg',sp:'8s',sd:'1s'},
+    {x:660,h:135,c:'#38a050',c2:'#287040',sw:'1.5deg',sp:'5s',sd:'3s'},
+  ];
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');
+  svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;bottom:0;left:0';svg.setAttribute('viewBox','0 0 700 200');
+  treeDefs.forEach((t,i)=>{
+    const g=document.createElementNS(svgNS,'g');
+    g.style.cssText=`transform-origin:${t.x}px 200px;animation:treeSway ${t.sp} ease-in-out infinite ${t.sd};--sw:${t.sw}`;
+    // trunk
+    const trunk=document.createElementNS(svgNS,'rect');
+    trunk.setAttribute('x',t.x-5);trunk.setAttribute('y',200-t.h*.3);
+    trunk.setAttribute('width','10');trunk.setAttribute('height',t.h*.3);
+    trunk.setAttribute('fill',t.c2);trunk.setAttribute('rx','3');
+    g.appendChild(trunk);
+    // canopy layers
+    [[1,.55],[.8,.65],[.6,.75]].forEach(([scale,posY])=>{
+      const ew=t.h*.45*scale, eh=t.h*.38*scale;
+      const ex=t.x, ey=200-t.h*posY;
+      const el=document.createElementNS(svgNS,'ellipse');
+      el.setAttribute('cx',ex);el.setAttribute('cy',ey);
+      el.setAttribute('rx',ew);el.setAttribute('ry',eh);
+      el.setAttribute('fill',scale===1?t.c:t.c2);el.setAttribute('opacity',scale===1?'.9':'.7');
+      g.appendChild(el);
+    });
+    svg.appendChild(g);
+  });
+  // ground
+  const gnd=document.createElementNS(svgNS,'rect');
+  gnd.setAttribute('x','0');gnd.setAttribute('y','190');gnd.setAttribute('width','700');gnd.setAttribute('height','10');
+  gnd.setAttribute('fill','rgba(15,40,15,.8)');svg.appendChild(gnd);
+  tw.appendChild(svg);
+  // fireflies
+  const fw=document.getElementById('h-fireflies');
+  for(let i=0;i<18;i++){
+    const f=document.createElement('div');f.className='firefly';
+    const sz=Math.random()*4+2;
+    f.style.cssText=`width:${sz}px;height:${sz}px;bottom:${30+Math.random()*120}px;left:${Math.random()*100}%;--ff:${(4+Math.random()*4).toFixed(1)}s;--ffd:${(Math.random()*5).toFixed(1)}s;--fx:${(Math.random()*20-10).toFixed(0)}px;--fy:${(-(8+Math.random()*12)).toFixed(0)}px;--fx2:${(Math.random()*16-8).toFixed(0)}px;--fy2:${(-(4+Math.random()*8)).toFixed(0)}px`;
+    fw.appendChild(f);
+  }
+  // falling leaves
+  const lw=document.getElementById('h-leaves');
+  const leafColors=['rgba(45,122,58,.8)','rgba(58,173,96,.7)','rgba(30,107,48,.8)','rgba(212,168,67,.5)','rgba(180,100,30,.4)'];
+  for(let i=0;i<12;i++){
+    const l=document.createElement('div');l.className='leaf-fall';
+    const sz=Math.random()*10+6;
+    l.style.cssText=`width:${sz}px;height:${sz*0.6}px;background:${leafColors[i%5]};top:0;left:${Math.random()*100}%;--lf:${(5+Math.random()*5).toFixed(1)}s;--lfd:${(Math.random()*6).toFixed(1)}s;--lr:${(Math.random()*360).toFixed(0)}deg;--lx:${(Math.random()*30-15).toFixed(0)}px`;
+    lw.appendChild(l);
+  }
+})();
+
+/* ══ SCENE HELPERS ══ */
+function drawTree(el,x,y,h,c1,c2,withFruits,withSeeds){
+  const ns='http://www.w3.org/2000/svg';
+  // trunk
+  const trunk=document.createElement('div');
+  trunk.style.cssText=`position:absolute;bottom:${y}px;left:${x}px;transform:translateX(-50%);width:${Math.max(8,h*.07)}px;height:${h*.35}px;background:${c2};border-radius:4px`;
+  el.appendChild(trunk);
+  // canopy layers
+  [[1,.55],[.78,.68],[.58,.79]].forEach(([scale,relY])=>{
+    const cw=h*.5*scale, ch=h*.4*scale;
+    const c=document.createElement('div');
+    c.style.cssText=`position:absolute;border-radius:50%;bottom:${y+h*relY}px;left:${x}px;transform:translateX(-50%);width:${cw}px;height:${ch}px;background:${scale===1?c1:c2};opacity:${scale===1?.9:.72};animation:leafPop ${(3+Math.random()*2).toFixed(1)}s ease-in-out infinite ${(Math.random()*2).toFixed(1)}s`;
+    el.appendChild(c);
+  });
+  // fruits
+  if(withFruits){
+    for(let i=0;i<5;i++){
+      const f=document.createElement('div');
+      f.style.cssText=`position:absolute;width:9px;height:9px;border-radius:50%;background:rgba(200,60,30,.85);bottom:${y+h*.5+Math.random()*h*.2}px;left:${x+Math.random()*h*.3-h*.15}px;animation:fruitSway ${(3+Math.random()*2).toFixed(1)}s ease-in-out infinite ${(i*.4).toFixed(1)}s`;
+      el.appendChild(f);
+    }
+  }
+  // seeds / leaves falling
+  if(withSeeds){
+    for(let i=0;i<4;i++){
+      const s=document.createElement('div');
+      s.style.cssText=`position:absolute;width:7px;height:4px;border-radius:50% 0 50% 0;background:rgba(45,122,58,.7);bottom:${y+h*.55}px;left:${x+Math.random()*40-20}px;animation:seedFall ${(2+Math.random()*2).toFixed(1)}s ease-in infinite ${(Math.random()*3).toFixed(1)}s;--sr:${(Math.random()*360).toFixed(0)}deg`;
+      el.appendChild(s);
+    }
+  }
+}
+
+function addStars(el,count,maxOp){
+  for(let i=0;i<count;i++){
+    const s=document.createElement('div');
+    const z=Math.random()*2+.4;
+    s.style.cssText=`position:absolute;border-radius:50%;background:#fff;width:${z}px;height:${z}px;top:${Math.random()*40}%;left:${Math.random()*100}%;opacity:${(.05+Math.random()*(maxOp||.4)).toFixed(2)};animation:shimmer ${(2+Math.random()*4).toFixed(1)}s ease-in-out infinite ${(Math.random()*4).toFixed(1)}s`;
+    el.appendChild(s);
+  }
+}
+
+/* Sc0 : Kalima tayyiba = good tree */
+function buildSc0(el){
+  addStars(el,20,.4);
+  // ground
+  const gnd=document.createElement('div');
+  gnd.style.cssText='position:absolute;bottom:0;left:0;right:0;height:28px;background:linear-gradient(180deg,rgba(20,50,20,.5),rgba(10,35,15,.8))';
+  el.appendChild(gnd);
+  // big central tree
+  drawTree(el,170,26,140,'#2d7a3a','#1e5228',true,true);
+  // root system SVG
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg.innerHTML=`
+    <!-- roots underground -->
+    <path d="M 170 172 Q 140 185 110 195" stroke="rgba(30,82,40,.5)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M 170 172 Q 165 190 155 200" stroke="rgba(30,82,40,.45)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 170 172 Q 175 190 185 200" stroke="rgba(30,82,40,.45)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M 170 172 Q 200 185 230 195" stroke="rgba(30,82,40,.5)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M 170 172 Q 130 192 95 200" stroke="rgba(30,82,40,.35)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M 170 172 Q 210 192 245 200" stroke="rgba(30,82,40,.35)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- root glow -->
+    <ellipse cx="170" cy="196" rx="55" ry="6" fill="rgba(45,122,58,.08)" stroke="rgba(45,122,58,.2)" stroke-width="1"/>
+    <!-- labels -->
+    <text x="170" y="14" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">كَشَجَرَةٍ طَيِّبَةٍ أَصْلُهَا ثَابِتٌ وَفَرْعُهَا فِي السَّمَاءِ</text>
+    <text x="50" y="100" text-anchor="middle" font-size="9" fill="rgba(45,122,58,.6)" font-family="Lato">Branches →</text>
+    <text x="50" y="110" text-anchor="middle" font-size="9" fill="rgba(45,122,58,.5)" font-family="Lato">vers le ciel</text>
+    <text x="50" y="185" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.55)" font-family="Lato">Racines</text>
+    <text x="50" y="195" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.45)" font-family="Lato">أَصْلُهَا ثَابِتٌ</text>
+    <text x="170" y="193" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.35)" font-family="Lato">Ibrahim : 24 — La parole bonne = un bel arbre</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc1 : Trees prostrating / tasbih */
+function buildSc1(el){
+  el.style.background='linear-gradient(180deg,#010a10,#021510)';
+  addStars(el,35,.6);
+  // ground
+  const gnd=document.createElement('div');
+  gnd.style.cssText='position:absolute;bottom:0;left:0;right:0;height:22px;background:rgba(15,40,15,.7)';
+  el.appendChild(gnd);
+  // multiple trees of different types
+  const treeDefs=[
+    {x:50,h:80,c:'#1e6b30',c2:'#14502a'},{x:120,h:100,c:'#2d7a3a',c2:'#1e5228'},
+    {x:200,h:90,c:'#38a050',c2:'#287040'},{x:275,h:110,c:'#1e6b30',c2:'#14502a'},
+    {x:345,h:85,c:'#2d7a3a',c2:'#1e5228'},
+  ];
+  treeDefs.forEach(t=>drawTree(el,t.x,20,t.h,t.c,t.c2,false,false));
+  // O2 particles rising
+  for(let i=0;i<10;i++){
+    const o=document.createElement('div');
+    o.style.cssText=`position:absolute;font-size:9px;color:rgba(100,220,150,.65);font-family:Lato,sans-serif;bottom:${60+Math.random()*60}px;left:${10+i*35}%;animation:o2Rise ${(2+Math.random()*2).toFixed(1)}s ease-in infinite ${(Math.random()*3).toFixed(1)}s`;
+    o.textContent='O₂';
+    el.appendChild(o);
+  }
+  // fireflies
+  for(let i=0;i<6;i++){
+    const f=document.createElement('div');
+    f.style.cssText=`position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(200,255,150,.85);box-shadow:0 0 5px 2px rgba(150,255,100,.5);bottom:${40+Math.random()*80}px;left:${Math.random()*100}%;animation:fireflyFloat ${(3+Math.random()*3).toFixed(1)}s ease-in-out infinite ${(Math.random()*4).toFixed(1)}s;--fx:${(Math.random()*16-8).toFixed(0)}px;--fy:-10px;--fx2:${(Math.random()*12-6).toFixed(0)}px;--fy2:-6px`;
+    el.appendChild(f);
+  }
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg.innerHTML=`
+    <text x="170" y="14" text-anchor="middle" font-family="Scheherazade New,serif" font-size="15" fill="rgba(212,168,67,.55)">وَالنَّجْمُ وَالشَّجَرُ يَسْجُدَانِ</text>
+    <text x="170" y="27" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.35)" font-family="Lato">Ar-Rahman : 6 — Les étoiles et les arbres se prosternent</text>
+    <text x="170" y="190" text-anchor="middle" font-size="9" fill="rgba(100,200,150,.45)" font-family="Lato">Chaque feuille = une usine d'O₂ — prosternation chimique permanente</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc2 : Olivier */
+function buildSc2(el){
+  addStars(el,20,.4);
+  const gnd=document.createElement('div');
+  gnd.style.cssText='position:absolute;bottom:0;left:0;right:0;height:25px;background:linear-gradient(180deg,rgba(60,45,20,.5),rgba(40,30,12,.8))';
+  el.appendChild(gnd);
+  // olive tree — silver-green with twisted trunk
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <radialGradient id="oliveCanopy" cx="45%" cy="40%" r="55%">
+        <stop offset="0%" stop-color="rgba(140,155,80,.85)"/>
+        <stop offset="50%" stop-color="rgba(100,115,55,.8)"/>
+        <stop offset="100%" stop-color="rgba(70,85,35,.7)"/>
+      </radialGradient>
+    </defs>
+    <!-- twisted trunk -->
+    <path d="M 170 175 Q 162 155 168 135 Q 174 115 165 95 Q 158 78 165 65" stroke="rgba(100,75,40,.8)" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M 170 175 Q 178 158 172 138 Q 166 118 175 98 Q 182 80 175 65" stroke="rgba(80,58,28,.6)" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <!-- main branch left -->
+    <path d="M 165 100 Q 130 88 110 70" stroke="rgba(90,68,35,.6)" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <!-- main branch right -->
+    <path d="M 172 105 Q 205 92 225 78" stroke="rgba(90,68,35,.6)" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <!-- canopy -->
+    <ellipse cx="160" cy="72" rx="55" ry="38" fill="url(#oliveCanopy)" opacity=".9"/>
+    <ellipse cx="170" cy="60" rx="42" ry="30" fill="rgba(130,145,72,.75)"/>
+    <ellipse cx="180" cy="80" rx="40" ry="28" fill="rgba(110,128,60,.7)"/>
+    <!-- olives hanging -->
+    <ellipse cx="138" cy="82" rx="5" ry="7" fill="rgba(60,90,30,.85)"/>
+    <ellipse cx="155" cy="92" rx="4" ry="6" fill="rgba(40,70,20,.85)"/>
+    <ellipse cx="175" cy="78" rx="5" ry="7" fill="rgba(60,90,30,.85)"/>
+    <ellipse cx="192" cy="88" rx="4" ry="6" fill="rgba(40,70,20,.85)"/>
+    <ellipse cx="165" cy="100" rx="4" ry="6" fill="rgba(80,110,40,.85)"/>
+    <!-- oil drop -->
+    <path d="M 255 80 Q 255 70 260 60 Q 265 50 260 45 Q 255 40 250 45 Q 245 50 250 60 Q 255 70 255 80 Z" fill="rgba(200,180,60,.55)" stroke="rgba(212,168,67,.4)" stroke-width="1"/>
+    <text x="270" y="64" font-size="9" fill="rgba(212,168,67,.6)" font-family="Lato">Huile</text>
+    <text x="270" y="74" font-size="9" fill="rgba(212,168,67,.5)" font-family="Lato">bénie 💡</text>
+    <!-- age label -->
+    <text x="55" y="120" text-anchor="middle" font-size="9" fill="rgba(200,180,120,.55)" font-family="Lato">Jusqu'à</text>
+    <text x="55" y="130" text-anchor="middle" font-size="9" fill="rgba(200,180,120,.55)" font-family="Lato">2 000 ans</text>
+    <!-- verse -->
+    <text x="170" y="14" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">شَجَرَةٌ مُبَارَكَةٌ — Un Arbre Béni</text>
+    <text x="170" y="190" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.35)" font-family="Lato">Al-Mu'minun : 20 — L'olivier du mont Sinaï</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc3 : Palmier dattier */
+function buildSc3(el){
+  addStars(el,25,.5);
+  const gnd=document.createElement('div');
+  gnd.style.cssText='position:absolute;bottom:0;left:0;right:0;height:22px;background:linear-gradient(180deg,rgba(80,55,20,.5),rgba(55,35,10,.8))';
+  el.appendChild(gnd);
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0';
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="palmTrunk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(140,95,45,.9)"/><stop offset="100%" stop-color="rgba(100,65,25,.95)"/></linearGradient>
+    </defs>
+    <!-- trunk with segments -->
+    <path d="M 165 178 Q 162 140 168 100 Q 172 70 168 40" stroke="url(#palmTrunk)" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <!-- trunk segments -->
+    <line x1="157" y1="155" x2="177" y2="155" stroke="rgba(120,80,30,.4)" stroke-width="1"/>
+    <line x1="158" y1="135" x2="178" y2="135" stroke="rgba(120,80,30,.4)" stroke-width="1"/>
+    <line x1="159" y1="115" x2="179" y2="115" stroke="rgba(120,80,30,.4)" stroke-width="1"/>
+    <line x1="160" y1="95" x2="180" y2="95" stroke="rgba(120,80,30,.4)" stroke-width="1"/>
+    <!-- palm fronds -->
+    <path d="M 168 40 Q 130 28 100 15" stroke="rgba(45,122,58,.8)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M 168 40 Q 148 20 145 5" stroke="rgba(38,105,50,.8)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M 168 40 Q 170 18 175 5" stroke="rgba(45,122,58,.8)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M 168 40 Q 190 22 205 8" stroke="rgba(38,105,50,.8)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M 168 40 Q 210 35 240 28" stroke="rgba(45,122,58,.75)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M 168 40 Q 120 42 95 48" stroke="rgba(38,105,50,.75)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- frond leaves -->
+    <path d="M 134 23 Q 130 18 126 13" stroke="rgba(58,160,75,.5)" stroke-width="2" fill="none"/>
+    <path d="M 118 17 Q 112 13 106 8" stroke="rgba(58,160,75,.5)" stroke-width="2" fill="none"/>
+    <!-- dates cluster -->
+    <ellipse cx="168" cy="55" rx="18" ry="10" fill="rgba(180,80,20,.7)"/>
+    <circle cx="158" cy="58" r="5" fill="rgba(160,60,15,.85)"/>
+    <circle cx="168" cy="60" r="5.5" fill="rgba(170,65,18,.85)"/>
+    <circle cx="178" cy="58" r="5" fill="rgba(155,58,14,.85)"/>
+    <circle cx="163" cy="50" r="4.5" fill="rgba(165,62,16,.85)"/>
+    <circle cx="173" cy="50" r="4.5" fill="rgba(172,68,20,.85)"/>
+    <!-- Maryam label -->
+    <text x="250" y="100" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">رُطَبًا جَنِيًّا</text>
+    <text x="250" y="114" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.45)" font-family="Lato">Dattes fraîches</text>
+    <text x="250" y="126" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.35)" font-family="Lato">pour Maryam ﻉ</text>
+    <!-- science note -->
+    <text x="60" y="110" text-anchor="middle" font-size="8" fill="rgba(100,200,150,.5)" font-family="Lato">رُطَب = ocytocine</text>
+    <text x="60" y="120" text-anchor="middle" font-size="8" fill="rgba(100,200,150,.45)" font-family="Lato">facilite l'accouchement</text>
+    <text x="170" y="190" text-anchor="middle" font-family="Scheherazade New,serif" font-size="12" fill="rgba(212,168,67,.5)">Maryam : 25 — وَهُزِّي إِلَيْكِ بِجِذْعِ النَّخْلَةِ</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc4 : Trees as lungs */
+function buildSc4(el){
+  el.style.background='linear-gradient(180deg,#010a10,#021812)';
+  addStars(el,15,.35);
+  const gnd=document.createElement('div');
+  gnd.style.cssText='position:absolute;bottom:0;left:0;right:0;height:22px;background:rgba(15,45,20,.7)';
+  el.appendChild(gnd);
+  // forest of trees
+  [[40,75,'#1e6b30','#14502a'],[90,95,'#2d7a3a','#1e5228'],[145,85,'#38a050','#287040'],
+   [200,100,'#1e6b30','#14502a'],[255,80,'#2d7a3a','#1e5228'],[305,90,'#38a050','#287040']].forEach(([x,h,c,c2])=>{
+    drawTree(el,x,20,h,c,c2,false,false);
+  });
+  // sun
+  const sun=document.createElement('div');
+  sun.style.cssText='position:absolute;top:15px;right:20px;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 38%,#ffe880,#f5a623);box-shadow:0 0 22px 6px rgba(245,166,35,.4);animation:shimmer 4s ease-in-out infinite';
+  el.appendChild(sun);
+  // sun rays
+  for(let i=0;i<8;i++){
+    const r=document.createElement('div');
+    r.style.cssText=`position:absolute;top:34px;right:38px;width:${18+Math.random()*14}px;height:2px;background:rgba(255,220,60,.35);border-radius:2px;transform-origin:right center;transform:rotate(${i*45}deg);animation:shimmer ${(3+Math.random()*2).toFixed(1)}s ease-in-out infinite ${(Math.random()*2).toFixed(1)}s`;
+    el.appendChild(r);
+  }
+  // O2 particles
+  for(let i=0;i<14;i++){
+    const o=document.createElement('div');
+    o.style.cssText=`position:absolute;font-size:9px;color:rgba(100,220,150,.7);font-family:Lato,sans-serif;bottom:${65+Math.random()*50}px;left:${5+i*7}%;animation:o2Rise ${(1.8+Math.random()*1.5).toFixed(1)}s ease-in infinite ${(Math.random()*3).toFixed(1)}s`;
+    o.textContent='O₂';
+    el.appendChild(o);
+  }
+  // CO2 going down
+  for(let i=0;i<5;i++){
+    const c=document.createElement('div');
+    c.style.cssText=`position:absolute;font-size:8px;color:rgba(255,120,80,.5);font-family:Lato,sans-serif;top:50px;left:${10+i*18}%;animation:seedFall ${(2.5+Math.random()*2).toFixed(1)}s ease-in infinite ${(Math.random()*3).toFixed(1)}s;--sr:0deg`;
+    c.textContent='CO₂';
+    el.appendChild(c);
+  }
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg.innerHTML=`
+    <text x="170" y="14" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">أَأَنتُمْ تَزْرَعُونَهُ أَمْ نَحْنُ الزَّارِعُونَ</text>
+    <text x="170" y="27" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.35)" font-family="Lato">Al-Waqi'a : 64 — Est-ce vous qui le faites pousser, ou Nous ?</text>
+    <text x="170" y="182" text-anchor="middle" font-size="9" fill="rgba(100,200,150,.5)" font-family="Lato">1 arbre = ~100 kg O₂/an — assez pour 2 personnes</text>
+    <text x="170" y="193" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.35)" font-family="Lato">Hadith : "Si l'Heure vient, qu'il plante le plant." (Ahmad)</text>
+  `;
+  el.appendChild(svg);
+}
+
+/* Sc5 : Believer = tree */
+function buildSc5(el){
+  el.style.background='linear-gradient(180deg,#010a10,#021510)';
+  addStars(el,40,.65);
+  // moon
+  const moon=document.createElement('div');
+  moon.style.cssText='position:absolute;top:16px;right:50px;width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 34%,#e8f0ff,#b0c8f0);box-shadow:0 0 20px 6px rgba(180,200,240,.3);animation:shimmer 5s ease-in-out infinite';
+  el.appendChild(moon);
+  const gnd=document.createElement('div');
+  gnd.style.cssText='position:absolute;bottom:0;left:0;right:0;height:22px;background:rgba(15,40,15,.7)';
+  el.appendChild(gnd);
+  // central tall tree = believer
+  drawTree(el,170,22,150,'#2d7a3a','#1e5228',true,true);
+  // smaller trees around = community
+  drawTree(el,70,20,80,'#38a050','#287040',false,false);
+  drawTree(el,270,20,85,'#1e6b30','#14502a',false,false);
+  // fireflies
+  for(let i=0;i<10;i++){
+    const f=document.createElement('div');
+    f.style.cssText=`position:absolute;width:${Math.random()*3+2}px;height:${Math.random()*3+2}px;border-radius:50%;background:rgba(200,255,150,.9);box-shadow:0 0 5px 2px rgba(150,255,100,.5);bottom:${30+Math.random()*100}px;left:${Math.random()*100}%;animation:fireflyFloat ${(3+Math.random()*4).toFixed(1)}s ease-in-out infinite ${(Math.random()*5).toFixed(1)}s;--fx:${(Math.random()*18-9).toFixed(0)}px;--fy:-12px;--fx2:${(Math.random()*14-7).toFixed(0)}px;--fy2:-6px`;
+    el.appendChild(f);
+  }
+  // tasbih words
+  const words=[
+    {t:'تَسْبِيح',x:'4%',y:'10%',sz:14,tx:'5px'},{t:'سُجُود',x:'70%',y:'8%',sz:13,tx:'-4px'},
+    {t:'النَّخْلَة',x:'5%',y:'55%',sz:13,tx:'4px'},{t:'مُؤْمِن',x:'72%',y:'52%',sz:14,tx:'-4px'},
+    {t:'ثِمَار',x:'38%',y:'8%',sz:15,tx:'3px'},
+  ];
+  words.forEach((w,i)=>{
+    const d=document.createElement('div');
+    d.style.cssText=`position:absolute;left:${w.x};top:${w.y};font-family:Scheherazade New,serif;font-size:${w.sz}px;color:rgba(212,168,67,.42);animation:tasbihFloat ${(4+Math.random()*3).toFixed(1)}s ease-in-out infinite ${(i*.6).toFixed(1)}s;--tx:${w.tx}`;
+    d.textContent=w.t;
+    el.appendChild(d);
+  });
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 340 200');svg.setAttribute('width','100%');svg.setAttribute('height','200');
+  svg.style.cssText='position:absolute;inset:0;pointer-events:none';
+  svg.innerHTML=`
+    <text x="170" y="14" text-anchor="middle" font-family="Scheherazade New,serif" font-size="13" fill="rgba(212,168,67,.55)">تُؤْتِي أُكُلَهَا كُلَّ حِينٍ بِإِذْنِ رَبِّهَا</text>
+    <text x="170" y="27" text-anchor="middle" font-size="9" fill="rgba(212,168,67,.35)" font-family="Lato">Ibrahim : 25 — Il donne ses fruits en toute saison, avec la permission de son Seigneur</text>
+    <text x="170" y="193" text-anchor="middle" font-size="9" fill="rgba(58,173,96,.5)" font-family="Lato">Le croyant est comme le palmier — utile en toutes ses parties (Bukhari)</text>
+  `;
+  el.appendChild(svg);
+}
+
+const sceneFns=[buildSc0,buildSc1,buildSc2,buildSc3,buildSc4,buildSc5];
+sceneFns.forEach((fn,i)=>fn(document.getElementById('sc'+i)));
+
+/* ══ SLIDE DOTS ══ */
+const NSLIDES=6;
+const dotsEl=document.getElementById('slide-dots');
+for(let i=0;i<NSLIDES;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=(()=>{const n=i;return()=>goSlide(n);})();
+  dotsEl.appendChild(d);
+}
+let curSlide=0;
+function goSlide(n){
+  document.getElementById('sl-'+curSlide).classList.remove('active');
+  curSlide=n;
+  document.getElementById('sl-'+n).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>{ d.className='dot'+(i===n?' active':i<n?' done':''); });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══ QUIZ ══ */
+const Q=[
+  {
+    icon:'🌳',
+    q:"À quoi le Coran compare-t-il la 'parole bonne' (kalima tayyiba) dans Ibrahim : 24 ?",
+    opts:["À une rivière qui coule","À un bel arbre aux racines fermes et aux branches vers le ciel","À une montagne solide","À un nuage qui arrose"],
+    ans:1,
+    fb:"La 'كَلِمَةٌ طَيِّبَة' (kalima tayyiba — parole bonne / la foi) est comparée à un bel arbre dont la racine est ferme dans la terre et les branches s'élèvent vers le ciel — qui donne ses fruits en toute saison avec la permission d'Allah. La foi du croyant doit être ainsi : enracinée, haute et généreuse.",
+    ayah:"« Une parole bonne, semblable à un bel arbre dont la racine est ferme et les branches s'élèvent vers le ciel. » — Ibrahim : 24"
+  },
+  {
+    icon:'🍃',
+    q:"Selon Ar-Rahman : 6, que font les arbres et les étoiles ensemble ?",
+    opts:["Ils illuminent la nuit","Ils se prosternent devant Allah","Ils produisent de l'oxygène","Ils régulent les saisons"],
+    ans:1,
+    fb:"'وَالنَّجْمُ وَالشَّجَرُ يَسْجُدَانِ' — Les étoiles et les arbres se prosternent devant Allah. Cette prosternation est réelle : les arbres obéissent totalement aux lois d'Allah — photosynthèse, croissance, fructification. Chaque feuille est une usine en état de sujood permanent.",
+    ayah:"« Et les étoiles et les arbres se prosternent. » — Ar-Rahman : 6"
+  },
+  {
+    icon:'🫒',
+    q:"Comment Allah qualifie-t-il l'olivier dans le Coran ?",
+    opts:["Un arbre majestueux (شَجَرَةٌ عَظِيمَة)","Un arbre béni (شَجَرَةٌ مُبَارَكَة)","Un arbre sacré (شَجَرَةٌ مُقَدَّسَة)","Un arbre précieux (شَجَرَةٌ كَرِيمَة)"],
+    ans:1,
+    fb:"Allah qualifie l'olivier de 'شَجَرَةٌ مُبَارَكَة' (arbre béni). Dans le verset de la Lumière (An-Nur : 35), son huile illumine presque sans que le feu la touche. Certains oliviers méditerranéens ont plus de 2 000 ans — ils étaient déjà adultes à l'époque du Prophète ﷺ.",
+    ayah:"« Un arbre qui pousse sur le mont Sinaï, produisant de l'huile et une sauce pour ceux qui mangent. » — Al-Mu'minun : 20"
+  },
+  {
+    icon:'🌴',
+    q:"Pourquoi Allah ordonne-t-Il à Maryam عَلَيْهَا السَّلَامُ de secouer le palmier lors de l'accouchement ?",
+    opts:["Pour avoir de l'ombre","Pour que des dattes fraîches tombent sur elle","Pour se tenir debout","Pour appeler à l'aide"],
+    ans:1,
+    fb:"Allah lui ordonne de secouer le tronc pour faire tomber des 'رُطَبًا جَنِيًّا' (dattes fraîches et mûres). La science a confirmé que les dattes fraîches contiennent des composés similaires à l'ocytocine qui facilitent les contractions utérines — un miracle médical révélé 14 siècles avant la biochimie.",
+    ayah:"« Secoue vers toi le tronc du palmier, il fera tomber sur toi des dattes fraîches et mûres. » — Maryam : 25"
+  },
+  {
+    icon:'🌴',
+    q:"À quel arbre le Prophète ﷺ a-t-il comparé le croyant ?",
+    opts:["Au chêne robuste","Au palmier dont toutes les parties sont utiles","À l'olivier béni","Au cèdre du Liban"],
+    ans:1,
+    fb:"Le Prophète ﷺ a dit : 'L'exemple du croyant est comme celui du palmier : ce qui te provient venant de lui t'est profitable ' (Rapporté par Al Bazar). Toutes les parties du palmier sont bénéfiques — fruits, feuilles, tronc, racines. Ainsi doit être le croyant : utile en toutes circonstances.",
+    ayah:"« Il donne ses fruits en toute saison, avec la permission de son Seigneur. » — Ibrahim : 25"
+  },
+  {
+    icon:'💡',
+    q:"Dans le verset de la Lumière (An-Nur : 35), à quoi sert l'huile d'olivier ?",
+    opts:["À guérir les malades","À alimenter la lampe de la lumière divine","À purifier l'eau","À nourrir les pauvres"],
+    ans:1,
+    fb:"Dans An-Nur : 35, Allah compare Sa lumière à une lampe dans une niche, alimentée par l'huile d'un olivier béni — 'ni oriental ni occidental, dont l'huile illuminerait presque sans que le feu la touche'.",
+    ayah:"« Un arbre béni, ni oriental ni occidental, dont l'huile illuminerait presque sans que le feu la touche. » — An-Nur : 35"
+  },
+  {
+    icon:'🌲',
+    q:"Combien de kg d'oxygène un arbre produit-il en moyenne par an ?",
+    opts:["10 kg","100 kg","500 kg","1 000 kg"],
+    ans:1,
+    fb:"Un arbre produit en moyenne 100 kg d'oxygène par an — assez pour subvenir aux besoins respiratoires de deux personnes. La forêt amazonienne produit 20% de l'oxygène mondial. Allah a créé ces poumons verts qui nous maintiennent en vie à chaque respiration, en silence.",
+    ayah:"« Est-ce vous qui le faites pousser, ou est-ce Nous qui le faisons pousser ? » — Al-Waqi'a : 64"
+  },
+  {
+    icon:'🌱',
+    q:"Que dit le Prophète ﷺ sur le fait de planter un arbre même si l'Heure arrive ?",
+    opts:["Il est inutile de planter si la fin est proche","Si l'Heure vient alors qu'il tient un plant, qu'il le plante","Il faut d'abord prier avant de planter","Il vaut mieux distribuer sa nourriture"],
+    ans:1,
+    fb:"Le Prophète ﷺ a dit : 'Si l'Heure a lieu alors que l'un d'entre vous a un petit palmier à planter dans sa main, s'il peut le planter avant qu'elle n'ai lieu qu'il le plante' (Rapporté par Boukhari). Planter un arbre est une sadaqa jariya (aumône continue) — tant que l'arbre vit et que des créatures en bénéficient, la récompense continue même après la mort.",
+    ayah:"« Il donne ses fruits en toute saison, avec la permission de son Seigneur. » — Ibrahim : 25"
+  }
+];
+
+let cur=0,score=0,answered=false;
+function startQuiz(){
+  document.getElementById('screen-intro').classList.remove('active');
+  document.getElementById('screen-quiz').classList.add('active');
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderQ(){
+  answered=false;
+  const q=Q[cur];
+  document.getElementById('q-icon').textContent=q.icon;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('q-count').textContent=`${cur+1} / ${Q.length}`;
+  document.getElementById('qprog').style.width=`${(cur/Q.length)*100}%`;
+  const opts=document.getElementById('options');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=o;
+    b.onclick=()=>pick(i);opts.appendChild(b);
+  });
+}
+function pick(i){
+  if(answered)return;answered=true;
+  const q=Q[cur];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  if(i!==q.ans)document.querySelectorAll('.opt')[i].classList.add('wrong');
+  else score++;
+  document.getElementById('fb-text').textContent=q.fb;
+  document.getElementById('fb-ayah').textContent=q.ayah;
+  document.getElementById('fb-box').style.display='block';
+  document.getElementById('qnext').style.display='block';
+  document.getElementById('score-pill').textContent=`⭐ ${score}`;
+}
+document.getElementById('qnext').onclick=()=>{ cur++;if(cur>=Q.length)showEnd();else renderQ(); };
+function showEnd(){
+  document.getElementById('q-card').style.display='none';
+  document.getElementById('fb-box').style.display='none';
+  document.getElementById('qnext').style.display='none';
+  document.getElementById('quiz-header').style.display='none';
+  const pct=score/Q.length;
+  let badge,title,msg;
+  if(pct===1){ badge='🌟';title='Exceptionnel — بارك الله فيك';msg="Tu as répondu correctement à toutes les questions ! La prochaine fois que tu vois un arbre, souviens-toi : il se prosterne devant Allah, il produit ton oxygène, et il est un miroir de ta foi. Plante un arbre — c'est une sadaqa jariya."; }
+  else if(pct>=.625){ badge='🌳';title='Très bien — أحسنت';msg="Tu connais bien les signes d'Allah dans les arbres. Relis les leçons sur l'olivier béni et les dattes de Maryam — des miracles coraniques qui touchent le cœur et la science."; }
+  else { badge='🌱';title='Bon début — استمر في التعلم';msg="Chaque arbre est un livre ouvert sur la sagesse d'Allah. Reprends les leçons et la prochaine fois que tu passes devant un arbre, souviens-toi : il glorifie Allah à chaque instant, en silence."; }
+  document.getElementById('end-badge').textContent=badge;
+  document.getElementById('end-title').textContent=title;
+  document.getElementById('end-big').textContent=score;
+  document.getElementById('end-msg').textContent=msg;
+  document.getElementById('end-screen').style.display='block';
+  document.getElementById('qprog').style.width='100%';
+}
+function restartQuiz(){
+  cur=0;score=0;
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('quiz-header').style.display='flex';
+  document.getElementById('score-pill').textContent='⭐ 0';
+  renderQ();
+}
+function reviewIntro(){
+  document.getElementById('screen-quiz').classList.remove('active');
+  document.getElementById('screen-intro').classList.add('active');
+  goSlide(0);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
